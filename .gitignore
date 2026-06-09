@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# LibreOffice lock files
+.~lock.*#
+
+# macOS resource forks / metadata
+._*
+.DS_Store
+
+# Editor swap files
+*.swp

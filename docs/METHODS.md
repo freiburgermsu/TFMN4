@@ -1,0 +1,194 @@
+# Methods — ODE growth-rate model for the TFMN4 barcode competition
+
+This document derives the model implemented in `scripts/` and states precisely
+what it can and cannot estimate. It is scoped to the **first assessment**: the
+**11 Samples observed at all four transfers {3, 4, 6, 13}**.
+
+---
+
+## 1. The experiment and the data
+
+`SeqCenter_2026-05-26_QUO1022807_exp2_extracted_barcodes.csv` is a **serial-transfer
+barcode competition**. Each row is a read count for one enzyme variant in one
+culture at one transfer.
+
+| Concept | Column(s) | Meaning |
+|---|---|---|
+| Variant | `Candidate` = `verA`–`verB` | A unique enzyme pair (41 verA × 96 verB → 350 observed). The lineage whose growth rate we want. |
+| Culture | `Sample` = `TFMN4.exp2.ACN3788.<DNA_construct>.<replicate>` | One competing population (24 total). |
+| Time | `Transfer` ∈ {3, 4, 6, 13} | A serial-transfer snapshot. |
+| Abundance | `Count` | Sequencing reads of that variant's barcode in that culture at that transfer. |
+
+Two structural facts about the counts **determine the entire model**:
+
+1. **The counts are compositional, not absolute cell numbers.** Total reads per
+   `(Sample, Transfer)` are roughly fixed sequencing depth (min 101, median 190,
+   max 274) and do **not** grow over transfers. A count therefore measures a
+   *relative frequency* `f_i = N_i / Σ_j N_j`; the absolute population size is not
+   in this file.
+
+2. **A selective sweep is occurring.** The number of distinct variants per culture
+   collapses over transfers (e.g. 48 → 27 → 17 → 9) while total reads stay flat —
+   winners concentrate, losers fall to zero reads. This is competitive exclusion,
+   exactly what a selection ODE predicts.
+
+The selection pressure (from the OD file's `Condition`) is
+**4 mM methoxybenzoate + kanamycin**: variants whose verA/verB enzymes metabolize
+the substrate better out-compete the rest.
+
+---
+
+## 2. The ODE model
+
+### 2.1 Latent (absolute) growth
+
+Within a culture *c*, each variant *i* grows exponentially:
+
+```
+dN_{c,i}/dt = r_{c,i} · N_{c,i}        ⇒   N_{c,i}(t) = N_{c,i}(0) · exp(r_{c,i} t)
+```
+
+Serial dilution at each transfer multiplies **every** lineage by the same factor
+1/D, so it cancels in frequencies and does not break the continuous-time picture.
+
+### 2.2 What sequencing observes — the replicator equation
+
+Reads see only frequencies `f_{c,i} = N_{c,i} / Σ_j N_{c,j}`. Differentiating:
+
+```
+df_{c,i}/dt = f_{c,i} · ( r_{c,i} − r̄_c(t) ),     r̄_c(t) = Σ_j f_{c,j} r_{c,j}
+```
+
+Adding a constant to **every** `r_i` leaves all frequencies unchanged. **This is
+the crux: compositional data identifies only rate *differences*, i.e. relative
+fitness — never absolute growth rate.**
+
+### 2.3 The identifiable, fittable form
+
+For any reference (we use the per-timepoint geometric mean = centered log-ratio,
+CLR), the log-ratio is **linear in time**:
+
+```
+d/dt ln( f_{c,i} / f_ref ) = r_{c,i} − r_ref ≡ s_{c,i}        (selection coefficient)
+⇒  CLR_{c,i}(t) = const + s_{c,i} · t
+```
+
+So **the growth rate of each variant is estimated as the slope of its
+centered-log-ratio versus time.** When one variant dominates this reduces to the
+logistic sweep `dg/dt = s·g(1−g)`, `logit(g)` linear in *t* — the observed sweep
+shape.
+
+### 2.4 Observation / noise model
+
+Counts at each `(Sample, Transfer)` are Multinomial in the latent frequencies
+(equivalently Poisson with `ln(depth)` as a fixed offset). Because depth is small
+and 31 % of nonzero counts equal 1, sampling noise is large and is handled by
+**weighting each CLR point by its count precision** `w = count + 0.5` in the
+least-squares fit (down-weighting singletons and below-detection cells). Zeros are
+treated as *left-censored* — frequency below ≈ 1/depth — not imputed to a value.
+The fully rigorous upgrade is a hierarchical Dirichlet-Multinomial GLM (§6).
+
+---
+
+## 3. The time axis (an empirical correction)
+
+The task described **1 transfer = 10 h**. The OD file's instrument timestamps
+(File B, `series='exp2'`) instead show a **very steady ~26.4 h per transfer**
+(see `outputs/intermediate/od_time_axis.csv`). The four sampled transfers fall at
+≈ **53, 80, 133, 318 h** after T0, not 30/40/60/130 h.
+
+This **only rescales rate units** — the sign, the ranking, and the per-cycle
+coefficient are all unaffected. We therefore report three axes:
+
+| Axis | Variable | Property |
+|---|---|---|
+| **per transfer-cycle** (primary) | `Transfer` index | gauge-robust; no time assumption |
+| **per generation** | cumulative generations from the within-cycle OD sigmoid `Δg = log₂(plateau/inoculum)` ≈ 3.3 gen/cycle | canonical microbial-fitness unit |
+| **per hour** | per-cycle ÷ cycle length | reported for **both** 26.4 h (measured) and 10 h (nominal) |
+
+> Because barcodes are sampled at **end-of-cycle stationary phase** (OD pinned at
+> carrying capacity), generations accrue only during the exponential portion of
+> each cycle — which is why the per-*generation* axis (not calendar hours) is the
+> defensible biological clock.
+
+---
+
+## 4. What is and is not identifiable
+
+**Identifiable**
+- Per-`(Sample, Candidate)` **selection coefficient** `s` = relative growth rate vs
+  the community mean, for variants seen at ≥ 2 timepoints (237 of 460 pairs).
+- The within-sample **fitness ranking** and **sweep-winner identity** (gauge-invariant).
+- Reproducible **verA / verB marginal** selection coefficients, pooled across the
+  11 cultures (the only signal that recurs — see §5).
+
+**Not identifiable**
+- **Absolute** Malthusian rates `r_i` — from this file *or* even with the OD file,
+  because barcodes are sampled at stationary phase (OD = K, constant), so the OD
+  multiplies frequencies by a per-well constant and adds no time-varying absolute
+  information. Absolute rates would need exponential-phase sequencing or a
+  spike-in / qPCR / CFU calibration.
+- **True extinction vs sampling dropout** — both appear as zero reads.
+- Any **per-Candidate carrying capacity** or time-varying fitness — only 4 uneven
+  snapshots, with a ~185 h unobserved gap between T6 and T13.
+
+---
+
+## 5. Per-Candidate vs allele-level estimands
+
+Per-Candidate coefficients are **noisy and largely irreproducible**: replicate
+cultures fix on *different* full Candidates (the SpeI replicates' winners are
+`A81-B8`, `A81-B174`, `A20-B151`, `A81-B151`, `A83-B42`), and 223/460 pairs are
+seen at a single timepoint. The reproducible signal is at the **allele** level:
+
+- The winning **verA is `A81` in 6 of 11 cultures**.
+- But `A81`'s *marginal selection coefficient* (+0.020/cycle) is **inside the
+  neutral-drift envelope** (drift p ≈ 0.64): it tends to win by **starting
+  abundance / founder effect**, not a per-generation growth advantage.
+- `A90` (+0.104/cycle, p < 0.001) and `A78` (+0.061, p = 0.01) show **robust,
+  drift-confirmed advantages** despite rarely winning a sweep outright.
+
+We therefore decompose `s_i ≈ a_{verA} + b_{verB} + interaction` and report the
+verA/verB marginals (inverse-variance weighted across cultures) as the trustworthy
+deliverable, each gated against a **neutral-drift null** (Multinomial resampling
+at the observed depths from a constant frequency vector). This null also guards
+against the **survivorship artifact**: at fixed depth a neutral survivor's
+frequency rises merely because competitors drop below detection.
+
+---
+
+## 6. Estimation recipe (as implemented)
+
+1. **`s01`** Restrict to the 11 four-transfer Samples; build the per-Sample variant
+   union grid (absences = explicit zero cells).
+2. **`s02`** Derive the time/generations axis from File B.
+3. **`s03`** Per `(Sample, Candidate)`: CLR of counts, then weighted least-squares
+   slope vs each time axis → selection coefficient `s`, with SE, R², monotonicity
+   and a `quality` tier. Report only pairs with ≥ 2 observed timepoints.
+4. **`s04`** Pivot to the **variant × Sample growth matrix** (the headline CSV);
+   per-Sample summary with sweep winners.
+5. **`s05`** Collapse to verA/verB marginals + neutral-drift null + robustness flag.
+6. **`s06`** Diagnostic figures (richness collapse, sweep trajectories, heatmap).
+
+**Recommended upgrade (not yet implemented — needs `numpyro`/`pymc`):** one
+hierarchical Dirichlet-Multinomial GLM across all 11 Samples with partially-pooled
+verA/verB main effects, a sparse verA×verB interaction, per-culture random
+deviations, and **per-transfer-interval** coefficients (since ~76 % of all-4
+trajectories are non-log-linear, a single global slope is only a first-order
+summary — see the `quality`/`monotonic` flags).
+
+---
+
+## 7. Key caveats (read before using the numbers)
+
+- **Relative, not absolute.** Every `s` is growth **relative to the community
+  mean** in that culture. Do not compare `s` across cultures that share no
+  variants without going through the allele level.
+- **Per-hour numbers depend on the 26.4 h vs 10 h choice** (factor 2.64).
+  Per-cycle and per-generation are unaffected.
+- **Single-global-slope is approximate.** ~76 % of all-4 trajectories are
+  non-monotone (the sweep mostly happens in the unobserved T6→T13 gap). Filter the
+  matrix by `quality ∈ {high, good}` and `monotonic` for the cleanest estimates;
+  treat `fair` cells (2 timepoints or low R²) as indicative only.
+- **A positive slope can be survivorship, not selection.** Trust allele-level
+  effects with `robust_selection = True`.
