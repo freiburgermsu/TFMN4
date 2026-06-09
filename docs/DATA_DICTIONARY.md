@@ -60,6 +60,44 @@ Same shape, cells = `s_per_generation`.
 
 ---
 
+## Cross-sample integration + OD anchor (`s08`–`s11`; see METHODS §8)
+
+### `variant_bridged_relative.csv` — per-variant effect on one common scale
+| Column | Meaning |
+|---|---|
+| `Candidate`, `verA`, `verB` | variant and parts |
+| `n_samples` | cultures the variant is estimable in |
+| `bridged` | appears in ≥2 samples (contributes to the gauge) |
+| `beta_per_cycle` | cross-sample variant effect (common relative scale), per cycle |
+| `beta_se` | SE, **overdispersion-inflated** by √φ (φ=2.53) |
+| `beta_se_raw` | sampling SE (φ=1), used for the EB pooling in `s09b` |
+| `beta_per_generation` | `beta_per_cycle` ÷ (generations/cycle ≈ 3.46) |
+| `I2_heterogeneity` | across-sample heterogeneity (multi-sample variants) |
+| `samples` | which cultures contributed |
+
+### `sample_gauge.csv` — per-sample gauge from the bridge model
+`Sample`, `gamma_c` (per-sample offset, Σ=0), `bridge_degree` (# samples sharing a
+variant), `n_bridge_variants`, `weakly_anchored` (degree ≤ 1).
+
+### `variant_pooled.csv` — partial-pooled variant effects (`s09b`)
+Adds `allele_pred_per_cycle` (additive verA+verB prediction), `beta_pooled_per_cycle`
+(EB blend), `shrinkage_lambda` (1 = keep own estimate, 0 = full pool to allele mean).
+
+### `allele_growth_advantage.csv` — graded allele table (`s10`)
+Per allele (verA & verB): `marginal_s_per_cycle`, `marginal_s_per_generation`, `se`,
+`n_pairs`, `n_samples`, `drift_null_p`, `exceeds_drift_null`, `robust_selection`,
+then the **derived, flagged** OD-clock columns `R_allele_OD_clock_per_h`,
+`R_allele_lo/hi` (interval over the community μ_bulk), `correction_frac_of_mubulk`,
+and assumption booleans `flag_anchor_is_community_level`,
+`flag_correction_is_few_pct_of_mubulk`, `flag_OD_not_biomass`, `flag_derived_not_measured`.
+**These OD/h numbers are community-dominated derivations, not per-variant measurements.**
+
+### `figures/`
+`growth_matrix_overview.png` (variant×sample heatmap + distribution),
+`od_anchor_falsification.png` (go/no-go, μ_bulk vs transfer, bridge graph, allele forest).
+
+---
+
 ## `intermediate/`
 - **`barcode_4transfer_long.csv`** — tidy rows: `Sample, DNA_construct, Replicate,
   Microtiter_plate_well, Transfer, verA, verB, Candidate, Count, depth, freq`
@@ -71,3 +109,9 @@ Same shape, cells = `s_per_generation`.
 - **`od_time_axis.csv`** — per transfer: `hours_from_T0` (instrument clock),
   `delta_g` (generations that cycle), `cumgen` (cumulative generations),
   `is_sampled_transfer`, `measured_hours_per_transfer` (≈26.4).
+- **`od_bulk_rate.csv`** — per `(Sample, transfer)`: `mu_bulk_per_h` (within-cycle
+  max exponential-phase specific growth rate = community r̄), `mu_se`, `fit_r2`,
+  `plateau_K`, `inoculum_net`, `n_band_readings`, `doubling_h`, `tau_exp_h`,
+  `reliable` (T6/T13 reliable; T3/T4 mostly not).
+- **`od_bulk_condition_summary.csv`** — community μ_bulk by construct family
+  (concX vs concY) at reliable transfers — **the one genuinely absolute OD/h rate**.

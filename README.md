@@ -45,18 +45,29 @@ scripts/
   s04_growth_matrix.py     pivot to the variant x Sample growth matrix + summary
   s05_allele_effects.py    verA/verB marginals + neutral-drift null
   s06_figures.py           diagnostic plots
+  s07_growth_matrix_figure.py   growth-matrix heatmap + distribution
+  s08_od_bulk_rate.py      community mu_bulk + tau_exp from the OD curves
+  s09_bridge_meta.py       cross-sample two-way bridge model (common relative scale)
+  s09b_partial_pooling.py  EB shrinkage of variant effects toward allele means
+  s10_allele_effects_graded.py  graded allele table + flagged OD-clock rate
+  s11_falsification_figures.py  OD-anchor go/no-go + bridge graph + forest
   run_all.py               run the whole pipeline in order
 docs/
-  METHODS.md           model derivation, identifiability, caveats
-  DATA_DICTIONARY.md   every output file + column
+  METHODS.md                model derivation, identifiability, cross-sample integration
+  DATA_DICTIONARY.md        every output file + column
+  EXPERIMENTAL_REQUIREMENTS.md   what data gives which growth-rate quantity (+ absolute)
 outputs/
   growth_matrix_selection_per_cycle.csv        <-- HEADLINE: variants x samples x growth
   growth_matrix_selection_per_generation.csv
   selection_coefficients_long.csv              full per-(Sample,Candidate) table + flags
   sample_summary.csv                           per-Sample winners, richness, ranges
   allele_effects_verA.csv / allele_effects_verB.csv
-  intermediate/        tidy data, depth table, OD-derived time axis
-  figures/             richness collapse, sweep trajectories, growth heatmap
+  variant_bridged_relative.csv                 cross-sample variant effects (one scale)
+  variant_pooled.csv                           partial-pooled variant effects
+  sample_gauge.csv                             per-sample gauge gamma_c + anchor flags
+  allele_growth_advantage.csv                  graded allele table (+ derived OD-clock)
+  intermediate/        tidy data, depth, OD time axis, OD bulk rate (mu_bulk)
+  figures/             richness, sweeps, growth heatmap, OD-anchor falsification
 ```
 
 ## The headline output
@@ -81,6 +92,16 @@ variant is seen at only one timepoint (not estimable). Read it alongside the
   neutral-drift envelope** (it wins by starting abundance / founder effect).
 - **verA `A90` (+0.104/cycle) and `A78` (+0.061/cycle)** are the **robust,
   drift-confirmed** growth advantages, despite rarely winning a sweep outright.
+
+### Cross-sample integration + absolute rates (`s08`–`s11`)
+- The 11 samples form **one connected bridge graph**, so variant effects integrate
+  onto a **common relative scale** (`variant_bridged_relative.csv`).
+- The OD growth curves give **one absolute number**: the community bulk rate
+  **μ_bulk ≈ 0.3 h⁻¹** (doubling ~2 h; concX > concY).
+- **Absolute per-variant OD/h is not identifiable** — the OD-anchor fails its go/no-go
+  test (`corr(γ_c, μ_bulk) ≈ 0`) and adds no per-variant information; the allele
+  "advantage" is only 2–12 % of μ_bulk. See `od_anchor_falsification.png` and
+  **`docs/EXPERIMENTAL_REQUIREMENTS.md`** for what data would unlock true biomass/h.
 
 ## ⚠️ Three things to know before using the numbers
 

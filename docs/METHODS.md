@@ -111,6 +111,14 @@ coefficient are all unaffected. We therefore report three axes:
 > each cycle — which is why the per-*generation* axis (not calendar hours) is the
 > defensible biological clock.
 
+> **Per-hour caveat (corrected in `s08`/`s10`).** Selection acts only during the
+> ~**7–10 h exponential phase** (`τ_exp`, measured from the within-cycle OD curve at
+> T6/T13), not the full 26.4 h cycle. The correct per-hour conversion of a relative
+> coefficient is `s / τ_exp`. The `s_per_hour_measured` / `s_per_hour_nominal`
+> columns in `selection_coefficients_long.csv` are therefore **cycle-averaged** and
+> understate exponential-phase rates by ~2.6× — treat them as cycle-level, and use
+> `τ_exp` for true per-hour statements.
+
 ---
 
 ## 4. What is and is not identifiable
@@ -168,7 +176,8 @@ frequency rises merely because competitors drop below detection.
 4. **`s04`** Pivot to the **variant × Sample growth matrix** (the headline CSV);
    per-Sample summary with sweep winners.
 5. **`s05`** Collapse to verA/verB marginals + neutral-drift null + robustness flag.
-6. **`s06`** Diagnostic figures (richness collapse, sweep trajectories, heatmap).
+6. **`s06`/`s07`** Diagnostic + growth-matrix figures.
+7. **`s08`–`s11`** Cross-sample integration and the OD absolute anchor — see §8.
 
 **Recommended upgrade (not yet implemented — needs `numpyro`/`pymc`):** one
 hierarchical Dirichlet-Multinomial GLM across all 11 Samples with partially-pooled
@@ -192,3 +201,50 @@ summary — see the `quality`/`monotonic` flags).
   treat `fair` cells (2 timepoints or low R²) as indicative only.
 - **A positive slope can be survivorship, not selection.** Trust allele-level
   effects with `robust_selection = True`.
+
+---
+
+## 8. Cross-sample integration and absolute units (`s08`–`s11`)
+
+To make a **variant-level statement across all samples**, and to ask whether growth
+can be expressed in **OD/biomass per hour**, the pipeline adds four stages. The full
+data-vs-identifiable-quantity map is in [`docs/EXPERIMENTAL_REQUIREMENTS.md`](EXPERIMENTAL_REQUIREMENTS.md).
+
+**`s09` — cross-sample bridge model (relative scale).** Each sample's `s_{c,i}` is
+gauged to its own community mean, so we tie the gauges together with a two-way model
+`s_{c,i} = β_i + γ_c + ε`, fit by weighted alternating least squares with `Σγ_c = 0`.
+`β_i` is the variant effect on **one common relative scale**; `γ_c` is the per-sample
+gauge, pinned by **variants shared across samples (bridges)**. This is identifiable
+because the bridge graph is **one connected component** (verified: 38 edges, 51
+bridges). SEs are inflated by the observed overdispersion **φ = 2.53** (×1.59). The
+lone degree-1 sample (`concX_largeLib_SpeI.3`) is flagged weakly anchored.
+`s09b` shrinks the 117 single-sample variants toward additive verA+verB allele means
+(empirical Bayes); the full crossed-random-effects version is the `numpyro` upgrade.
+
+**`s08` — the one quantity OD legitimately supplies.** The within-cycle
+exponential-phase slope `μ_bulk = d ln(OD)/dt = Σ_i f_i r_i = r̄` is the
+**community-mean absolute rate** (~**0.3 h⁻¹**, doubling ~2 h; condition-dependent,
+concX > concY). It also gives the exponential-phase clock `τ_exp ≈ 7–10 h`.
+
+**Why per-variant absolute OD/h is NOT identifiable here (`s11` falsification).**
+Three of four design approaches proposed `r_i = μ_bulk_c + s_{c,i}/τ_exp`. It fails
+on this data:
+1. **Go/no-go fails** — anchoring requires `corr(γ_c, μ_bulk_c) ≪ 0`; observed ≈ 0
+   (panel a of `od_anchor_falsification.png`).
+2. **μ_bulk can't discriminate samples** — across-sample SD ≲ within-sample noise; it
+   is one shared constant + noise, not a per-sample gauge (panel b).
+3. **No new information** — algebraically `s/τ_exp = s_per_generation × (μ_bulk/ln2)`,
+   an existing column × a per-sample scalar; for the real alleles the correction is
+   only **1.7–12 % of μ_bulk** (panel d). It is also circular for sweep winners.
+
+**`s10` — graded deliverable.** Reports per-allele relative marginals (per cycle &
+per generation, drift-gated) plus a clearly-flagged **derived** `R_allele_OD_clock`
+= `μ_bulk + s/τ_exp` (interval, with assumption-flag booleans) — a unit relabel of
+the relative effect, dominated by the shared community rate, **not** a per-variant
+measurement.
+
+**Bottom line.** What is genuinely absolute in OD/h is the **one community rate**.
+Variant/allele results are **relative** (and reproducible at the allele level). True
+per-variant absolute (biomass) rates need new data — within-exponential-phase
+barcode sampling + an absolute abundance anchor (spike-in/qPCR/CFU), or monoculture
+growth curves, plus an OD→biomass calibration — see `EXPERIMENTAL_REQUIREMENTS.md`.
