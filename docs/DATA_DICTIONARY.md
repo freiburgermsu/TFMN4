@@ -92,9 +92,26 @@ and assumption booleans `flag_anchor_is_community_level`,
 `flag_correction_is_few_pct_of_mubulk`, `flag_OD_not_biomass`, `flag_derived_not_measured`.
 **These OD/h numbers are community-dominated derivations, not per-variant measurements.**
 
+### `global_variant_growth_rates.csv` — global static-rate fit (`s12`/`s12b`; METHODS §9)
+Per variant, one mostly-static growth rate shared across all samples, fit to jointly
+reproduce relative counts + community OD, **with error**:
+| Column | Meaning |
+|---|---|
+| `Candidate`, `verA`, `verB`, `n_samples` | variant, parts, # cultures present |
+| `has_slope_info` | observed at ≥2 timepoints in ≥1 sample (else rate is prior-driven) |
+| `r_global_per_h` | global static growth rate (per hour; community-dominated absolute) |
+| `rel_advantage_per_h` | `r_global − μ_bar` (the data-driven relative offset) |
+| `doubling_h` | ln2 / r_global |
+| `se_laplace` | inverse-Hessian SE |
+| `se_boot`, `ci_boot_lo/hi` | bootstrap SE + 95% CI (counts + μ_bulk resampling) |
+| `loso_heterogeneity_sd` | leave-one-sample-out SD ("is the rate static?") |
+| `sens_to_OD_weight` | \|Δr\| as the OD anchor goes 0→20 |
+| `identifiability` | `data-pinned` / `mixed` / `anchor-prior-driven` |
+
 ### `figures/`
 `growth_matrix_overview.png` (variant×sample heatmap + distribution),
-`od_anchor_falsification.png` (go/no-go, μ_bulk vs transfer, bridge graph, allele forest).
+`od_anchor_falsification.png` (go/no-go, μ_bulk vs transfer, bridge graph, allele forest),
+`global_growth_fit.png` (Laplace-vs-bootstrap SE, rate forest±CI, LOSO heterogeneity, OD-weight sensitivity).
 
 ---
 

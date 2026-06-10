@@ -25,6 +25,8 @@ import s08_od_bulk_rate
 import s09_bridge_meta
 import s09b_partial_pooling
 import s10_allele_effects_graded
+import s12_global_growth_fit
+import s12b_growth_rate_error
 import s06_figures
 import s07_growth_matrix_figure
 import s11_falsification_figures
@@ -44,6 +46,9 @@ def main():
     s09_bridge_meta.main(); print(line)
     s09b_partial_pooling.main(); print(line)
     s10_allele_effects_graded.main(); print(line)
+    # --- global static-rate optimization (assumption-laden absolute rates) + error ---
+    s12_global_growth_fit.main(); print(line)
+    s12b_growth_rate_error.main(); print(line)
     # --- figures (non-essential) ---
     try:
         s06_figures.main()
@@ -56,6 +61,7 @@ def main():
     print("  outputs/growth_matrix_selection_per_cycle.csv  (per-sample, per-variant)")
     print("  outputs/variant_bridged_relative.csv           (cross-sample variant effects)")
     print("  outputs/allele_growth_advantage.csv            (graded allele table + OD-clock)")
+    print("  outputs/global_variant_growth_rates.csv        (global static per-variant rate + error)")
     print("  outputs/intermediate/od_bulk_condition_summary.csv  (the one absolute OD/h rate)")
 
 

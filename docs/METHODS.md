@@ -248,3 +248,46 @@ Variant/allele results are **relative** (and reproducible at the allele level). 
 per-variant absolute (biomass) rates need new data — within-exponential-phase
 barcode sampling + an absolute abundance anchor (spike-in/qPCR/CFU), or monoculture
 growth curves, plus an OD→biomass calibration — see `EXPERIMENTAL_REQUIREMENTS.md`.
+
+---
+
+## 9. Global static-rate optimization (`s12`/`s12b`)
+
+A single global inverse problem that — under the explicit assumption that a
+variant's biomass is its read-fraction × community OD — assigns **one mostly-static
+growth rate `r_i` per variant, shared across all 11 samples**, and solves for the
+combination that jointly reproduces every sample's relative counts **and** community
+OD growth.
+
+**Model (softmax replicator + OD-mean anchor).** Latent log-abundance
+`η_{c,i,t} = logA_{c,i} + r_i·x_t` with `x_t` = cumulative exponential-phase hours
+(`cumgen × ln2/μ_bar`); predicted frequency = softmax over a sample's variants;
+predicted community rate `r̄_{c,t} = Σ_i f_{c,i,t} r_i`. Fit in **jax** (autodiff) +
+scipy L-BFGS over ~314 global rates + ~460 per-(sample,variant) intercepts.
+Loss = multinomial NLL (recreate counts) + `w_OD·(r̄−μ_bulk)²` (recreate OD growth)
++ ridge `w_r·(r_i−μ_bar)²` ("mostly static, minimally flexible") + data-anchored
+`logA` conditioning.
+
+**Result.** One static rate per variant reproduces the relative counts very well
+(**freq pseudo-R² ≈ 0.95**); the community-rate match is looser (RMSE ≈ 0.15/h,
+limited by noisy μ_bulk). Rates span ≈ **0.15–0.46 h⁻¹** around μ_bar ≈ 0.32 h⁻¹
+(doubling ~2 h), fastest for the sweep-winner variants.
+
+**Error in the rates (`s12b`), four layers:**
+1. **Laplace SE** — inverse Hessian (Schur-complement over the `logA` nuisance);
+   median ≈ 0.039/h.
+2. **Bootstrap 95% CI** — resample multinomial counts at observed depths + jitter
+   μ_bulk; median SE ≈ 0.020/h (agrees with Laplace to ~2×).
+3. **LOSO heterogeneity** — leave-one-sample-out SD; median ≈ 0.010/h (small →
+   the rates really are near-static across samples, validating the assumption).
+4. **Weight sensitivity** — the absolute level shifts only ≈ 0.03/h as the OD
+   anchor goes off→strong, and most rates move 0.02–0.05/h → the **relative
+   structure is data-pinned but the absolute level is anchor-dependent** (the
+   `identifiability` column flags data-pinned vs anchor/prior-driven variants).
+
+**Honesty.** This delivers the requested per-variant absolute (OD/h) rates, but they
+remain **community-dominated**: the relative ordering and spread are robust and
+data-driven; the absolute level rides on the noisy community μ_bulk and the ridge
+prior. Treat `r_global_per_h` as "community rate ± a data-driven relative offset,"
+with the error columns quantifying both. Output: `global_variant_growth_rates.csv`,
+figure `global_growth_fit.png`.

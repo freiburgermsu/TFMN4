@@ -51,6 +51,8 @@ scripts/
   s09b_partial_pooling.py  EB shrinkage of variant effects toward allele means
   s10_allele_effects_graded.py  graded allele table + flagged OD-clock rate
   s11_falsification_figures.py  OD-anchor go/no-go + bridge graph + forest
+  s12_global_growth_fit.py      global static per-variant rate (jax; counts + OD)
+  s12b_growth_rate_error.py     Laplace + bootstrap + LOSO + sensitivity error
   run_all.py               run the whole pipeline in order
 docs/
   METHODS.md                model derivation, identifiability, cross-sample integration
@@ -66,8 +68,9 @@ outputs/
   variant_pooled.csv                           partial-pooled variant effects
   sample_gauge.csv                             per-sample gauge gamma_c + anchor flags
   allele_growth_advantage.csv                  graded allele table (+ derived OD-clock)
+  global_variant_growth_rates.csv              global static per-variant rate + error (s12/s12b)
   intermediate/        tidy data, depth, OD time axis, OD bulk rate (mu_bulk)
-  figures/             richness, sweeps, growth heatmap, OD-anchor falsification
+  figures/             richness, sweeps, growth heatmap, OD-anchor falsification, global-growth fit
 ```
 
 ## The headline output
@@ -102,6 +105,16 @@ variant is seen at only one timepoint (not estimable). Read it alongside the
   test (`corr(γ_c, μ_bulk) ≈ 0`) and adds no per-variant information; the allele
   "advantage" is only 2–12 % of μ_bulk. See `od_anchor_falsification.png` and
   **`docs/EXPERIMENTAL_REQUIREMENTS.md`** for what data would unlock true biomass/h.
+
+### Global static-rate fit (`s12`/`s12b`)
+- A single global optimization assigns each variant **one static rate** (shared across
+  all samples) that jointly reproduces the relative counts (**freq R²≈0.95**) and the
+  community OD; rates span **0.15–0.46 h⁻¹** (doubling 1.5–4.5 h) around μ_bar≈0.32.
+- Rates come **with error** (Laplace SE, bootstrap CI, leave-one-sample-out
+  heterogeneity, OD-weight sensitivity). Cross-sample heterogeneity is small (~0.01/h
+  → rates really are near-static), but the **absolute level is anchor-dependent**
+  (most rates flagged `mixed`/`anchor-driven`) — the relative ordering is what's
+  robust. See `global_growth_fit.png` and METHODS §9.
 
 ## ⚠️ Three things to know before using the numbers
 
