@@ -27,6 +27,7 @@ import s09b_partial_pooling
 import s10_allele_effects_graded
 import s12_global_growth_fit
 import s12b_growth_rate_error
+import s12c_growth_forest_all
 import s06_figures
 import s07_growth_matrix_figure
 import s11_falsification_figures
@@ -54,6 +55,7 @@ def main():
         s06_figures.main()
         s07_growth_matrix_figure.main()
         s11_falsification_figures.main()
+        s12c_growth_forest_all.main()
     except Exception as e:
         print(f"[figures] skipped ({type(e).__name__}: {e})")
     print("=" * 70)
