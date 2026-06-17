@@ -29,7 +29,7 @@ def main():
     df = pd.read_csv(C.OUT / "global_variant_growth_rates.csv").copy()
     # community mu_bar (reliable T6/T13 median), for the reference line
     bulk = pd.read_csv(C.INTER / "od_bulk_rate.csv")
-    mu_bar = float(bulk.loc[bulk.reliable & bulk.transfer.isin([6, 13]), "mu_bulk_per_h"].median())
+    mu_bar = float(bulk.loc[bulk.reliable & bulk.transfer.isin(list(C.RELIABLE_OD_TRANSFERS)), "mu_bulk_per_h"].median())
 
     df = df.sort_values("r_global_per_h").reset_index(drop=True)
     n = len(df)

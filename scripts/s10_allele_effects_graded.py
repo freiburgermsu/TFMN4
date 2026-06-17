@@ -32,7 +32,7 @@ def main():
     mu_lo = float(cond["median"].min())          # concY (lower)
     mu_hi = float(cond["median"].max())          # concX (higher)
     mu_mid = float(np.median([mu_lo, mu_hi]))
-    tau = float(bulk.loc[bulk.reliable & bulk.transfer.isin([6, 13]), "tau_exp_h"].median())
+    tau = float(bulk.loc[bulk.reliable & bulk.transfer.isin(list(C.RELIABLE_OD_TRANSFERS)), "tau_exp_h"].median())
 
     ax = pd.read_csv(C.INTER / "od_time_axis.csv").set_index("transfer")["cumgen"]
     gpc = (ax[13] - ax[3]) / (13 - 3)             # generations per cycle

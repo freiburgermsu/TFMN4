@@ -13,3 +13,6 @@ __pycache__/
 
 # Editor swap files
 *.swp
+
+# Large source zips (extracted copy is committed under amplicon_data/)
+*.zip

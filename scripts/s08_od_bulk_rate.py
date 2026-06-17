@@ -51,26 +51,24 @@ def mu_max_window(t, net):
 
 def main():
     wm = pd.read_csv(C.INTER / "sample_well_map.csv")
-    well2sample = dict(zip(wm["Microtiter_plate_well"].astype(str), wm["Sample"]))
-    focus = set(well2sample)
+    sample_rows = wm[["Sample", "DNA_construct", "Microtiter_plate_well"]].drop_duplicates()
+    focus = set(wm["Microtiter_plate_well"].astype(str))
 
     axis = pd.read_csv(C.INTER / "od_time_axis.csv").set_index("transfer")
     dg = axis["delta_g"].to_dict()
     dg_med = float(np.nanmedian(list(dg.values())))
 
-    od = pd.read_csv(C.OD_CSV, usecols=["series", "transfer", "reading", "datetime",
-                                        "Microtiter_plate_well", "od", "background"])
-    od = od[(od["series"].astype(str) == "exp2") &
-            (od["Microtiter_plate_well"].astype(str).isin(focus))].copy()
+    od = C.read_focus_od(["transfer", "reading", "datetime", "od", "background"], focus)
     od["well"] = od["Microtiter_plate_well"].astype(str)
     od["rn"] = pd.to_numeric(od["reading"], errors="coerce")   # 'contam' -> NaN
     od = od.dropna(subset=["rn"])
     od["dt"] = pd.to_datetime(od["datetime"], errors="coerce")
     od["net"] = (od["od"] - od["background"]).clip(lower=1e-4)
 
-    rows = []
+    # per (well, transfer) within-cycle exponential rate, computed once
+    well_rate = {}
     for (w, tr), g in od.groupby(["well", "transfer"]):
-        if tr not in C.FOUR_TRANSFER_SET:
+        if tr not in C.TRANSFERS:
             continue
         g = g.sort_values("rn")
         t = (g["dt"] - g["dt"].min()).dt.total_seconds().to_numpy() / 3600.0
@@ -83,26 +81,33 @@ def main():
         tau = delta_g * np.log(2) / mu if (mu and mu > 0) else np.nan
         reliable = bool(n_band >= WINDOW and np.isfinite(mu) and mu > 0 and K > 0.1
                         and np.isfinite(tau) and tau < C.HOURS_PER_TRANSFER_MEASURED)
-        sample = well2sample[w]
-        rows.append(dict(
-            Sample=sample,
-            construct_family="concX" if ".concX" in sample else "concY",
-            transfer=int(tr),
+        well_rate[(w, int(tr))] = dict(
             mu_bulk_per_h=round(mu, 4) if np.isfinite(mu) else np.nan,
             mu_se=round(fit["se"], 4) if np.isfinite(fit["se"]) else np.nan,
             fit_r2=round(fit["r2"], 3) if np.isfinite(fit["r2"]) else np.nan,
-            plateau_K=round(K, 3),
-            inoculum_net=round(float(net[0]), 4),
+            plateau_K=round(K, 3), inoculum_net=round(float(net[0]), 4),
             n_band_readings=n_band,
             doubling_h=round(np.log(2) / mu, 2) if (mu and mu > 0) else np.nan,
             tau_exp_h=round(tau, 2) if np.isfinite(tau) else np.nan,
-            reliable=reliable,
-        ))
+            reliable=reliable)
+
+    # expand to every Sample sharing that well (e.g. the 3 amplicon primerset reps)
+    def family(dc):
+        return "concX" if "concX" in str(dc) else ("concY" if "concY" in str(dc) else str(dc))
+    rows = []
+    for sr in sample_rows.itertuples():
+        w = str(sr.Microtiter_plate_well)
+        for tr in C.TRANSFERS:
+            wr = well_rate.get((w, tr))
+            if wr is None:
+                continue
+            rows.append(dict(Sample=sr.Sample, construct_family=family(sr.DNA_construct),
+                             transfer=tr, **wr))
     bulk = pd.DataFrame(rows).sort_values(["Sample", "transfer"])
     bulk.to_csv(C.INTER / "od_bulk_rate.csv", index=False)
 
     # condition-level community rate at the reliable transfers (6, 13)
-    rel = bulk[bulk.reliable & bulk.transfer.isin([6, 13])]
+    rel = bulk[bulk.reliable & bulk.transfer.isin(list(C.RELIABLE_OD_TRANSFERS))]
     summ = (rel.groupby("construct_family")["mu_bulk_per_h"]
             .agg(n="size", median="median", mean="mean", sd="std",
                  min="min", max="max").reset_index())

@@ -167,8 +167,9 @@ def main():
     pick = pd.concat([sl.head(8), sl.tail(8)])
     y = np.arange(len(pick))
     a = ax[0, 1]
-    a.errorbar(pick["r_global_per_h"], y,
-               xerr=[pick["r_global_per_h"] - pick["ci_boot_lo"], pick["ci_boot_hi"] - pick["r_global_per_h"]],
+    xerr_lo = (pick["r_global_per_h"] - pick["ci_boot_lo"]).clip(lower=0)
+    xerr_hi = (pick["ci_boot_hi"] - pick["r_global_per_h"]).clip(lower=0)
+    a.errorbar(pick["r_global_per_h"], y, xerr=[xerr_lo, xerr_hi],
                fmt="o", capsize=2, color="#1f77b4")
     a.axvline(mu_bar, color="r", ls="--", lw=1, label=f"community μ_bar={mu_bar:.2f}")
     a.set_yticks(y); a.set_yticklabels(pick["Candidate"], fontsize=6)

@@ -1,0 +1,10 @@
+Sample,construct_family,transfer,mu_bulk_per_h,mu_se,fit_r2,plateau_K,inoculum_net,n_band_readings,doubling_h,tau_exp_h,reliable
+B4_p_bcfr,pyruvate,3,1.1519,0.2579,0.952,0.324,0.0133,6,0.6,2.79,True
+B4_p_bcfr,pyruvate,4,0.9469,0.0043,1.0,0.197,0.0125,3,0.73,2.92,True
+B4_p_bcfr,pyruvate,13,0.7214,0.1052,0.979,0.56,0.0503,8,0.96,3.4,True
+B4_p_fbcr,pyruvate,3,1.1519,0.2579,0.952,0.324,0.0133,6,0.6,2.79,True
+B4_p_fbcr,pyruvate,4,0.9469,0.0043,1.0,0.197,0.0125,3,0.73,2.92,True
+B4_p_fbcr,pyruvate,13,0.7214,0.1052,0.979,0.56,0.0503,8,0.96,3.4,True
+B4_p_fr,pyruvate,3,1.1519,0.2579,0.952,0.324,0.0133,6,0.6,2.79,True
+B4_p_fr,pyruvate,4,0.9469,0.0043,1.0,0.197,0.0125,3,0.73,2.92,True
+B4_p_fr,pyruvate,13,0.7214,0.1052,0.979,0.56,0.0503,8,0.96,3.4,True

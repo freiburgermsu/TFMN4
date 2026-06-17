@@ -291,3 +291,35 @@ data-driven; the absolute level rides on the noisy community μ_bulk and the rid
 prior. Treat `r_global_per_h` as "community rate ± a data-driven relative offset,"
 with the error columns quantifying both. Output: `global_variant_growth_rates.csv`,
 figure `global_growth_fit.png`.
+
+---
+
+## 10. Joint WGS + amplicon fusion (`s13`/`s13b`/`s13c`)
+
+The WGS experiment is uniformly **4MXB** (every focus well = `Methoxybenzoate 4 mM +
+Kan`), the same environment as the amplicon 4MXB run, and WGS well **B4** is the same
+physical culture as the amplicon B4. So both datasets measure each variant's **4MXB
+growth rate**, and are fused into one fit: WGS supplies cross-well breadth (11 wells),
+the amplicon supplies depth (~20× reads on B4).
+
+Model = the `s12` softmax-replicator with **one global `r_i` per variant** across all
+4MXB cells, a per-(physical-well, variant) `logA` gauge (WGS-B4 and amplicon-B4 share
+one `logA_B4` block), and a single strongly-ridged assay-**differential** drift
+`b_amp·x` (a constant assay offset cancels in the softmax). Counts enter at native
+per-cell depth; the OD anchor is entered once per well; the 3 amplicon primer sets are
+collapsed to one cell (freq corr 0.995–0.998).
+
+**Error reduction** is measured by fitting the SAME model three ways (joint /
+WGS-only / amplicon-B4-only) and reporting **per-variant** `se_reduction_ratio` and
+`ESS_fold` (never a single global number), split into a sampling component (Laplace,
+shrinks with depth) and a leave-one-well-out heterogeneity component (cross-culture,
+must not shrink), gated by a WGS-B4-vs-amplicon-B4 same-culture concordance check.
+
+**Result (honest):** `b_amp ≈ 0` (no systematic assay drift), concordance positive
+(corr ≈ 0.42, noise-limited), cross-well heterogeneity small. The fusion **tightens
+the 81 shared/deep-B4 variants modestly** (~12 % lower SE, ESS ~1.4×) and makes **131
+variants newly estimable** from the deep amplicon, while leaving the 233 WGS-only
+(not-in-B4) variants unchanged — i.e. it enhances coverage and modestly enhances
+precision, not a dramatic global error drop (the amplicon's depth is concentrated:
+174/212 B4 variants have <30 reads). Full narrative, decisions, and caveats in
+[`docs/INTEGRATION.md`](INTEGRATION.md).

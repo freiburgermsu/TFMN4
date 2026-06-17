@@ -62,7 +62,7 @@ def main():
     fig.colorbar(im, ax=ax, shrink=0.5, label="s per transfer-cycle")
     fig.tight_layout(); fig.savefig(C.FIG / "growth_matrix_heatmap.png", dpi=130); plt.close(fig)
 
-    print("[s06] wrote 3 figures to outputs/figures/")
+    print(f"[s06] wrote 3 figures to {C.FIG}")
 
 
 if __name__ == "__main__":

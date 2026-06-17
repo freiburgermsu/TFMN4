@@ -132,3 +132,35 @@ reproduce relative counts + community OD, **with error**:
   `reliable` (T6/T13 reliable; T3/T4 mostly not).
 - **`od_bulk_condition_summary.csv`** — community μ_bulk by construct family
   (concX vs concY) at reliable transfers — **the one genuinely absolute OD/h rate**.
+
+---
+
+## Joint WGS+amplicon fusion (`s13`/`s13b`; see METHODS §10, docs/INTEGRATION.md)
+
+### `outputs_joint_4MXB/joint_variant_growth_rates_4MXB.csv`
+Per variant, the fused 4MXB growth rate with a full error/identifiability accounting:
+| Column | Meaning |
+|---|---|
+| `Candidate`, `verA`, `verB` | variant and parts |
+| `r_joint_per_h` | joint (WGS+amplicon) global 4MXB growth rate (per hour; community-dominated absolute) |
+| `se_joint` | Laplace SE from the joint fit (sampling error) |
+| `se_wgs_only`, `se_ampl_only` | Laplace SE from the WGS-only and amplicon-B4-only fits (same machinery) |
+| `se_reduction_ratio` | `min(se_wgs_only, se_ampl_only) / se_joint` (>1 = fusion tightened it) |
+| `ESS_fold_vs_wgs` | `(se_wgs_only/se_joint)²` — WGS-equivalent information gain |
+| `se_heterogeneity_loso` | leave-one-WGS-well-out SD of the rate (cross-culture variation) |
+| `se_combined` | `sqrt(se_joint² + se_heterogeneity_loso²)` — honest headline CI half-width |
+| `r_sensitivity_to_b_amp` | \|Δr\| when the assay-drift ridge is relaxed vs off |
+| `r_wgs_only`, `r_ampl_only` | rate from each single-assay fit |
+| `evidence_tier` | `both-deep` (tightened) / `amplicon-B4-only` (newly estimable) / `WGS-only` (unchanged) |
+| `in_B4` | variant present in the deep amplicon (well B4) |
+
+### `outputs_joint_4MXB/b4_concordance.csv`
+Same-culture gate: `Candidate`, `r_WGS_B4`, `r_ampl_B4` for variants estimable in both
+the WGS-B4-only and amplicon-B4-only fits (corr ≈ 0.42).
+
+### `outputs_joint_4MXB/intermediate/combined_4MXB_long.csv`
+The fused input: WGS (11 wells) + amplicon-B4, all 4MXB, columns `Sample, assay,
+Microtiter_plate_well, Transfer, verA, verB, Candidate, Count, depth, freq`.
+
+### `outputs_joint_4MXB/figures/joint_error_reduction.png`
+SE scatter (joint vs WGS-only), ESS histogram, top-tightened forest, B4 concordance.

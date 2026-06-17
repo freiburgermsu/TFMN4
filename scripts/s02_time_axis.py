@@ -32,10 +32,8 @@ def main():
     well_map = pd.read_csv(C.INTER / "sample_well_map.csv")
     focus_wells = set(well_map["Microtiter_plate_well"].astype(str))
 
-    usecols = ["series", "transfer", "reading", "datetime",
-               "Microtiter_plate_well", "od", "background"]
-    od = pd.read_csv(C.OD_CSV, usecols=usecols)
-    od = od[od["series"].astype(str) == "exp2"].copy()
+    usecols = ["transfer", "reading", "datetime", "od", "background"]
+    od = C.read_focus_od(usecols, focus_wells)   # dataset-aware series/condition/well filter
     od["well"] = od["Microtiter_plate_well"].astype(str)
 
     # ---- (1) transfer timing from datetimes ---------------------------------

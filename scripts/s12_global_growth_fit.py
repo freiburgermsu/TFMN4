@@ -58,7 +58,7 @@ def build_design():
     d4 = pd.read_csv(C.INTER / "barcode_4transfer_long.csv")
     ax = pd.read_csv(C.INTER / "od_time_axis.csv").set_index("transfer")["cumgen"].to_dict()
     bulk = pd.read_csv(C.INTER / "od_bulk_rate.csv")
-    mu_bar = float(bulk.loc[bulk.reliable & bulk.transfer.isin([6, 13]), "mu_bulk_per_h"].median())
+    mu_bar = float(bulk.loc[bulk.reliable & bulk.transfer.isin(list(C.RELIABLE_OD_TRANSFERS)), "mu_bulk_per_h"].median())
     mub = {(r.Sample, int(r.transfer)): r.mu_bulk_per_h
            for r in bulk[bulk.reliable].itertuples()}
 
@@ -151,11 +151,13 @@ def main():
 
     def f(p): return float(loss_jit(jnp.asarray(p)))
     def g(p): return np.asarray(grad_jit(jnp.asarray(p)), float)
-    # two L-BFGS passes (warm restart) for clean convergence
+    # warm-restarted L-BFGS passes for clean convergence (the deep-count amplicon
+    # likelihood is much steeper than WGS, so more passes + line-search help)
     p = p0
-    for _ in range(2):
+    for _ in range(4):
         res = minimize(f, p, jac=g, method="L-BFGS-B",
-                       options=dict(maxiter=5000, maxfun=50000, ftol=1e-12, gtol=1e-8))
+                       options=dict(maxiter=8000, maxfun=80000, ftol=1e-13,
+                                    gtol=1e-7, maxls=60))
         p = res.x
     gnorm = float(np.linalg.norm(g(p)))
     r = p[:n_var]

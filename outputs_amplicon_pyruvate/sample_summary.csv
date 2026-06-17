@@ -1,0 +1,4 @@
+Sample,DNA_construct,Replicate,n_candidates,n_estimable,sweep_winner,winner_verA,winner_freq_T13,top_s_per_cycle,bottom_s_per_cycle,n_variants_T3,n_variants_T4,n_variants_T13
+B4_p_bcfr,pyruvate,bcfr,177,95,A81-B8,A81,0.8464812712826334,0.4034354552015429,-0.5205218554264041,142,118,27
+B4_p_fbcr,pyruvate,fbcr,181,89,A81-B8,A81,0.870946393117141,0.3639253136963086,-0.5205712125134598,137,121,32
+B4_p_fr,pyruvate,fr,81,48,A81-B8,A81,0.8940646130728775,0.4003059043446536,-0.2401038852297713,67,54,16

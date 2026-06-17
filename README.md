@@ -29,10 +29,36 @@ mean**. Positive `s` ⇒ sweeps in; negative ⇒ sweeps out.
 
 ```bash
 # Uses the project venv (see ~/.claude/CLAUDE.md)
-~/Documents/py_venv/bin/python scripts/run_all.py
+~/Documents/py_venv/bin/python scripts/run_all.py            # WGS  -> outputs/
+
+# Same pipeline on the deep verAB amplicon data (Plasmidsaurus), per carbon source:
+TFMN4_DATASET=amplicon_4MXB     ~/Documents/py_venv/bin/python scripts/run_all.py   # -> outputs_amplicon_4MXB/
+TFMN4_DATASET=amplicon_pyruvate ~/Documents/py_venv/bin/python scripts/run_all.py   # -> outputs_amplicon_pyruvate/
 ```
 
-Reads the two CSVs in the repo root and writes everything under `outputs/`.
+The default (no env var) is the original WGS run → `outputs/`. The `TFMN4_DATASET`
+switch (see `config.py`) reuses the identical analysis code on the amplicon data,
+writing to **separate** directories so nothing is overwritten. The amplicon design,
+how it maps onto the pipeline, and its results are documented in
+[`docs/AMPLICON.md`](docs/AMPLICON.md) — headline: one static rate per variant
+reproduces the relative counts at **freq R² ≈ 0.995**, and **pyruvate grows ~3×
+faster than 4-methoxybenzoate** at the community level (μ_bulk 0.83 vs 0.30 /h).
+
+```bash
+# Joint WGS+amplicon fusion for lower-error 4MXB per-variant rates -> outputs_joint_4MXB/
+~/Documents/py_venv/bin/python scripts/s13_joint_4MXB.py
+~/Documents/py_venv/bin/python scripts/s13b_joint_error.py
+~/Documents/py_venv/bin/python scripts/s13c_error_reduction_fig.py
+```
+
+The WGS experiment is uniformly 4MXB, so it is fused with the amplicon 4MXB run (WGS
+breadth + amplicon depth; WGS well B4 = the amplicon B4 culture) into one estimate of
+each variant's 4MXB growth rate — see [`docs/INTEGRATION.md`](docs/INTEGRATION.md).
+**Honest headline:** the fusion is valid (no systematic assay drift; positive
+same-culture concordance) and **tightens the 81 shared/deep-B4 variants modestly
+(~12 % lower SE, ESS ~1.4×) while making 131 variants newly estimable** from the deep
+amplicon — an enhancement of *coverage* plus modest precision, not a dramatic global
+error drop (the amplicon's depth is concentrated: 174/212 B4 variants have <30 reads).
 
 ## Repository layout
 

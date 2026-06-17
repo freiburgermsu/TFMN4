@@ -1,0 +1,4 @@
+Sample,gamma_c,bridge_degree,n_bridge_variants,weakly_anchored
+B4_p_fbcr,-0.0611,2,80,False
+B4_p_bcfr,-0.0609,2,80,False
+B4_p_fr,0.122,2,48,False

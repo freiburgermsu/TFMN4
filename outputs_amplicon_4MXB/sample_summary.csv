@@ -1,0 +1,4 @@
+Sample,DNA_construct,Replicate,n_candidates,n_estimable,sweep_winner,winner_verA,winner_freq_T13,top_s_per_cycle,bottom_s_per_cycle,n_variants_T3,n_variants_T4,n_variants_T13
+B4_M_bcfr,4MXB,bcfr,146,70,A81-B8,A81,0.6650039380414807,0.5540908196074537,-0.3383676061725776,112,89,28
+B4_M_fbcr,4MXB,fbcr,143,69,A81-B8,A81,0.6744186046511628,0.5369481120667331,-0.3500309322260158,115,81,35
+B4_M_fr,4MXB,fr,92,47,A81-B8,A81,0.6771860618014465,0.59325182440517,-0.2250108344821077,64,69,17

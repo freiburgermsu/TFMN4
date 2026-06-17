@@ -36,14 +36,14 @@ def main():
     res = pd.read_csv(C.OUT / "selection_coefficients_long.csv")
     allele = pd.read_csv(C.OUT / "allele_growth_advantage.csv")
     cond = pd.read_csv(C.INTER / "od_bulk_condition_summary.csv")
-    tau = float(bulk.loc[bulk.reliable & bulk.transfer.isin([6, 13]), "tau_exp_h"].median())
+    tau = float(bulk.loc[bulk.reliable & bulk.transfer.isin(list(C.RELIABLE_OD_TRANSFERS)), "tau_exp_h"].median())
     mu_lo, mu_hi = float(cond["median"].min()), float(cond["median"].max())
     mu_mid = float(np.median([mu_lo, mu_hi]))
 
     fig, axes = plt.subplots(2, 2, figsize=(13, 11))
 
     # ---- (a) go/no-go ------------------------------------------------------
-    mub = (bulk[bulk.reliable & bulk.transfer.isin([6, 13])]
+    mub = (bulk[bulk.reliable & bulk.transfer.isin(list(C.RELIABLE_OD_TRANSFERS))]
            .groupby("Sample")["mu_bulk_per_h"].mean())
     g = gauge.set_index("Sample")["gamma_c"]
     j = pd.concat([g, mub], axis=1).dropna()
@@ -65,7 +65,7 @@ def main():
     ax = axes[0, 1]
     for s, gg in bulk[bulk.reliable].groupby("Sample"):
         ax.plot(gg["transfer"], gg["mu_bulk_per_h"], marker="o", alpha=0.6, lw=1)
-    rel = bulk[bulk.reliable & bulk.transfer.isin([6, 13])]
+    rel = bulk[bulk.reliable & bulk.transfer.isin(list(C.RELIABLE_OD_TRANSFERS))]
     ax.axhspan(rel["mu_bulk_per_h"].mean() - rel["mu_bulk_per_h"].std(),
                rel["mu_bulk_per_h"].mean() + rel["mu_bulk_per_h"].std(),
                color="#cccccc", alpha=0.5, zorder=0,
