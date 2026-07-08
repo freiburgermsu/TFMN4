@@ -79,6 +79,9 @@ scripts/
   s11_falsification_figures.py  OD-anchor go/no-go + bridge graph + forest
   s12_global_growth_fit.py      global static per-variant rate (jax; counts + OD)
   s12b_growth_rate_error.py     Laplace + bootstrap + LOSO + sensitivity error
+  s14_segmented_growth.py       COMPLEMENTARY two-phase (breakpoint) per-variant fit
+  s14b_segmented_summary.py     segmented rollups (model-selection audit, sample, allele)
+  s14c_segmented_figures.py     segmented figure suite (overview, params, gallery, allele)
   run_all.py               run the whole pipeline in order
 docs/
   METHODS.md                model derivation, identifiability, cross-sample integration
@@ -95,8 +98,13 @@ outputs/
   sample_gauge.csv                             per-sample gauge gamma_c + anchor flags
   allele_growth_advantage.csv                  graded allele table (+ derived OD-clock)
   global_variant_growth_rates.csv              global static per-variant rate + error (s12/s12b)
+  segmented_growth_rates.csv                   complementary two-phase breakpoint fit (s14)
+  segmented_model_selection.csv                segmented decision audit + counts (s14b)
+  segmented_sample_summary.csv                 per-culture acceleration rollup (s14b)
+  segmented_allele_effects.csv                 per-allele acceleration rollup (s14b)
   intermediate/        tidy data, depth, OD time axis, OD bulk rate (mu_bulk)
-  figures/             richness, sweeps, growth heatmap, OD-anchor falsification, global-growth fit
+  figures/             richness, sweeps, growth heatmap, OD-anchor falsification, global-growth fit,
+                       segmented_{overview,parameters,gallery,allele}.png (s14c two-phase figures)
 ```
 
 ## The headline output
@@ -141,6 +149,33 @@ variant is seen at only one timepoint (not estimable). Read it alongside the
   → rates really are near-static), but the **absolute level is anchor-dependent**
   (most rates flagged `mixed`/`anchor-driven`) — the relative ordering is what's
   robust. See `global_growth_fit.png` and METHODS §9.
+
+### Complementary two-phase / breakpoint fit (`s14`)
+`s03` and `s12` fit **one** rate; `s14` is a **complementary** regression (it does not
+replace them) that lets the rate change **once**, fitting **four** parameters per
+variant: **initial abundance** (intercept), **initial growth rate**, **final growth
+rate**, and the **inter-sample transfer at which the rate switches** (a continuous
+broken-stick with the knot at an interior sampled transfer). **Only an *increase* in
+growth rate is permitted** (`r_final > r_init`); a variant whose data prefer a decrease
+keeps the constant fit. It adopts the change only when that increasing fit genuinely
+improves the fit (weighted `ΔBIC>6`, strong evidence) **and** the rate increases by
+**>10%**; otherwise it keeps the constant fit — so the rate does not have to change. Of
+the 66 WGS trajectories seen at all four transfers, **13 show a strong *increasing*
+two-phase change** (variants that lose ground early then surge, inflecting near T6),
+**47 are held constant because their best fit was a decrease** (not permitted), and the
+rest stay constant. Where adopted, the constant fit is genuinely poor (median weighted
+R² ≈ 0.31 → ≈ 0.96 two-phase; caveat #3 below). Acceleration **clusters by allele** —
+verB `B26` accelerates in 5/5 of its testable variants, verA `A78`/`A81` in 4 each.
+
+This ships with a full table+figure communication layer (parallel to the single-variable
+assessment): rollup tables `segmented_{model_selection,sample_summary,allele_effects}.csv`
+(`s14b`) and a figure suite `segmented_{overview,parameters,gallery,allele}.png` (`s14c`,
+on the data-viz skill's CVD-safe palette) — model-selection + the increasing-only
+constraint, the four fitted parameters (incl. an `r_init`→`r_final` dumbbell), every
+adopted fit as small multiples, and per-allele tallies. The tables + overview are emitted
+for **all datasets**; the two 3-transfer amplicon runs are not breakpoint-testable (a
+two-phase model needs ≥4 timepoints) so they report all-constant with a reduced overview.
+See METHODS §11.
 
 ## ⚠️ Three things to know before using the numbers
 
