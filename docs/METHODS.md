@@ -452,3 +452,83 @@ On the 3-transfer amplicon designs nothing is breakpoint-testable, so their over
 the honest reduced form — a single "all constant" bar plus the single-slope rate
 distribution — and the parameter/gallery/allele figures are skipped (there is nothing to
 show). Only the 4-transfer WGS run yields the full suite.
+
+### 11.6 4-variable vs 1-variable — a fair comparison (`s14d`)
+
+The 4-variable segmented model and the original 1-variable constant-rate model (`s03`)
+are **nested**: the broken-stick reduces exactly to the single line when
+`r_init == r_final`. A raw goodness-of-fit contest is therefore rigged — the model with
+more parameters cannot fit worse — so `s14d` reports the *fair* axes and empirically
+tests whether the extra parameters earn their keep. Outputs:
+`model_comparison_summary.csv`, `model_comparison_by_trajectory.csv`, figures
+`model_comparison.png` (coverage, in-sample fit, BIC parsimony funnel, out-of-sample
+LOOCV) and `model_comparison_blindspot.png`.
+
+1. **Coverage.** The 1-var fits all **237** estimable trajectories; the 4-var only the
+   **66** with ≥4 observed transfers. The deployed 4-var produces **identical output on
+   224/237** (171 not testable + 53 testable-but-kept) and differs only on the **13** it
+   refines. It is a *targeted* refinement, not a replacement.
+2. **In-sample fit (not a fair basis).** On the 66 testable the broken-stick lifts median
+   weighted R² from **0.31 → 0.96** and cuts median weighted RSS ~9× — but this is
+   *expected by construction* (more parameters, nested), so it cannot by itself decide
+   the contest.
+3. **Parsimony (BIC).** With the complexity charge, an *unconstrained* breakpoint still
+   "wins" on **65/66** — a symptom of n=4 flexibility (1 residual d.o.f.), not real
+   structure. This is exactly why the deployed model is conservative: requiring an
+   **increase** narrows it to 18/66, and adding the strong-evidence + >10% gates to
+   **13/66**. The 1-var is retained for **53/66** testable (and all 171 non-testable).
+4. **Prediction (leave-one-timepoint-out CV — the fair, out-of-sample test).** Run two
+   ways on the 13 adopted trajectories:
+   - **elbow re-learned each fold (the honest test):** median RMSE ratio 4-var/1-var
+     ≈ **0.92** — essentially **parity** (4-var better in only 7/13). At 4 timepoints the
+     breakpoint *location* is not robustly identifiable, so the whole model does not
+     out-predict the single slope.
+   - **elbow supplied (location fixed):** ratio ≈ **0.53**, 4-var better in **11/13**
+     (median RMSE 0.76 → 0.28). Given *where* the elbow is, the two-phase **shape** has
+     real predictive content.
+   The gap between the two is the headline: **the two-phase shape is real, but its
+   location is under-identified at this sampling density** — an empirical confirmation of
+   the §11.4 caveat. More transfers (especially in the unobserved T6→T13 gap) are what
+   would pin `τ`.
+5. **The 1-var blind spot.** For the adopted variants the single slope reports a median
+   magnitude of just **|s| ≈ 0.20/cycle** while the true phase swing is
+   **|r_final − r_init| ≈ 0.59/cycle** — 10/13 have a single slope below half the swing.
+   The single number averages a dip-then-rise into something that can look near-neutral
+   (e.g. `A78-B3`: 1-var `s=+0.03` — "neutral" — vs 4-var `−0.31 → +0.15` at T6).
+
+**Bottom line.** For *prediction* at this sampling density the 1-var model is the right
+default (the 4-var's out-of-sample edge is not robust once the elbow must be learned).
+The 4-var model's value is **descriptive**: it flags *which* variants change rate, in
+*which direction*, and — given a plausible elbow — the *shape*, surfacing dynamics the
+single slope hides. The two are complementary, which is why `s14` is offered alongside
+`s03`/`s12` rather than replacing them.
+
+### 11.7 Fit error, specifically (`s14e`)
+
+A focused look at *error* alone (metric: unweighted **CLR RMSE** — the root-mean-square
+residual in centered-log-ratio units over a trajectory's timepoints; testable
+trajectories have all 4 transfers observed so this is clean). Outputs:
+`model_fit_error.csv`, `model_fit_error_by_trajectory.csv`, figure `model_fit_error.png`.
+
+- **In-sample error falls sharply where the 4-var is deployed.** On the 13 refined
+  variants median CLR RMSE drops **0.40 → 0.06** (weighted RSS 3.44 → 0.08; R²
+  0.87 → 1.00). On the other **224/237** trajectories the deployed 4-var *is* the
+  constant fit, so the error is **identical**.
+- **The 1-var's residual is structured, not noise.** Averaged over the adopted
+  trajectories the constant fit's |residual| is largest at the **ends and the elbow**
+  (mean |resid| ≈ 0.31 at T3, **0.72 at T6**, vs ≈ 0.05–0.10 for the 4-var) — a single
+  slope cannot bend, so it misfits systematically exactly where the trajectory turns.
+  That structure is *why* the extra parameters cut the error.
+- **But the in-sample drop is mostly optimism.** On held-out timepoints (LOOCV, elbow
+  re-learned per fold) the two models' errors are **essentially equal**: median CLR RMSE
+  **1.71 (1-var) vs 1.69 (4-var)**. The 4-var's optimism gap (LOOCV − in-sample ≈ 1.63)
+  exceeds the 1-var's (≈ 1.31), i.e. more of its in-sample fit is overfitting — expected
+  for a 3-parameter fit (plus a *selected* knot) on 4 points. The dof-adjusted residual
+  SE (`sqrt(RSS/(n−k))`) still favours the 4-var (1.25 vs 1.50) because it does not
+  charge for the knot *selection*; only true out-of-sample error does, and there the
+  advantage disappears.
+
+**In one line:** the 4-var model reduces *in-sample* fit error by ~7× where it is
+deployed and leaves it unchanged elsewhere, but that reduction does **not** translate to
+lower *out-of-sample* error at 4 transfers — so it is a better *description* of the
+observed trajectory, not a better *predictor* of unseen timepoints.

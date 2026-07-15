@@ -46,18 +46,34 @@ ADOPTED = BLUE; HELD = ORANGE; WEAK = MUTED
 BP_COLOR = {4: AQUA, 6: VIOLET}
 
 
-def _set_style():
-    plt.rcParams.update({
-        "figure.facecolor": SURFACE, "axes.facecolor": SURFACE, "savefig.facecolor": SURFACE,
-        "font.family": "sans-serif",
-        "font.sans-serif": ["DejaVu Sans", "Arial", "Segoe UI", "sans-serif"],
-        "text.color": INK, "axes.labelcolor": INK2, "axes.titlecolor": INK,
-        "axes.edgecolor": BASELINE, "xtick.color": MUTED, "ytick.color": MUTED,
-        "xtick.labelcolor": INK2, "ytick.labelcolor": INK2,
-        "axes.grid": True, "grid.color": GRID, "grid.linewidth": 0.6, "grid.alpha": 0.9,
-        "axes.spines.top": False, "axes.spines.right": False,
-        "axes.titleweight": "bold", "figure.titleweight": "bold",
-    })
+import functools
+
+_STYLE = {
+    "figure.facecolor": SURFACE, "axes.facecolor": SURFACE, "savefig.facecolor": SURFACE,
+    "font.family": "sans-serif",
+    "font.sans-serif": ["DejaVu Sans", "Arial", "Segoe UI", "sans-serif"],
+    "text.color": INK, "axes.labelcolor": INK2, "axes.titlecolor": INK,
+    "axes.edgecolor": BASELINE, "xtick.color": MUTED, "ytick.color": MUTED,
+    "xtick.labelcolor": INK2, "ytick.labelcolor": INK2,
+    "axes.grid": True, "grid.color": GRID, "grid.linewidth": 0.6, "grid.alpha": 0.9,
+    "axes.spines.top": False, "axes.spines.right": False,
+    "axes.titleweight": "bold", "figure.titleweight": "bold",
+}
+
+
+def styled(fn):
+    """Apply the segmented-figure style via a SCOPED rc_context, so it never mutates
+    matplotlib's global rcParams (which would leak into other figure scripts sharing
+    the process, e.g. under run_all)."""
+    @functools.wraps(fn)
+    def wrap(*a, **k):
+        with plt.rc_context(_STYLE):
+            return fn(*a, **k)
+    return wrap
+
+
+def _set_style():   # retained as a no-op for import compatibility; styling is now scoped
+    pass
 
 
 def _short_sample(s):
@@ -77,6 +93,7 @@ def _clr_for_sample(d4, sample, transfers):
 
 
 # ---------------------------------------------------------------------------
+@styled
 def fig_overview(r, cls):
     _set_style()
     transfers = list(C.FOUR_TRANSFER_SET)
@@ -179,6 +196,7 @@ def fig_overview(r, cls):
     print(f"[s14c] wrote figures/segmented_overview.png")
 
 
+@styled
 def fig_overview_constant_only(r):
     """Reduced overview for datasets where nothing is breakpoint-testable."""
     _set_style()
@@ -206,6 +224,7 @@ def fig_overview_constant_only(r):
     print(f"[s14c] wrote figures/segmented_overview.png (constant-only)")
 
 
+@styled
 def fig_parameters(r, cls):
     _set_style()
     adopted = cls["adopted"].copy()
@@ -282,6 +301,7 @@ def fig_parameters(r, cls):
     print(f"[s14c] wrote figures/segmented_parameters.png")
 
 
+@styled
 def fig_gallery(r, cls, d4):
     _set_style()
     adopted = cls["adopted"].sort_values("delta_bic", ascending=False)
@@ -337,6 +357,7 @@ def fig_gallery(r, cls, d4):
     print(f"[s14c] wrote figures/segmented_gallery.png ({n} panels)")
 
 
+@styled
 def fig_allele(alle, cls):
     _set_style()
     if cls["adopted"].empty:

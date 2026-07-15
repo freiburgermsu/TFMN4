@@ -156,6 +156,40 @@ Three communication tables aggregating `segmented_growth_rates.csv`:
   Whether acceleration clusters in particular enzyme parts (e.g. verB `B26` accelerates
   in 5/5 testable variants; verA `A78`/`A81` in 4 each).
 
+### 4-variable vs 1-variable comparison (`s14d`; METHODS §11.6)
+Head-to-head of the segmented model against the original constant-rate model (`s03`),
+using the *fair* (nested-aware) axes:
+
+- **`model_comparison_summary.csv`** — tidy `metric, one_variable, four_variable,
+  interpretation`: free parameters, fittable/identical/differing counts, in-sample
+  median R²/RSS (flagged as construction-favoured), BIC preference counts, the deployed
+  decision split, and the out-of-sample **LOOCV** results under both an *elbow-learned*
+  (fair) and *elbow-supplied* (shape-only) regime, plus the single-slope-vs-phase-swing
+  blind-spot medians.
+- **`model_comparison_by_trajectory.csv`** — one row per testable trajectory:
+  `s_constant_per_cycle` (1-var), `r_init`/`r_final`/`breakpoint` (4-var), `r2_1var`,
+  `r2_4var_capability` / `r2_4var_deployed`, `bic_1var` / `bic_4var_*`,
+  `bic_prefers_4var_*`, `loocv_rmse_{1var,4var}_free` (elbow re-learned per fold) and
+  `..._fixedelbow` (elbow supplied) with fold counts, `oos_4var_better_free`,
+  `abs_phase_range`, and `deployed_model`.
+  On 3-transfer datasets (0 testable) the summary just records "models identical
+  everywhere" and the by-trajectory table is empty.
+
+### fit-error comparison (`s14e`; METHODS §11.7)
+A focused error-only comparison (metric: unweighted **CLR RMSE**):
+
+- **`model_fit_error.csv`** — tidy `fit_error_metric, one_variable, four_variable,
+  interpretation`: in-sample CLR RMSE (all-testable and adopted-only), in-sample
+  weighted RSS and R² (adopted), the dof-adjusted residual SE, the out-of-sample LOOCV
+  RMSE (adopted), the optimism gap (LOOCV − in-sample) for each model, and the count of
+  trajectories with identical error (224/237).
+- **`model_fit_error_by_trajectory.csv`** — one row per testable trajectory:
+  `rmse_1var`/`rmse_4var` (in-sample CLR RMSE), `wrss_1var`/`wrss_4var`,
+  `r2_1var`/`r2_4var`, `rse_dofadj_1var`/`rse_dofadj_4var`,
+  `loocv_rmse_1var`/`loocv_rmse_4var`, and `deployed_model`. The 4-var here is the
+  *deployed* fit (two-phase only where adopted; constant — identical to the 1-var —
+  elsewhere).
+
 ### `figures/`
 `growth_matrix_overview.png` (variant×sample heatmap + distribution),
 `od_anchor_falsification.png` (go/no-go, μ_bulk vs transfer, bridge graph, allele forest),
@@ -168,6 +202,12 @@ Segmented figure suite (`s14c`; METHODS §11.5):
 `segmented_gallery.png` (every adopted two-phase fit as small multiples),
 `segmented_allele.png` (per-verA / per-verB acceleration tallies).
 On 3-transfer datasets (amplicon), only a reduced `segmented_overview.png` is drawn (nothing is testable → the constant-slope distribution).
+
+4-var vs 1-var comparison (`s14d`; METHODS §11.6):
+`model_comparison.png` (coverage/agreement, in-sample R² with the 53 kept points on the identity line, the BIC parsimony funnel, and out-of-sample LOOCV under learned-vs-supplied elbow),
+`model_comparison_blindspot.png` (|single slope| vs |phase swing| for adopted variants + two illustrative trajectories where the 1-var looks near-neutral but the 4-var reveals a dip-then-rise).
+`model_fit_error.png` (`s14e`: per-variant in-sample RMSE dumbbell, the 1-var's residual structure by timepoint, the in-sample-vs-out-of-sample optimism ladder, and the paired RMSE scatter showing error is identical except on the 13 refined).
+Drawn only for datasets with adopted switches (WGS).
 
 ---
 

@@ -1,0 +1,2 @@
+fit_error_metric,one_variable,four_variable,interpretation
+fit_error,identical,identical,3-transfer dataset: 4-var reduces to the 1-var everywhere
