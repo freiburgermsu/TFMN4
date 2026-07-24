@@ -49,6 +49,7 @@ faster than 4-methoxybenzoate** at the community level (μ_bulk 0.83 vs 0.30 /h)
 ~/Documents/py_venv/bin/python scripts/s13_joint_4MXB.py
 ~/Documents/py_venv/bin/python scripts/s13b_joint_error.py
 ~/Documents/py_venv/bin/python scripts/s13c_error_reduction_fig.py
+~/Documents/py_venv/bin/python scripts/s13d_counts_only.py   # counts-only (no amplicon) comparison
 ```
 
 The WGS experiment is uniformly 4MXB, so it is fused with the amplicon 4MXB run (WGS
@@ -59,6 +60,14 @@ same-culture concordance) and **tightens the 81 shared/deep-B4 variants modestly
 (~12 % lower SE, ESS ~1.4×) while making 131 variants newly estimable** from the deep
 amplicon — an enhancement of *coverage* plus modest precision, not a dramatic global
 error drop (the amplicon's depth is concentrated: 174/212 B4 variants have <30 reads).
+
+`s13d_counts_only.py` re-runs that exact joint model **without the amplicon data** (WGS
+SeqCenter counts only) and saves it separately (`joint_variant_growth_rates_4MXB_counts_only.csv`,
+`counts_vs_amplicon_4MXB.csv`, `figures/counts_vs_amplicon_4MXB.png`) — a clean baseline
+that isolates what the amplicon adds. (The standalone WGS pipeline `outputs/` is already
+counts-only; the amplicon enters the barcode analysis *only* through this joint fusion.)
+It confirms the amplicon **shifts no rate** (median |Δr| ≈ 0.002/h) and only tightens the
+81 B4-present variants (~1.18× lower SE), leaving the 233 non-B4 variants unchanged.
 
 ## dgoA copy-number amplification (new data — `cn` pipeline)
 
