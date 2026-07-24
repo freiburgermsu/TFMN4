@@ -323,3 +323,212 @@ variants newly estimable** from the deep amplicon, while leaving the 233 WGS-onl
 precision, not a dramatic global error drop (the amplicon's depth is concentrated:
 174/212 B4 variants have <30 reads). Full narrative, decisions, and caveats in
 [`docs/INTEGRATION.md`](INTEGRATION.md).
+
+---
+
+## 11. Complementary two-phase (breakpoint) regression (`s14`)
+
+§2–§6 fit **one** slope per trajectory (a single selection coefficient `s`), and §9
+fits **one** static rate per variant. But the README caveat #3 notes that ~76 % of
+fully-sampled trajectories are **non-monotone** — a variant can sweep in fast and then
+saturate, or rise then reverse, so a single slope is only a first-order summary.
+`s14` offers a **complementary** view that lets the rate change once — and, by request,
+**only in the increasing direction** (§11.3). It does **not** overwrite `s03` or `s12`;
+it writes its own `segmented_growth_rates.csv`.
+
+### 11.1 The four-parameter model
+
+For each `(Sample, Candidate)` trajectory, the centered-log-ratio is fit as a
+**continuous broken-stick** (hinge) in time:
+
+```
+CLR(t) = logA + r_init·(t − t0) + (r_final − r_init)·max(0, t − τ)
+```
+
+with **four** estimands (the user request):
+
+| Symbol | Column | Meaning |
+|---|---|---|
+| `logA`     | `logA_init`            | **initial abundance** — fitted CLR (log relative abundance) at the first sampled transfer `t0` |
+| `r_init`   | `r_init_per_cycle`     | **initial growth rate** — slope of the first segment |
+| `r_final`  | `r_final_per_cycle`    | **final growth rate** — slope of the second segment |
+| `τ`        | `breakpoint_transfer`  | **the inter-sample breakpoint** — the interior sampled transfer where `r_init` switches to `r_final` |
+
+The segments join **continuously** at `τ` (no jump), so a variant that never changes
+rate collapses exactly to the `s03` constant-slope line (`r_init == r_final`). Fit by
+weighted least squares with the same Poisson-precision weights `w = count + ½` as
+`s03`; on constant-model trajectories `s14`'s slope reproduces `s03`'s `s_per_cycle`
+to rounding.
+
+### 11.2 Why the breakpoint sits at a sampled transfer
+
+With only 3–4 transfers per culture a **free** continuous breakpoint is not
+identifiable. The estimable, biologically natural choice is a knot **at one of the
+interior sampled transfers** — the points "between samples." `τ` is searched over
+`TRANSFERS[1:-1]` (= {4, 6} for WGS) and the best-fitting knot is kept. The continuous
+two-phase model has **3 linear parameters**, so a residual degree of freedom requires
+**≥ 4 observed timepoints with ≥ 2 on each side of the knot**. Only such trajectories
+are *breakpoint-testable* (`breakpoint_testable=True`); all others are reported with
+the constant fit. In the WGS design that is exactly the **66 variants seen at all four
+transfers**; the 3-sampled-transfer amplicon designs are never testable (correctly —
+2 segments + intercept over 3 points has no residual d.o.f.).
+
+### 11.3 When the rate is allowed to change (all gates must pass)
+
+Default = constant. The rate switches to two-phase **only if all three** hold:
+
+0. **Direction gate — increases only.** Only an **increase** in growth rate is
+   permitted, `r_final > r_init`. A variant whose data prefer a growth-rate *decrease*
+   is **not** allowed a two-phase model and keeps the constant fit. (Among the two
+   candidate knots only increasing-rate fits are eligible; the would-be direction of
+   the unconstrained best fit is still recorded in the `unconstrained_direction`
+   column so the effect of this rule is auditable.) Note "increase" is on the growth
+   *rate*: a still-negative rate that becomes less negative (e.g. −0.16 → −0.02) is an
+   increase and is permitted.
+1. **Fit gate.** The (increasing) two-phase fit must beat the constant fit on a
+   small-sample **weighted BIC** by a *strong-evidence* margin,
+   `ΔBIC = BIC_const − BIC_two > 6` (Kass–Raftery: 2–6 positive, 6–10 strong, >10 very
+   strong). BIC already charges `k·ln n` for the extra parameter; the strong margin is
+   deliberately conservative because at `n=4` the 3-parameter model has only 1 residual
+   d.o.f. and is flexible. *(AICc is not usable here: at `n=4, k=3` its `n−k−1`
+   correction divides by zero — itself a signal that a 4-point trajectory barely
+   supports 3 parameters. BIC with a strong margin is the honest substitute.)* This
+   encodes the requirement that the decision **depends on the fit before/after the
+   change**, and that the rate **need not change if constant fits better**.
+2. **Size gate.** The rate must **increase by more than 10 %**:
+   `(r_final − r_init) / max(|r_init|, 0.05) > 0.10`. The floor only keeps the ratio
+   finite when `r_init ≈ 0` (selection coefficients are centered near zero); the BIC
+   gate does the real work of preventing trivial switches.
+
+### 11.4 Result (WGS)
+
+Of the 66 testable trajectories, **13 show strong evidence of an *increasing* two-phase
+rate change** and are adopted; **47 are held at the constant fit because their best fit
+was a decrease** (not permitted), and the remaining 6 keep the constant fit for want of
+a strong-enough increasing fit. Where a switch is adopted the constant fit is genuinely
+poor (median weighted R² ≈ 0.31 vs ≈ 0.96 two-phase), directly quantifying the "single
+slope is only first-order" caveat. The adopted switches are **variants that were losing
+ground early and then took off** — declining-then-surging trajectories that inflect
+around T6 (e.g. `A78-B26`: `r −0.30 → +0.45/cyc` at T6; `A81-B151`: `−0.22 → +0.51`).
+Tunable constants (`BIC_MARGIN`, `REL_RATE_CHANGE_MIN`, `MIN_OBS_FOR_BREAKPOINT`) sit at
+the top of `s14`. Output: `segmented_growth_rates.csv`, figure
+`segmented_growth_examples.png`.
+
+**Caveat.** With 4 transfers the two-phase fit has only 1 residual d.o.f., so the exact
+`τ`/`r_final` of any single variant is weakly determined; read `s14` as **which**
+variants change rate and in **which direction**, not as a precise second-phase rate.
+The recommended fuller upgrade remains a hierarchical per-interval Bayesian model (§6).
+
+### 11.5 Communicating the results (`s14b` tables, `s14c` figures)
+
+The segmented fit ships with the same table-plus-figure communication layer as the
+single-slope assessment:
+
+**Rollup tables (`s14b`).** `segmented_model_selection.csv` is the reproducible decision
+audit (thresholds + classification counts + adopted-set medians);
+`segmented_sample_summary.csv` gives per-culture acceleration counts, breakpoints, and
+median phase rates; `segmented_allele_effects.csv` tallies acceleration per verA/verB
+allele. The allele table surfaces a real cluster: **verB `B26` shows an adopted
+increasing switch in 5/5 of its testable variants, and verA `A78` and `A81` in 4 each** —
+the same alleles the single-slope assessment flags as robust, now seen to gain their
+advantage as a *late acceleration* rather than a constant edge.
+
+**Figure suite (`s14c`), built on the data-viz skill's validated CVD-safe palette:**
+- `segmented_overview.png` — the model-selection story in four panels: the classification
+  (estimable → testable → adopted/held/weak), the `r_init`-vs-`r_final` scatter with the
+  `y=x` "increase-only" permit line (adopted points all sit above it), the two decision
+  gates (ΔBIC and +Δrate, with adopted points in the pass quadrant), and constant-vs-
+  two-phase fit quality (adopted points jump to high R²).
+- `segmented_parameters.png` — the four fitted parameters: a **dumbbell** of `r_init →
+  r_final` per adopted variant (the headline before/after), the breakpoint tally (T4 vs
+  T6), initial abundance vs acceleration, and the normalized fitted **acceleration shapes**
+  (the characteristic dip-then-rise, deeper for T6 switches).
+- `segmented_gallery.png` — every adopted two-phase fit as small multiples (observed CLR,
+  constant vs two-phase line, breakpoint), so each result is individually inspectable.
+- `segmented_allele.png` — per-allele acceleration tallies for verA and verB.
+
+**All datasets.** The tables and `segmented_overview.png` are produced for every dataset.
+On the 3-transfer amplicon designs nothing is breakpoint-testable, so their overview is
+the honest reduced form — a single "all constant" bar plus the single-slope rate
+distribution — and the parameter/gallery/allele figures are skipped (there is nothing to
+show). Only the 4-transfer WGS run yields the full suite.
+
+### 11.6 4-variable vs 1-variable — a fair comparison (`s14d`)
+
+The 4-variable segmented model and the original 1-variable constant-rate model (`s03`)
+are **nested**: the broken-stick reduces exactly to the single line when
+`r_init == r_final`. A raw goodness-of-fit contest is therefore rigged — the model with
+more parameters cannot fit worse — so `s14d` reports the *fair* axes and empirically
+tests whether the extra parameters earn their keep. Outputs:
+`model_comparison_summary.csv`, `model_comparison_by_trajectory.csv`, figures
+`model_comparison.png` (coverage, in-sample fit, BIC parsimony funnel, out-of-sample
+LOOCV) and `model_comparison_blindspot.png`.
+
+1. **Coverage.** The 1-var fits all **237** estimable trajectories; the 4-var only the
+   **66** with ≥4 observed transfers. The deployed 4-var produces **identical output on
+   224/237** (171 not testable + 53 testable-but-kept) and differs only on the **13** it
+   refines. It is a *targeted* refinement, not a replacement.
+2. **In-sample fit (not a fair basis).** On the 66 testable the broken-stick lifts median
+   weighted R² from **0.31 → 0.96** and cuts median weighted RSS ~9× — but this is
+   *expected by construction* (more parameters, nested), so it cannot by itself decide
+   the contest.
+3. **Parsimony (BIC).** With the complexity charge, an *unconstrained* breakpoint still
+   "wins" on **65/66** — a symptom of n=4 flexibility (1 residual d.o.f.), not real
+   structure. This is exactly why the deployed model is conservative: requiring an
+   **increase** narrows it to 18/66, and adding the strong-evidence + >10% gates to
+   **13/66**. The 1-var is retained for **53/66** testable (and all 171 non-testable).
+4. **Prediction (leave-one-timepoint-out CV — the fair, out-of-sample test).** Run two
+   ways on the 13 adopted trajectories:
+   - **elbow re-learned each fold (the honest test):** median RMSE ratio 4-var/1-var
+     ≈ **0.92** — essentially **parity** (4-var better in only 7/13). At 4 timepoints the
+     breakpoint *location* is not robustly identifiable, so the whole model does not
+     out-predict the single slope.
+   - **elbow supplied (location fixed):** ratio ≈ **0.53**, 4-var better in **11/13**
+     (median RMSE 0.76 → 0.28). Given *where* the elbow is, the two-phase **shape** has
+     real predictive content.
+   The gap between the two is the headline: **the two-phase shape is real, but its
+   location is under-identified at this sampling density** — an empirical confirmation of
+   the §11.4 caveat. More transfers (especially in the unobserved T6→T13 gap) are what
+   would pin `τ`.
+5. **The 1-var blind spot.** For the adopted variants the single slope reports a median
+   magnitude of just **|s| ≈ 0.20/cycle** while the true phase swing is
+   **|r_final − r_init| ≈ 0.59/cycle** — 10/13 have a single slope below half the swing.
+   The single number averages a dip-then-rise into something that can look near-neutral
+   (e.g. `A78-B3`: 1-var `s=+0.03` — "neutral" — vs 4-var `−0.31 → +0.15` at T6).
+
+**Bottom line.** For *prediction* at this sampling density the 1-var model is the right
+default (the 4-var's out-of-sample edge is not robust once the elbow must be learned).
+The 4-var model's value is **descriptive**: it flags *which* variants change rate, in
+*which direction*, and — given a plausible elbow — the *shape*, surfacing dynamics the
+single slope hides. The two are complementary, which is why `s14` is offered alongside
+`s03`/`s12` rather than replacing them.
+
+### 11.7 Fit error, specifically (`s14e`)
+
+A focused look at *error* alone (metric: unweighted **CLR RMSE** — the root-mean-square
+residual in centered-log-ratio units over a trajectory's timepoints; testable
+trajectories have all 4 transfers observed so this is clean). Outputs:
+`model_fit_error.csv`, `model_fit_error_by_trajectory.csv`, figure `model_fit_error.png`.
+
+- **In-sample error falls sharply where the 4-var is deployed.** On the 13 refined
+  variants median CLR RMSE drops **0.40 → 0.06** (weighted RSS 3.44 → 0.08; R²
+  0.87 → 1.00). On the other **224/237** trajectories the deployed 4-var *is* the
+  constant fit, so the error is **identical**.
+- **The 1-var's residual is structured, not noise.** Averaged over the adopted
+  trajectories the constant fit's |residual| is largest at the **ends and the elbow**
+  (mean |resid| ≈ 0.31 at T3, **0.72 at T6**, vs ≈ 0.05–0.10 for the 4-var) — a single
+  slope cannot bend, so it misfits systematically exactly where the trajectory turns.
+  That structure is *why* the extra parameters cut the error.
+- **But the in-sample drop is mostly optimism.** On held-out timepoints (LOOCV, elbow
+  re-learned per fold) the two models' errors are **essentially equal**: median CLR RMSE
+  **1.71 (1-var) vs 1.69 (4-var)**. The 4-var's optimism gap (LOOCV − in-sample ≈ 1.63)
+  exceeds the 1-var's (≈ 1.31), i.e. more of its in-sample fit is overfitting — expected
+  for a 3-parameter fit (plus a *selected* knot) on 4 points. The dof-adjusted residual
+  SE (`sqrt(RSS/(n−k))`) still favours the 4-var (1.25 vs 1.50) because it does not
+  charge for the knot *selection*; only true out-of-sample error does, and there the
+  advantage disappears.
+
+**In one line:** the 4-var model reduces *in-sample* fit error by ~7× where it is
+deployed and leaves it unchanged elsewhere, but that reduction does **not** translate to
+lower *out-of-sample* error at 4 transfers — so it is a better *description* of the
+observed trajectory, not a better *predictor* of unseen timepoints.

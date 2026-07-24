@@ -49,6 +49,7 @@ faster than 4-methoxybenzoate** at the community level (μ_bulk 0.83 vs 0.30 /h)
 ~/Documents/py_venv/bin/python scripts/s13_joint_4MXB.py
 ~/Documents/py_venv/bin/python scripts/s13b_joint_error.py
 ~/Documents/py_venv/bin/python scripts/s13c_error_reduction_fig.py
+~/Documents/py_venv/bin/python scripts/s13d_counts_only.py   # counts-only (no amplicon) comparison
 ```
 
 The WGS experiment is uniformly 4MXB, so it is fused with the amplicon 4MXB run (WGS
@@ -59,6 +60,39 @@ same-culture concordance) and **tightens the 81 shared/deep-B4 variants modestly
 (~12 % lower SE, ESS ~1.4×) while making 131 variants newly estimable** from the deep
 amplicon — an enhancement of *coverage* plus modest precision, not a dramatic global
 error drop (the amplicon's depth is concentrated: 174/212 B4 variants have <30 reads).
+
+`s13d_counts_only.py` re-runs that exact joint model **without the amplicon data** (WGS
+SeqCenter counts only) and saves it separately (`joint_variant_growth_rates_4MXB_counts_only.csv`,
+`counts_vs_amplicon_4MXB.csv`, `figures/counts_vs_amplicon_4MXB.png`) — a clean baseline
+that isolates what the amplicon adds. (The standalone WGS pipeline `outputs/` is already
+counts-only; the amplicon enters the barcode analysis *only* through this joint fusion.)
+It confirms the amplicon **shifts no rate** (median |Δr| ≈ 0.002/h) and only tightens the
+81 B4-present variants (~1.18× lower SE), leaving the 233 non-B4 variants unchanged.
+
+## dgoA copy-number amplification (new data — `cn` pipeline)
+
+`copy-number-dgoA_.csv` is a **direct** measurement of `dgoA*` gene copy number per
+lineage over serial transfers (not compositional counts), so — unlike the barcode data —
+each variant's **absolute amplification rate and its error are directly identifiable**.
+
+```bash
+~/Documents/py_venv/bin/python scripts/cn_run_all.py     # -> outputs_copynumber/
+```
+
+The **1-variable** model (OLS of `ln(copy_number)` vs transfer, on per-transfer means =
+the unit of replication) gives the **per-variant amplification rate ± SE ± 95% CI**
+(`dgoA_growth_rates.csv`, forest `dgoA_growth_rates_forest.png`). The **4-variable**
+segmented model + the 1-var-vs-4-var comparison and fit error are regenerated for this
+data (`model_comparison.png`, `model_fit_error.png`).
+
+**Honest headline (hardened by an adversarial verification pass):** after per-transfer-mean
+fitting, low-leverage flagging (the 55 `exp1` lineages have only 3 transfers → CIs not
+calibrated), and BH-FDR multiplicity correction, **exactly one lineage is a robust dgoA
+amplifier — `pgi.1`, r = +0.071 ± 0.011 /transfer (q = 0.019, 8 transfers)**; a naive fit
+would have over-reported 11. The 4-var story inverts the barcode's: dgoA copy number
+mostly **saturates** (20/24 testable lineages amplify-then-plateau), which the
+increasing-only 4-var can't fit, and a bidirectional broken-stick predicts only *modestly*
+better out-of-sample (Wilcoxon p≈0.08). Full write-up: [`docs/COPY_NUMBER.md`](docs/COPY_NUMBER.md).
 
 ## Repository layout
 
@@ -79,6 +113,11 @@ scripts/
   s11_falsification_figures.py  OD-anchor go/no-go + bridge graph + forest
   s12_global_growth_fit.py      global static per-variant rate (jax; counts + OD)
   s12b_growth_rate_error.py     Laplace + bootstrap + LOSO + sensitivity error
+  s14_segmented_growth.py       COMPLEMENTARY two-phase (breakpoint) per-variant fit
+  s14b_segmented_summary.py     segmented rollups (model-selection audit, sample, allele)
+  s14c_segmented_figures.py     segmented figure suite (overview, params, gallery, allele)
+  s14d_model_comparison.py      1-var (s03) vs 4-var (s14) head-to-head (tables + figures)
+  s14e_fit_error.py             focused 1-var vs 4-var fit-error comparison (table + figure)
   run_all.py               run the whole pipeline in order
 docs/
   METHODS.md                model derivation, identifiability, cross-sample integration
@@ -95,8 +134,18 @@ outputs/
   sample_gauge.csv                             per-sample gauge gamma_c + anchor flags
   allele_growth_advantage.csv                  graded allele table (+ derived OD-clock)
   global_variant_growth_rates.csv              global static per-variant rate + error (s12/s12b)
+  segmented_growth_rates.csv                   complementary two-phase breakpoint fit (s14)
+  segmented_model_selection.csv                segmented decision audit + counts (s14b)
+  segmented_sample_summary.csv                 per-culture acceleration rollup (s14b)
+  segmented_allele_effects.csv                 per-allele acceleration rollup (s14b)
+  model_comparison_summary.csv                 1-var vs 4-var head-to-head (s14d)
+  model_comparison_by_trajectory.csv           per-trajectory 1-var vs 4-var + LOOCV (s14d)
+  model_fit_error.csv / _by_trajectory.csv     1-var vs 4-var fit-error comparison (s14e)
   intermediate/        tidy data, depth, OD time axis, OD bulk rate (mu_bulk)
-  figures/             richness, sweeps, growth heatmap, OD-anchor falsification, global-growth fit
+  figures/             richness, sweeps, growth heatmap, OD-anchor falsification, global-growth fit,
+                       segmented_{overview,parameters,gallery,allele}.png (s14c two-phase figures),
+                       model_comparison{,_blindspot}.png (s14d 1-var vs 4-var),
+                       model_fit_error.png (s14e fit-error comparison)
 ```
 
 ## The headline output
@@ -141,6 +190,55 @@ variant is seen at only one timepoint (not estimable). Read it alongside the
   → rates really are near-static), but the **absolute level is anchor-dependent**
   (most rates flagged `mixed`/`anchor-driven`) — the relative ordering is what's
   robust. See `global_growth_fit.png` and METHODS §9.
+
+### Complementary two-phase / breakpoint fit (`s14`)
+`s03` and `s12` fit **one** rate; `s14` is a **complementary** regression (it does not
+replace them) that lets the rate change **once**, fitting **four** parameters per
+variant: **initial abundance** (intercept), **initial growth rate**, **final growth
+rate**, and the **inter-sample transfer at which the rate switches** (a continuous
+broken-stick with the knot at an interior sampled transfer). **Only an *increase* in
+growth rate is permitted** (`r_final > r_init`); a variant whose data prefer a decrease
+keeps the constant fit. It adopts the change only when that increasing fit genuinely
+improves the fit (weighted `ΔBIC>6`, strong evidence) **and** the rate increases by
+**>10%**; otherwise it keeps the constant fit — so the rate does not have to change. Of
+the 66 WGS trajectories seen at all four transfers, **13 show a strong *increasing*
+two-phase change** (variants that lose ground early then surge, inflecting near T6),
+**47 are held constant because their best fit was a decrease** (not permitted), and the
+rest stay constant. Where adopted, the constant fit is genuinely poor (median weighted
+R² ≈ 0.31 → ≈ 0.96 two-phase; caveat #3 below). Acceleration **clusters by allele** —
+verB `B26` accelerates in 5/5 of its testable variants, verA `A78`/`A81` in 4 each.
+
+This ships with a full table+figure communication layer (parallel to the single-variable
+assessment): rollup tables `segmented_{model_selection,sample_summary,allele_effects}.csv`
+(`s14b`) and a figure suite `segmented_{overview,parameters,gallery,allele}.png` (`s14c`,
+on the data-viz skill's CVD-safe palette) — model-selection + the increasing-only
+constraint, the four fitted parameters (incl. an `r_init`→`r_final` dumbbell), every
+adopted fit as small multiples, and per-allele tallies. The tables + overview are emitted
+for **all datasets**; the two 3-transfer amplicon runs are not breakpoint-testable (a
+two-phase model needs ≥4 timepoints) so they report all-constant with a reduced overview.
+See METHODS §11.
+
+**1-variable vs 4-variable comparison (`s14d`).** Because the models are **nested** (the
+4-var reduces to the 1-var when `r_init==r_final`), a raw fit contest is rigged, so
+`s14d` reports the fair axes — `model_comparison{,_blindspot}.png` +
+`model_comparison_{summary,by_trajectory}.csv`. Honest findings: the deployed 4-var is
+**identical to the 1-var on 224/237** trajectories and refines only 13; in-sample R²
+rises 0.31→0.96 but that's *expected* (more parameters). The fair **out-of-sample
+LOOCV** test shows the 4-var only out-predicts the 1-var when the breakpoint **location
+is supplied** (RMSE ratio 0.53, 11/13) — once the elbow must be learned per fold it's
+**parity** (0.92, 7/13), because 4 timepoints can't pin `τ`. So the 1-var stays the
+right default for *prediction*, while the 4-var's value is *descriptive*: it exposes
+dip-then-rise dynamics the single slope averages to near-zero (median |s|=0.20 for a 0.59
+phase swing). See METHODS §11.6.
+
+**Fit error, specifically (`s14e`).** Zooming in on error alone
+(`model_fit_error{,_by_trajectory}.csv`, `model_fit_error.png`): where the 4-var is
+deployed it cuts **in-sample** CLR RMSE ~7× (0.40→0.06, R² 0.87→1.00) and leaves it
+**identical on the other 224/237** trajectories; the 1-var's residual is *structured*
+(worst at the elbow — mean |resid| 0.72 at T6 — because a straight line can't bend). But
+**out-of-sample** (LOOCV) the two are essentially tied (1.71 vs 1.69) — the in-sample
+drop is mostly overfitting. So the 4-var fits the *observed* trajectory much better but
+does not predict *unseen* timepoints better at 4 transfers. See METHODS §11.7.
 
 ## ⚠️ Three things to know before using the numbers
 

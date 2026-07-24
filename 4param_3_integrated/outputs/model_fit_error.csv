@@ -1,0 +1,9 @@
+fit_error_metric,one_variable,four_variable,interpretation
+in_sample_CLR_RMSE__all_testable,0.5343,0.4157,of 71 testable; unweighted CLR residual RMSE
+in_sample_CLR_RMSE__adopted_only,0.4414,0.0728,of 14 the 4-var refines — where the models actually differ
+in_sample_weighted_RSS__adopted,3.9586,0.1356,the fitting objective (weighted); lower is better
+in_sample_R2__adopted,0.8377,0.9957,weighted R² on the adopted set
+dof_adjusted_residual_SE__testable,1.6243,1.4173,sqrt(RSS/(n−k)); charges the 4-var for its extra parameter (n=4)
+out_of_sample_LOOCV_RMSE__adopted,1.8953,1.7046,"held-out error, elbow re-learned per fold — the honest test"
+optimism_gap__adopted,1.4539,1.6318,LOOCV − in-sample; the 4-var's larger gap = more of its in-sample gain is overfitting
+trajectories_with_identical_error,294.0,294.0,of 308 estimable — the 4-var equals the 1-var except on 14

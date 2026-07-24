@@ -1,0 +1,4 @@
+version,label,n_transfers,n_estimable,n_breakpoint_testable,n_two_phase_adopted,n_held_decrease,n_weak_constant,median_r2_constant_testable,median_r2_two_phase_testable,median_delta_bic_adopted
+amplicon,Amplicon only,3,186,0,0,0,0,,,
+barcode,Barcode / WGS only,4,237,66,13,47,6,0.3115,0.9759,11.297
+integrated,Integrated (WGS+amplicon),4,308,71,14,50,7,0.3602,0.9544,13.132

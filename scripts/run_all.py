@@ -28,6 +28,11 @@ import s10_allele_effects_graded
 import s12_global_growth_fit
 import s12b_growth_rate_error
 import s12c_growth_forest_all
+import s14_segmented_growth
+import s14b_segmented_summary
+import s14c_segmented_figures
+import s14d_model_comparison
+import s14e_fit_error
 import s06_figures
 import s07_growth_matrix_figure
 import s11_falsification_figures
@@ -50,12 +55,23 @@ def main():
     # --- global static-rate optimization (assumption-laden absolute rates) + error ---
     s12_global_growth_fit.main(); print(line)
     s12b_growth_rate_error.main(); print(line)
+    # --- complementary two-phase (breakpoint) per-variant regression (does NOT
+    #     replace s03/s12; offered alongside them) + its summary rollups ---
+    s14_segmented_growth.main(); print(line)
+    s14b_segmented_summary.main(); print(line)
+    # --- 1-var (s03) vs 4-var (s14) head-to-head comparison (tables always; its
+    #     own figures are best-effort inside main) ---
+    s14d_model_comparison.main(); print(line)
+    # --- focused fit-error comparison (1-var vs 4-var) ---
+    s14e_fit_error.main(); print(line)
     # --- figures (non-essential) ---
     try:
         s06_figures.main()
         s07_growth_matrix_figure.main()
         s11_falsification_figures.main()
         s12c_growth_forest_all.main()
+        s14_segmented_growth.make_figure()
+        s14c_segmented_figures.main()
     except Exception as e:
         print(f"[figures] skipped ({type(e).__name__}: {e})")
     print("=" * 70)
@@ -64,6 +80,13 @@ def main():
     print("  outputs/variant_bridged_relative.csv           (cross-sample variant effects)")
     print("  outputs/allele_growth_advantage.csv            (graded allele table + OD-clock)")
     print("  outputs/global_variant_growth_rates.csv        (global static per-variant rate + error)")
+    print("  outputs/segmented_growth_rates.csv             (complementary two-phase breakpoint fit)")
+    print("  outputs/segmented_{model_selection,sample_summary,allele_effects}.csv  (segmented rollups)")
+    print("  outputs/model_comparison_{summary,by_trajectory}.csv                   (1-var vs 4-var)")
+    print("  outputs/model_fit_error{,_by_trajectory}.csv                           (1-var vs 4-var fit error)")
+    print("  outputs/figures/segmented_{overview,parameters,gallery,allele}.png     (segmented figures)")
+    print("  outputs/figures/model_comparison{,_blindspot}.png                      (1-var vs 4-var figures)")
+    print("  outputs/figures/model_fit_error.png                                    (1-var vs 4-var fit error)")
     print("  outputs/intermediate/od_bulk_condition_summary.csv  (the one absolute OD/h rate)")
 
 

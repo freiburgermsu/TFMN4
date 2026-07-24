@@ -1,0 +1,63 @@
+{
+  "versions": {
+    "amplicon": {
+      "n_transfers": 3,
+      "estimable": 186,
+      "testable": 0,
+      "adopted": 0,
+      "held_decrease": 0
+    },
+    "barcode": {
+      "n_transfers": 4,
+      "estimable": 237,
+      "testable": 66,
+      "adopted": 13,
+      "held_decrease": 47
+    },
+    "integrated": {
+      "n_transfers": 4,
+      "estimable": 308,
+      "testable": 71,
+      "adopted": 14,
+      "held_decrease": 50
+    }
+  },
+  "b4": {
+    "amplicon": {
+      "estimable": 82,
+      "testable": 0,
+      "adopted": 0
+    },
+    "barcode": {
+      "estimable": 24,
+      "testable": 6,
+      "adopted": 0
+    },
+    "integrated": {
+      "estimable": 95,
+      "testable": 11,
+      "adopted": 1
+    }
+  },
+  "adopted_overlap": {
+    "barcode": 13,
+    "integrated": 14,
+    "shared": 13,
+    "new_in_integrated": 1,
+    "b4_new_variants": [
+      "A81-B132"
+    ]
+  },
+  "concordance": {
+    "barcode_vs_integrated": {
+      "r": 0.6689947152201299,
+      "n": 24,
+      "median_abs_delta": 0.18014999999999998
+    },
+    "amplicon_vs_integrated": {
+      "r": 0.9425428125328568,
+      "n": 82,
+      "median_abs_delta": 0.0739
+    }
+  }
+}

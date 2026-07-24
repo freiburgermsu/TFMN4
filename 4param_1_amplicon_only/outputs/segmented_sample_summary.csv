@@ -1,0 +1,4 @@
+Sample,DNA_construct,n_estimable,n_testable,n_accelerating,n_held_decrease,frac_accelerating,bp_T4,bp_T6,median_r_init_adopted,median_r_final_adopted,median_acceleration_adopted,median_logA_init
+B4_M_bcfr,4MXB,70,0,0,0,,0,0,,,,1.2023
+B4_M_fbcr,4MXB,69,0,0,0,,0,0,,,,1.3012
+B4_M_fr,4MXB,47,0,0,0,,0,0,,,,0.9591

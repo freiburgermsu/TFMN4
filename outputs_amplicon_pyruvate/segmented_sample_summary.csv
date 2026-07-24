@@ -1,0 +1,4 @@
+Sample,DNA_construct,n_estimable,n_testable,n_accelerating,n_held_decrease,frac_accelerating,bp_T4,bp_T6,median_r_init_adopted,median_r_final_adopted,median_acceleration_adopted,median_logA_init
+B4_p_bcfr,pyruvate,95,0,0,0,,0,0,,,,1.2956
+B4_p_fbcr,pyruvate,89,0,0,0,,0,0,,,,1.6527
+B4_p_fr,pyruvate,48,0,0,0,,0,0,,,,0.9732

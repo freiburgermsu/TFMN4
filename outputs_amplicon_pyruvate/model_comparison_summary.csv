@@ -1,0 +1,3 @@
+metric,one_variable,four_variable,interpretation
+trajectories_fittable,232,0,3-transfer dataset: 4-var not identifiable
+trajectories_identical_output,232,232,4-var reduces to the 1-var fit everywhere
