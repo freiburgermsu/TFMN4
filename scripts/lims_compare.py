@@ -234,7 +234,11 @@ def variant_tables():
         v = rd(bc_dir(ds) / "variant_bridged_relative.csv"); g = rd(bc_dir(ds) / "global_variant_growth_rates.csv")
         if v is None or g is None:
             continue
-        m = v.merge(g[["Candidate", "r_global_per_h", "ci_boot_lo", "ci_boot_hi", "rel_advantage_per_h",
+        lap = "ci_laplace_lo" in g and not bool(g["boot_loso_refits_converged"].all())
+        g = g.assign(ci_lo=g["ci_laplace_lo"] if lap else g["ci_boot_lo"],
+                     ci_hi=g["ci_laplace_hi"] if lap else g["ci_boot_hi"],
+                     ci_kind="Laplace" if lap else "bootstrap")
+        m = v.merge(g[["Candidate", "r_global_per_h", "ci_lo", "ci_hi", "ci_kind", "rel_advantage_per_h",
                        "identifiability", "has_slope_info"]], on="Candidate", how="left")
         m.insert(0, "environment", label(ds)); m.insert(1, "dataset", ds["name"])
         frames.append(m)
@@ -243,7 +247,7 @@ def variant_tables():
     return long
 
 
-def _s03_slopes(d4, transfers):
+def _s03_slopes(d4, transfers, se=False):
     """The s03 estimator (CLR weighted-LS slope per transfer) on a count table."""
     out = []
     x = np.array(transfers, float)
@@ -257,7 +261,8 @@ def _s03_slopes(d4, transfers):
             if (cv > 0).sum() < C.MIN_OBS_TIMEPOINTS:
                 continue
             f = C.weighted_linfit(x, clr.loc[cand].to_numpy(float), cv + C.PSEUDOCOUNT)
-            out.append(dict(Sample=s, Candidate=cand, s=f["slope"], n_obs=int((cv > 0).sum())))
+            out.append(dict(Sample=s, Candidate=cand, s=f["slope"], n_obs=int((cv > 0).sum()),
+                            **({"w": 1 / max(f["slope_se"], 1e-3) ** 2} if se else {})))
     return pd.DataFrame(out)
 
 
@@ -287,8 +292,9 @@ def wgs_vs_amplicon():
     fq_ = fq.assign(expected_wgs=f_amp_lo * dw_, expected_amp=f_wgs_lo * da_)
     fq_["p_absent_in_wgs"] = np.exp(-fq_.expected_wgs)          # Poisson P(0 WGS reads)
     fq_["p_absent_in_amp"] = np.exp(-fq_.expected_amp)
-    disc = fq_[((fq_.Count_wgs == 0) & (fq_.p_absent_in_wgs < 1e-3)) |
-               ((fq_.Count_amp == 0) & (fq_.p_absent_in_amp < 1e-3))]
+    alpha = 0.05 / max(2 * len(fq_), 1)                         # Bonferroni over every tested cell
+    disc = fq_[((fq_.Count_wgs == 0) & (fq_.p_absent_in_wgs < alpha)) |
+               ((fq_.Count_amp == 0) & (fq_.p_absent_in_amp < alpha))]
     disc.sort_values(["Candidate", "Sample", "Transfer"]).to_csv(CMP / "cross_assay_discordance_TFMN4.csv", index=False)
     both = fq[(fq.Count_wgs > 0) & (fq.Count_amp > 0)]
     st = dict(n_cells=len(set(zip(fq.Sample, fq.Transfer))), n_rows=len(fq),
@@ -312,8 +318,19 @@ def wgs_vs_amplicon():
     j = sl.dropna(subset=["s_wgs_4T", "s_amp_4T"])
     st.update(n_slope_pairs=len(j),
               slope_pearson_same_4T=float(stats.pearsonr(j.s_wgs_4T, j.s_amp_4T)[0]),
-              slope_spearman_same_4T=float(stats.spearmanr(j.s_wgs_4T, j.s_amp_4T)[0]),
-              slope_median_diff_amp_minus_wgs=float((j.s_amp_4T - j.s_wgs_4T).median()))
+              slope_spearman_same_4T=float(stats.spearmanr(j.s_wgs_4T, j.s_amp_4T)[0]))
+    # Each assay's slopes are relative to the geometric mean of the variants IT detects (the
+    # amplicon sees ~5x more), so absolute values are not comparable across assays; alleles are
+    # compared gauge-free, as a difference from the median allele and as a percentile.
+    rows = []
+    for nm, d, T in (("wgs_4T", dw, shared_T), ("amp_4T", da, shared_T), ("amp_allT", da, amp["transfers"])):
+        sl_ = _s03_slopes(d[d.Sample.isin(shared_S) & d.Transfer.isin(T)], T, se=True)
+        sl_ = sl_.merge(d.drop_duplicates("Candidate")[["Candidate", "verA"]], on="Candidate")
+        mm = sl_.groupby("verA").apply(lambda z: np.sum(z.w * z.s) / np.sum(z.w), include_groups=False)
+        rows.append(pd.DataFrame({f"{nm}_minus_median": (mm - mm.median()).round(4), f"{nm}_percentile": mm.rank(pct=True).round(3)}))
+    alle = pd.concat(rows, axis=1).reset_index().rename(columns={"index": "verA"})
+    alle.to_csv(CMP / "wgs_vs_amplicon_TFMN4_alleles.csv", index=False)
+    st["allele_table"] = alle
     j2 = sl.dropna(subset=["s_amp_4T", "s_amp_8T"])
     st.update(n_slope_pairs_4T_vs_8T=len(j2),
               slope_spearman_amp4T_vs_amp8T=float(stats.spearmanr(j2.s_amp_4T, j2.s_amp_8T)[0]),
@@ -334,9 +351,11 @@ def validation():
         if not pb.exists():
             rows.append(dict(file=str(f), status="missing in DB run")); continue
         a = pd.read_csv(pa); b = pd.read_csv(pb)
-        common = [c for c in a.columns if c in b.columns]
-        if a.shape != b.shape:
-            rows.append(dict(file=str(f), status=f"shape {a.shape} vs {b.shape}")); continue
+        common = [c for c in a.columns if c in b.columns]       # LIMS runs may add columns
+        if len(a) != len(b):
+            rows.append(dict(file=str(f), status=f"rows {len(a)} vs {len(b)}")); continue
+        if "Candidate" in common and a.Candidate.is_unique and set(a.Candidate) == set(b.Candidate):
+            b = b.set_index("Candidate").loc[a.Candidate].reset_index()   # tables sorted by value
         a, b = a[common], b[common]
         num = a.select_dtypes("number").columns; oth = [c for c in common if c not in num]
         da, db = a[num].to_numpy(float), b[num].to_numpy(float)
@@ -349,6 +368,21 @@ def validation():
     df = pd.DataFrame(rows)
     df.to_csv(CMP / "validation_wgs_db_vs_repo.csv", index=False)
     return df
+
+
+def s12_vs_repo():
+    """global_variant_growth_rates.csv of the DB WGS run vs the committed one, per column group:
+    the s12 point estimates vs the s12b refit columns (converged here, iteration-capped there)."""
+    if WGS is None or not (ROOT / "outputs" / "global_variant_growth_rates.csv").exists():
+        return None
+    a = pd.read_csv(ROOT / "outputs" / "global_variant_growth_rates.csv")
+    b = rd(bc_dir(WGS) / "global_variant_growth_rates.csv")
+    j = a.merge(b, on="Candidate", suffixes=("_repo", "_db"))
+    mx = lambda cols: float(max((j[f"{c}_repo"] - j[f"{c}_db"]).abs().max() for c in cols))
+    return dict(s12=mx(["r_global_per_h", "se_laplace"]),
+                s12b=mx(["ci_boot_lo", "ci_boot_hi", "se_boot", "loso_heterogeneity_sd", "sens_to_OD_weight"]),
+                ident=int((j.identifiability_repo != j.identifiability_db).sum()), n=len(j),
+                converged=bool(b["boot_loso_refits_converged"].all()) if "boot_loso_refits_converged" in b else False)
 
 
 def sensitivity():
@@ -623,17 +657,20 @@ def fig_top_variants(vlong):
         y = np.arange(len(top))
         mu = float((top.r_global_per_h - top.rel_advantage_per_h).median())   # s12's community mu_bar
         rel = top.rel_advantage_per_h
-        lo = (top.r_global_per_h - top.ci_boot_lo).clip(lower=0); hi = (top.ci_boot_hi - top.r_global_per_h).clip(lower=0)
+        lo = (top.r_global_per_h - top.ci_lo).clip(lower=0); hi = (top.ci_hi - top.r_global_per_h).clip(lower=0)
         a.errorbar(rel, y, xerr=[lo, hi], fmt="o", ms=5, color=ENV_COLOR[ds["name"]],
                    mec=SURFACE, mew=1.2, ecolor=ENV_COLOR[ds["name"]], elinewidth=1.2, capsize=2, zorder=3)
-        a.set_xlim(left=0)
+        a.axvline(0, color=BASELINE, lw=1.0, zorder=1)        # = the community mean; CIs may cross it
         a.set_yticks(y); a.set_yticklabels([f"{c}  (n={int(k)})" for c, k in zip(top.Candidate, top.n_samples)], fontsize=7.5)
-        a.set_xlabel("advantage over community mean  r − μ̄  (per h) ± bootstrap 95% CI", fontsize=8)
+        a.set_xlabel(f"advantage over community mean  r − μ̄  (per h) ± {top.ci_kind.iloc[0] if len(top) else 'bootstrap'} 95% CI",
+                     fontsize=8)
         a.set_title(f"{label(ds)}   (μ̄ = {mu:.2f}/h)", fontsize=10); a.grid(axis="y", visible=False)
     fig.suptitle("Fastest variants per environment — the s12 global static-rate model, fit separately per environment\n"
                  "plotted as the advantage over that environment's community mean (the data-pinned part; the absolute "
-                 "level is anchor-dependent)  ·  n = cultures the variant appears in  ·  x-axes differ between panels", fontsize=11.5)
-    fig.tight_layout(rect=[0, 0, 1, 0.93])
+                 "level is anchor-dependent)  ·  n = cultures the variant appears in  ·  x-axes differ between panels\n"
+                 "wide, skewed intervals = variants with only 1–3 reads at a timepoint (resampling often removes them "
+                 "from it, so their fitted rate swings); variants with hundreds of reads have tight intervals", fontsize=11.5)
+    fig.tight_layout(rect=[0, 0, 1, 0.91])
     fig.savefig(FIG / "top_variants_by_environment.png", dpi=140, bbox_inches="tight"); plt.close(fig)
 
 
@@ -659,8 +696,8 @@ def fig_wgs_vs_amp(fq, sl, st):
     a.scatter(j.s_wgs_4T, j.s_amp_4T, s=16, color=BLUE, alpha=0.6, edgecolors="none")
     a.set_xlim(-lim, lim); a.set_ylim(-lim, lim)
     a.set_xlabel("WGS  s per cycle  (T3, T4, T6, T13)"); a.set_ylabel("amplicon  s per cycle  (same 4 transfers)")
-    a.set_title(f"(b) Same estimand, two assays ({len(j)} trajectories)\nSpearman ρ = {st['slope_spearman_same_4T']:.2f}; "
-                f"median Δ(amp − WGS) = {st['slope_median_diff_amp_minus_wgs']:+.3f}", fontsize=9.5)
+    a.set_title(f"(b) Same transfers, two assays ({len(j)} trajectories)\nSpearman ρ = {st['slope_spearman_same_4T']:.2f} "
+                f"(levels differ by gauge: each assay's own variant set)", fontsize=9.5)
     j2 = sl.dropna(subset=["s_amp_4T", "s_amp_8T"])
     a = axs[2]
     lim = float(np.nanmax(np.abs(j2[["s_amp_4T", "s_amp_8T"]].to_numpy()))) * 1.05
@@ -771,11 +808,21 @@ def report(summ, cn_sum, along, conc, st, val, sens=None):
         L.append(md_table(val[val.status != "identical"], ["file", "status", "max_abs_numeric_diff", "column_of_max",
                                                            "text_cells_differing"], {"max_abs_numeric_diff": "{:.3g}"}))
         txt_only = val[(val.status != "identical") & (val.max_abs_numeric_diff == 0)]["file"].tolist()
-        L.append(f"\nEvery number is identical except in `global_variant_growth_rates.csv`, where only the s12b "
-                 "bootstrap / LOSO / sensitivity refits move (capped-iteration L-BFGS solves; the point estimates "
-                 "`r_global_per_h` and `se_laplace` agree to the 4th decimal, and the same drift appears when the "
-                 "repo's own code is re-run unchanged on this machine). "
-                 f"{', '.join(f'`{f}`' for f in txt_only)} differ only in free text: the `dataset` label, and the "
+        num_diff = val.loc[val.max_abs_numeric_diff.fillna(0) > 0, "file"].tolist()
+        g = s12_vs_repo()
+        if g is not None and num_diff == ["global_variant_growth_rates.csv"]:
+            L.append(f"\nEvery number is identical except in `global_variant_growth_rates.csv`. There the s12 point "
+                     f"estimates `r_global_per_h` and `se_laplace` agree to {g['s12']:.4f}/h (4th-decimal rounding), "
+                     f"while the s12b bootstrap / LOSO / OD-weight-sensitivity columns differ by up to {g['s12b']:.3f}/h "
+                     f"({g['ident']}/{g['n']} `identifiability` labels change): "
+                     + ("the LIMS runs solve those refits to convergence, whereas the committed `outputs/` holds the "
+                        "repo's iteration-capped refits, which are not reproducible across machines anyway "
+                        "(docs/LIMS_REANALYSIS.md §3). " if g["converged"] else
+                        "those are iteration-capped refits, which are not reproducible across machines "
+                        "(docs/LIMS_REANALYSIS.md §3). "))
+        else:
+            L.append(f"\nFiles with numeric differences: {', '.join(f'`{f}`' for f in num_diff) or 'none'}. ")
+        L.append(f"{', '.join(f'`{f}`' for f in txt_only)} differ only in free text: the `dataset` label, and the "
                  "`interpretation` sentences, which LIMS runs generate from their own numbers — on this data they "
                  "reach the same conclusions the repo states (LOOCV parity once the elbow is learned, a clear gain "
                  "when it is supplied, a larger optimism gap for the 4-var).\n")
@@ -813,7 +860,7 @@ def report(summ, cn_sum, along, conc, st, val, sens=None):
                   .sort_values("n_cells", ascending=False))
             L.append("Systematic cross-assay check (same culture & transfer, both directions; a variant counts as "
                      "discordant when the lower 95% bound of its frequency in one assay predicts reads in the other "
-                     "but none were seen, Poisson P<0.001):\n")
+                     "but none were seen; Poisson P below a Bonferroni threshold over all tested cells):\n")
             L.append(md_table(dg, ["Candidate", "n_cells", "median_amplicon_freq", "wgs_reads"],
                               {"median_amplicon_freq": "{:.1%}"}))
         L.append(f"\nThe main run keeps every read; the sensitivity run `{sd['out']}/` drops {cand}. "
@@ -831,8 +878,15 @@ def report(summ, cn_sum, along, conc, st, val, sens=None):
                  f"Spearman = {st['freq_spearman']:.2f}; {st['frac_wgs_variants_seen_in_amplicon']:.0%} of WGS-detected "
                  f"variant×cells are also seen by the amplicon; dominant variant agrees in "
                  f"{st['dominant_variant_agreement']:.0%} of {st['n_cells_compared']} cells.")
-        L.append(f"- same estimand (s per cycle on T3/T4/T6/T13): Spearman = {st['slope_spearman_same_4T']:.2f} over "
-                 f"{st['n_slope_pairs']} trajectories; median Δ(amplicon − WGS) = {st['slope_median_diff_amp_minus_wgs']:+.3f}.")
+        L.append(f"- same transfers (s per cycle on T3/T4/T6/T13): Spearman = {st['slope_spearman_same_4T']:.2f} over "
+                 f"{st['n_slope_pairs']} trajectories. Absolute levels are NOT comparable across assays (each slope is "
+                 "relative to the geometric mean of the variants that assay detects), so alleles are compared as a "
+                 "difference from the median allele / percentile:")
+        at = st["allele_table"]
+        L.append("")
+        L.append(md_table(at[at.verA.isin(["A90", "A78", "A81", "A83", "A183"])],
+                          ["verA", "wgs_4T_minus_median", "wgs_4T_percentile", "amp_4T_minus_median",
+                           "amp_4T_percentile", "amp_allT_minus_median", "amp_allT_percentile"]))
         L.append(f"- estimable trajectories: WGS {st['n_estimable_wgs']} → amplicon (8 transfers) {st['n_estimable_amp8']}; "
                  f"amplicon 4- vs 8-transfer slopes Spearman = {st['slope_spearman_amp4T_vs_amp8T']:.2f}.\n")
         L.append("![wgs vs amplicon](comparison/figures/wgs_vs_amplicon_TFMN4.png)\n")
@@ -868,7 +922,8 @@ def main():
         except Exception as e:
             print(f"[lims_compare] figure {name} skipped ({type(e).__name__}: {e})")
     if st:
-        pd.Series(st).to_csv(CMP / "wgs_vs_amplicon_TFMN4_stats.csv", header=["value"])
+        pd.Series({k: v for k, v in st.items() if k != "allele_table"}).to_csv(
+            CMP / "wgs_vs_amplicon_TFMN4_stats.csv", header=["value"])
     report(summ, cn_sum, along, conc, st, val, sens)
     print(f"[lims_compare] {len(summ)} barcode + {len(cn_sum)} copy-number environments summarised; "
           f"wrote {CMP.relative_to(ROOT)}/ and {(OUT / 'REPORT.md').relative_to(ROOT)}")

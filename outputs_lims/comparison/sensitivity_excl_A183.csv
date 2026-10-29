@@ -13,8 +13,8 @@ A183_marginal_s_per_cycle_main,+0.206 (robust True); excluded from the sensitivi
 A81_marginal_s_per_cycle_main_vs_excl,+0.016 vs +0.021 (robust True vs True)
 A90_marginal_s_per_cycle_main_vs_excl,-0.116 vs -0.112 (robust True vs True)
 A78_marginal_s_per_cycle_main_vs_excl,-0.036 vs -0.032 (robust True vs True)
-global_rel_advantage_spearman_main_vs_excl,0.9969
-global_rel_advantage_max_abs_change_per_h,0.0414
+global_rel_advantage_spearman_main_vs_excl,0.9968
+global_rel_advantage_max_abs_change_per_h,0.0422
 top12_fastest_overlap,11/12
 n_breakpoint_testable_main_vs_excl,702 vs 701
 n_two_phase_adopted_increasing_main_vs_excl,53 vs 53

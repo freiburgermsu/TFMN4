@@ -115,10 +115,14 @@ region × carbon source × platform), each saved and visualised in its own folde
   (`TFMN4_CN_DATASET=lims_cn_<env>`) → `outputs_lims/copy_number/<env>/`.
 - `scripts/lims_compare.py` — cross-environment tables/figures → `outputs_lims/comparison/`, and the
   auto-generated **[`outputs_lims/REPORT.md`](outputs_lims/REPORT.md)**.
+- the JAX fits (`s12`/`s12b`) run on the GPU when JAX can see one (CPU otherwise; same results);
+  on the large LIMS problems that is what makes converging every s12b refit affordable.
 
 **Headlines** (full write-up and caveats: [`docs/LIMS_REANALYSIS.md`](docs/LIMS_REANALYSIS.md)):
 - **Validation:** the DB's WGS counts reproduce `outputs/` exactly (every number in 24/25 tables;
-  only s12b's capped-iteration bootstrap columns drift, as they do re-running the repo unchanged).
+  the 25th differs only in s12b's bootstrap/LOSO/sensitivity columns, which the LIMS runs solve to
+  convergence — the repo's iteration-capped refits move by up to ~0.015/h between machines, between
+  CPU and GPU, and even between two GPU runs, while converged ones give identical results everywhere).
 - **Dense TFMN4 time series (8 transfers, ~3,900 reads/cell):** 5.6× more estimable trajectories;
   A81 still wins 6/11 sweeps with no marginal advantage (founder effect); the WGS-era **A90/A78
   advantages do not replicate**; the 4-parameter breakpoint model now predicts held-out
@@ -126,13 +130,16 @@ region × carbon source × platform), each saved and visualised in its own folde
 - **Suspected contamination:** verA **A183** (mostly A183-B63) appears abruptly at T10/T13 in all
   11 TFMN4 cultures, only in two amplicon orders and never in the WGS of the same cultures → a
   sensitivity run without A183 is provided (`…_amplicon_excl_A183/`).
-- **Carbon source sets selection strength (TFMN7):** guaiacol = hard sweeps by verA A183 in both host
-  strains (richness 415→46 and 669→23); isovanillate/veratrate = weak selection (richness stays
-  >150); 4MXB = intermediate with sub-library-specific winners. Allele effects barely correlate
-  between environments (Spearman −0.13…+0.28).
+- **Carbon source sets selection strength (TFMN7, library-matched):** guaiacol = hard sweeps by
+  verA A183 in both host strains (richness 415→46 and 669→23); isovanillate/veratrate = weak
+  selection (richness stays >150); 4MXB = intermediate with sub-library-specific winners. Allele
+  effects barely replicate even within one environment (Spearman ≈0.17 between the two 4MXB
+  experiments and between the two guaiacol hosts), so carbon-source-specific allele effects
+  cannot be separated from experiment-level irreproducibility.
 - **Copy number:** dgoA/pyruvate reproduces the repo (only `TFMN1.pgi.1` amplifies, FDR); EASy
-  lineages show no FDR-significant dgoA/Kan trend; the verAB cassette amplifies slightly but
-  significantly on vanillate (5/15 lineages) and isovanillate (1/21).
+  lineages show no FDR-significant dgoA/Kan trend; verAB copy number rises slightly in all 15
+  vanillate lineages (5 FDR-significant), but the adjacent 6 kb region rises identically — a
+  co-amplified segment or a technical drift, which the DB cannot resolve.
 
 ## Repository layout
 
@@ -217,8 +224,9 @@ variant is seen at only one timepoint (not estimable). Read it alongside the
 - **verA `A90` (+0.104/cycle) and `A78` (+0.061/cycle)** are the **robust,
   drift-confirmed** growth advantages, despite rarely winning a sweep outright.
   *Update (LIMS re-analysis): the deep 8-transfer amplicon of the same cultures does not
-  reproduce these — on the same four transfers A90 shrinks to +0.043 and A78 to −0.006, and
-  over the full series both are disfavoured; see [`docs/LIMS_REANALYSIS.md`](docs/LIMS_REANALYSIS.md) §4.1.*
+  reproduce these — ranked against the median allele, A90/A78 fall from the 94th/88th
+  percentile (WGS) to the 60th/50th on the same four transfers, and to the 7th/23rd over all
+  eight; see [`docs/LIMS_REANALYSIS.md`](docs/LIMS_REANALYSIS.md) §4.1.*
 
 ### Cross-sample integration + absolute rates (`s08`–`s11`)
 - The 11 samples form **one connected bridge graph**, so variant effects integrate

@@ -29,7 +29,9 @@ MAX_FOREST_ROWS = 400   # beyond this a one-row-per-variant forest is unreadable
 
 def caterpillar(df, mu_bar):
     n = len(df); x = np.arange(n)
-    lo = df["ci_boot_lo"].to_numpy(float); hi = df["ci_boot_hi"].to_numpy(float)
+    laplace = ("ci_laplace_lo" in df) and not bool(df["boot_loso_refits_converged"].all())
+    ci = ("ci_laplace_lo", "ci_laplace_hi") if laplace else ("ci_boot_lo", "ci_boot_hi")
+    lo = df[ci[0]].to_numpy(float); hi = df[ci[1]].to_numpy(float)
     r = df["r_global_per_h"].to_numpy(float)
     slope = df["has_slope_info"].astype(bool).to_numpy()
     fig, ax = plt.subplots(figsize=(12, 6.5))
@@ -48,7 +50,8 @@ def caterpillar(df, mu_bar):
             bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="#cccccc", alpha=0.9))
     ax.set_xlim(-n * 0.01, n * 1.01)
     ax.set_xlabel(f"variant rank (all {n}, sorted by rate)")
-    ax.set_ylabel("global static growth rate  r  (per hour)  ±  bootstrap 95% CI")
+    ax.set_ylabel("global static growth rate  r  (per hour)  ±  "
+                  + ("Laplace 95% CI (bootstrap refits not converged)" if laplace else "bootstrap 95% CI"))
     ax.set_title(f"All {n} variants: global static growth rate ± error (ranked caterpillar)\n"
                  f"color = identifiability; hollow = no slope info (prior-driven)", fontsize=11)
     ax.legend(fontsize=7, loc="upper left")

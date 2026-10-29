@@ -74,6 +74,11 @@ input set per environment (`lims_data/barcodes|od|copy_number/`) plus `manifest.
 `TFMN4_CN_DATASET=lims_cn_<env>`), exactly as the repo already switches between WGS and
 amplicon data, so **the identical analysis code runs on every environment**.
 
+**Community-rate (OD) transfers.** As in the original configs (WGS → T6/T13, amplicon →
+T4/T13), only the **last two sampled transfers** feed μ_bulk, τ_exp and the s12 anchor
+(TFMN4 amplicon → T10/T13, TFMN7 → T4/T17). Early cycles are atypically slow (TFMN7's T1, the
+first cycle after transformation, runs at 0.13–0.16/h in every environment).
+
 **Environment = experiment × carbon source × host strain × assay.** Guaiacol is split by host
 strain (ACN3788 vs ACN3882: a different genetic background would otherwise be fitted as one
 population). The two 4MXB experiments (TFMN4, TFMN7) stay separate (different transfer
@@ -81,15 +86,20 @@ schedules, libraries and runs) and are compared afterwards. Within an environmen
 joins the design if ≥50% of cultures passed QC there, and a culture is kept only with a
 complete trajectory (the repo's rule).
 
-**What had to be generalised** (each change leaves the original datasets' code path
-untouched — verified by re-running the repo's own WGS, amplicon and copy-number pipelines
-from a scratch copy: identical outputs apart from the s12b refits noted in §3):
+**What had to be generalised.** Each change leaves the original datasets' code path untouched —
+verified by running the original code (`origin/main`) and the current code side by side on the
+repo's own WGS, both amplicon and the copy-number datasets (same machine, CPU): all 83 output
+tables are identical. One deliberate exception:
+the OD-anchor figure of the two original amplicon datasets
+(`outputs_amplicon_*/figures/od_anchor_falsification.png`) now carries their correct
+reliable-transfer label and ticks (T4/T13) instead of the WGS-specific "T6/T13".
 
 | where | why |
 |---|---|
 | s09/s10 generations-per-cycle | used T3→T13 explicitly; now the first→last sampled transfer |
 | s09 bridge model | TFMN7 4MXB cultures come from disjoint sub-libraries → 3 unconnected components; each now gets its own sum-to-zero gauge (`bridge_component` column) instead of an assertion failure |
-| s12 global fit | 3,000–12,000 parameters: dense `jax.hessian` replaced by batched Hessian-vector products + an exact per-culture block Schur complement; L-BFGS hits its iteration cap on deep counts, so the optimum is polished with a trust-region Newton step (same loss). Every LIMS fit converges (‖grad‖ ≤ 2×10⁻⁴); rates moved ≤0.01/h except guaiacol ACN3882 (≤0.11/h) |
+| s12 global fit | 3,000–12,000 parameters: dense `jax.hessian` replaced by batched Hessian-vector products + an exact per-culture block Schur complement; L-BFGS hits its iteration cap on deep counts, so the optimum is polished with a trust-region Newton step (same loss). Every large LIMS fit ends at ‖grad‖ < 10⁻³ (the small DB-WGS fit keeps the repo's L-BFGS) |
+| s12b error layers | every refit — 60 bootstrap, one per left-out culture, and the two OD-weight sensitivity solves that set `identifiability` — is solved to convergence by damped Newton on the dense Hessian (batched Hessian-vector products, Cholesky, backtracking line search) instead of the repo's iteration-capped L-BFGS: same loss, same resampled data and random draws; largest final ‖grad‖ 1.0×10⁻⁶ over the 66–81 refits of every environment (`intermediate/s12b_refit_convergence.csv`). The original datasets keep the capped refits (§3.1) |
 | s14d LOOCV | design matrices were hard-coded for 3 points (4 transfers) |
 | s14b/s14c | breakpoint columns/colours were fixed to T4/T6; knots are now one ordinal colour ramp |
 | figures | per-variant forests/galleries capped or drawn as ranked caterpillars when there are thousands of variants; sample-name prefixes generic |
@@ -101,30 +111,71 @@ from a scratch copy: identical outputs apart from the s12b refits noted in §3):
 The DB's WGS counts, run through the generalised code (`outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_wgs/`),
 reproduce the committed `outputs/`: **every number in 24 of 25 tables is identical**
 (A90 +0.104/cycle, freq R² 0.946, 13/66 two-phase switches, LOOCV 1.707 vs 1.691, …). The
-exception is s12b's bootstrap / leave-one-sample-out / sensitivity columns in
-`global_variant_growth_rates.csv` (median 0.001/h, max 0.013/h): those are capped-iteration
-L-BFGS refits, and they drift by the same amount when the repo's *unchanged* code is re-run on
-this machine. The remaining text differences are the dataset label and the generated
-interpretation sentences (`validation_wgs_db_vs_repo.csv`).
+exception is `global_variant_growth_rates.csv`: its s12 point estimates (`r_global_per_h`,
+`se_laplace`) agree to the 4th decimal, but the s12b bootstrap / leave-one-sample-out /
+sensitivity columns differ by up to 0.072/h (median 0.013/h for the lower CI bound) and 39/314
+`identifiability` labels change — the LIMS runs solve those refits to convergence, `outputs/`
+holds the repo's iteration-capped ones (§3.1). The remaining text differences are the dataset
+label and the generated interpretation sentences (`validation_wgs_db_vs_repo.csv`).
+
+### 3.1 CPU vs GPU — and why the s12b refits are now converged
+
+Only three scripts use JAX (`s12`, `s12b`, `s13`); everything else is numpy/pandas/scipy and
+runs on the CPU regardless. The JAX steps give the same numbers on either platform **once the
+refits are converged**; the repo's iteration-capped refits reproduce only on the same machine and
+platform (same data throughout; max |difference| per column group):
+
+| comparison | s12 estimates | s12b refit columns |
+|---|---|---|
+| original vs current code, repo datasets, CPU (83 tables) | identical | identical |
+| committed `outputs/` vs a re-run on this machine (CPU) — capped refits | ≤ 0.0001/h | 0.013/h; 11/314 labels flip |
+| CPU vs GPU — capped refits (repo WGS) | ≤ 0.0001/h | 0.015/h; 4 labels flip |
+| GPU vs GPU, same code run twice — capped refits | ≤ 0.0001/h | 0.014/h; 10 labels flip |
+| capped vs converged refits (DB WGS) | ≤ 0.0001/h | 0.072/h; 39 labels flip |
+| capped vs converged refits (TFMN4 amplicon) | — | 0.096/h |
+| CPU vs GPU — converged refits, whole pipeline (TFMN7 isovanillate, 26 tables) | identical | identical (only the diagnostic residual ‖grad‖ differs, ~10⁻⁷) |
+| CPU vs GPU — converged refits (TFMN4 amplicon) | identical | identical |
+| GPU vs GPU, two runs — converged refits (TFMN4 amplicon) | identical | identical |
+
+An iteration-capped refit stops wherever its iteration budget runs out. Rounding-level
+differences — CPU and GPU sum in different orders, and the GPU's parallel sums are not bitwise
+reproducible between runs — send it along a different path, so capped values scatter by
+~0.015/h, and they also sit up to 0.07–0.10/h away from the optimum. Converged refits land on
+the same optimum on any platform. The s12 fit itself is converged, hence its 4th-decimal
+agreement everywhere (rounding).
+
+The GPU matters for speed only on the large LIMS problems, where it makes converging ~70–80
+refits per environment affordable: TFMN4 amplicon (4,910 parameters, 73 refits) 1 min 40 s on
+an RTX 5070 Ti vs 62 min on the CPU; the whole isovanillate pipeline 2 min vs 18 min (CPU
+timings on a 64-core machine shared with other jobs). On the repo's own small problem (314 variants) s12 +
+s12b take ~1 min either way. `scripts/lims_run_all.py` uses the GPU when JAX can see one and
+runs at most `--gpu-jobs` (default 2) barcode environments at once: the largest environment
+(guaiacol ACN3882, 11,931 parameters) holds 8.6 GiB of the card's 16 GB during s12/s12b.
 
 ## 4. Barcode environments
 
 | environment | cultures × transfers | variants | richness first → last (median) | μ_bulk (/h) | top sweep-winner verA | 4-var: adopted / testable | LOOCV 4-var/1-var (elbow learned) |
 |---|---|--:|---|--:|---|---|---|
-| TFMN4 · 4MXB · amplicon | 11 × 8 (T2–T13) | 1,909 | 159 → 44 | 0.31 | A81 (6/11) | 53 / 702 | **0.65** (50/53 better) |
+| TFMN4 · 4MXB · amplicon | 11 × 8 (T2–T13) | 1,909 | 159 → 44 | 0.32 | A81 (6/11) | 53 / 702 | **0.65** (50/53 better) |
 | TFMN4 · 4MXB · WGS (validation) | 11 × 4 | 314 | 30 → 9 | 0.32 | A81 (6/11) | 13 / 66 | 0.92 (7/13) |
 | TFMN7 · 4MXB · ACN3788 | 19 × 5 (T1–T4, T17) | 3,178 | 195 → 17 | 0.27 | A88 (4/19) | 83 / 769 | 0.51 (63/83) |
 | TFMN7 · guaiacol · ACN3788 | 10 × 5 | 3,100 | 415 → 46 | 0.29 | **A183 (8/10)** | 2 / 527 | — (2 adopted) |
-| TFMN7 · guaiacol · ACN3882 | 9 × 5 | 4,865 | 669 → 23 | 0.18 | **A183 (8/9)** | 0 / 13 | — |
+| TFMN7 · guaiacol · ACN3882 | 9 × 5 | 4,865 | 669 → 23 | 0.30 | **A183 (8/9)** | 0 / 13 | — |
 | TFMN7 · isovanillate · ACN3788 | 4 × 5 | 1,272 | 297 → 170 | 0.26 | A186 (2/4) | 117 / 817 | 0.66 (87/117) |
 | TFMN7 · veratrate · ACN3788 | 4 × 5 | 1,565 | 400 → 222 | 0.24 | A183 (2/4) | 228 / 974 | 0.60 (160/228) |
+
+μ_bulk = community exponential-phase rate from the last two sampled transfers (§2). The 4MXB
+richness of TFMN7 mixes sub-libraries of ~20 verA with the 199-verA large library; see §4.3 for
+library-matched comparisons.
 
 ### 4.1 What the dense TFMN4 time series changes
 
 - **Coverage:** 1,329 estimable trajectories vs 237 with WGS (×5.6); 702 are breakpoint-testable.
 - **Assay agreement is good** on the same cultures and transfers: frequencies correlate
   r = 0.78 (log), the dominant variant agrees in 82% of cells, slopes on the identical four
-  transfers correlate ρ = 0.60 (WGS depth-limited) — except for one variant (§4.2).
+  transfers correlate ρ = 0.60 (WGS depth-limited) — except for one variant (§4.2). Absolute
+  slope levels are not comparable between assays: each slope is relative to the geometric mean
+  of the variants *that* assay detects, and the amplicon detects ~5× more.
 - **The 4-parameter model becomes predictive.** At 4 transfers the breakpoint was not
   identifiable (out-of-sample parity, METHODS §11.6); with 8 transfers the adopted two-phase
   fits predict held-out timepoints better in 50/53 cases (median RMSE ratio 0.65). Note what
@@ -135,29 +186,40 @@ interpretation sentences (`validation_wgs_db_vs_repo.csv`).
 - **A81 still wins 6/11 sweeps with only a negligible marginal advantage** (+0.016/cycle ≈
   +0.005/gen; drift-significant only because the deep data resolve tiny effects) — the repo's
   founder-effect reading holds.
-- **The WGS-era "robust" A90/A78 advantages do not hold up.** On the same four transfers the
-  amplicon gives A90 +0.043 (WGS +0.104) and A78 −0.006 (WGS +0.061); over the full series both
-  are drift-confirmed *negative* (A90 −0.116, A78 −0.036/cycle) because A90 declines early
-  (−0.17 over T2–T8). At ~200 reads the WGS slopes were inflated (the survivorship effect
-  METHODS §5 warns about) and a single slope over a non-monotone trajectory depends on the
-  sampling window. Treat the README's A90/A78 claim as superseded by the deeper data.
+- **The WGS-era "robust" A90/A78 advantages do not hold up.** Compared gauge-free (each verA's
+  marginal slope minus the median allele's, and its percentile; `wgs_vs_amplicon_TFMN4_alleles.csv`):
+
+  | verA | WGS, T3/4/6/13 | amplicon, same 4 transfers | amplicon, all 8 transfers |
+  |---|---|---|---|
+  | A90 | +0.107 (94th pct) | +0.048 (60th) | −0.184 (7th) |
+  | A78 | +0.063 (88th) | −0.001 (50th) | −0.104 (23rd) |
+  | A81 | +0.022 (81st) | +0.019 (54th) | −0.052 (32nd) |
+
+  On the same transfers the deeper data rank A90 and A78 only near the median; over the dense
+  series both fall into the bottom quartile because they decline early. Their WGS advantage is
+  therefore neither replicated at depth nor a constant per-cycle edge — treat the README's
+  A90/A78 claim as superseded. (A single slope over a non-monotone trajectory depends on the
+  sampling window, as METHODS §7 warned.)
 
 ### 4.2 Suspected contamination: verA A183 (mostly `A183-B63`) in the TFMN4 amplicon
 
-verA A183 is essentially absent from all 11 TFMN4 cultures through T8 (5 reads in 66
-culture-transfers, ~260k reads) and from every WGS sample. Then, at T10 and T13, it appears in
-**every** culture at once: `A183-B63` at 6–30% (T10) and 11–25% (T13), plus a dozen other A183
-pairings at 1–6 reads. It occurs only in the two June 2026 amplicon orders (ZQT7PJ = T13,
-KZGC3B = T6/T8/T10, whose T6/T8 samples stay clean), and the WGS of the same cultures at T13 has
-**0 reads** where ~30 per culture are expected (Poisson P ≈ e⁻³⁰). A systematic scan in both
-directions (a variant whose lower-bound frequency in one assay predicts reads that the other
-assay lacks) flags `A183-B63` in all 11 cultures and otherwise a single cell (`A16-B117`, 3% at
-T4 in one culture) (`cross_assay_discordance_TFMN4.csv`). A real sweep would have to rise from <0.03% to ~12% within
+verA A183 is essentially absent from all 11 TFMN4 cultures through T8 (10 reads in 66
+culture-transfers, ~260k reads: 5 at T2, and 1 at T6 + 3 at T8 of `A183-B63` in order KZGC3B)
+and from every WGS sample. Then, at T10 and T13, it appears in **every** culture at once:
+`A183-B63` at 6–30% (T10) and 11–25% (T13), plus a dozen other A183 pairings at 1–6 reads. It is
+essentially confined to the two June 2026 amplicon orders (ZQT7PJ = T13; KZGC3B = T6/T8/T10,
+where T6/T8 carry only those 4 reads), and the WGS of the same cultures at T13 has **0 reads**
+where ~30 per culture are expected (Poisson P ≈ e⁻³⁰). The WGS extractor does label
+un-matched verA barcodes (`A_UNK-…` rows exist in the same samples), yet there is no
+`A_UNK-B63` either — so a missing A183 entry in the WGS reference would not explain the gap. A
+systematic, Bonferroni-corrected scan in both directions (a variant whose lower-bound frequency
+in one assay predicts reads the other assay lacks) flags only `A183-B63`, in all 11 cultures
+(`cross_assay_discordance_TFMN4.csv`). A real sweep would have to rise from <0.03% to ~12% within
 two cycles in eleven independent cultures simultaneously and then stall — not plausible. It is
 therefore treated as a likely contamination of the T10/T13 amplicon material by an
 A183-carrying population. (A183 itself is a genuine, fit library allele: it sweeps guaiacol and
-wins 4MXB cultures in TFMN7 — §4.3.) A WGS allele-calling gap for A183 is the alternative;
-checking the WGS extraction reference for A183, or re-sequencing a T13 sample, would settle it.
+wins 4MXB cultures in TFMN7 — §4.3.) Re-sequencing one T13 sample (or checking the WGS
+extractor's reference list for A183) would settle it.
 
 The main TFMN4 run keeps every read; a **sensitivity run without verA A183**
 (`outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_amplicon_excl_A183/`) shows that nothing
@@ -173,11 +235,16 @@ top rank of A183-B63 rest on the suspect reads.**
 
 - **Guaiacol = hard sweeps.** Richness collapses from 415 to 46 (ACN3788) and 669 to 23
   (ACN3882) median variants; verA **A183** wins 8/10 and 8/9 cultures, rising from 39% (ACN3788)
-  or 4% (ACN3882) at T1 to >90% by T4. Winners lead the community by 0.3–0.6/h. The ACN3882 host
-  grows slower (μ_bulk 0.18 vs 0.29/h) and its sweep is the most extreme.
+  or 4% (ACN3882) at T1 to >90% by T4. Both hosts grow at the same community rate (0.29 vs
+  0.30/h); the ACN3882 sweep is the more extreme.
 - **Isovanillate and veratrate = weak selection.** Richness stays high (297 → 170, 400 → 222);
-  the fastest variants lead by only ~0.05–0.07/h; many variants decline early and then
-  stabilise (most of the 117 and 228 adopted two-phase fits).
+  the fastest variants lead the community mean by only ~0.05–0.07/h (vs ~0.3/h in guaiacol
+  ACN3788); many variants decline early and then stabilise (most of the 117 and 228 adopted
+  two-phase fits).
+- **The contrast is not a library artefact.** Within the same 199-verA large library, median
+  variants per culture go 495 → 46 (guaiacol ACN3788) and 732 → 23 (ACN3882) but 297 → 170
+  (isovanillate) and 400 → 222 (veratrate). Within sub-library 1, guaiacol (341 → 46; 606 → 20)
+  and 4MXB (370 → 40) end at similar richness, with 4MXB slower early (153 vs 80 at T4).
 - **TFMN7 4MXB = intermediate, many winners.** Cultures seeded from different sub-libraries
   share few variants (3 bridge components); winners differ by sub-library (A88, A81, A196,
   A143, A183, A38). A183 is carried only by sub-library 1, and there it wins 2 of 4 cultures
@@ -186,21 +253,26 @@ top rank of A183-B63 rest on the suspect reads.**
 
 ### 4.4 Across environments
 
-- **Allele effects are mostly context-specific.** Pairwise Spearman correlations of the
-  verA/verB marginals between environments are −0.13…+0.28 — including the same 4MXB condition in
-  two experiments (ρ = 0.17, 101 shared alleles) and guaiacol in two host strains (ρ = 0.17).
+- **Allele effects barely replicate — even within an environment.** Pairwise Spearman
+  correlations of the verA/verB marginals are −0.13…+0.28 between carbon sources, but also only
+  ρ = 0.17 for the same 4MXB condition in two experiments (101 shared alleles) and for guaiacol in
+  two host strains. Because replication within an environment is as weak as across
+  environments, these data cannot separate carbon-source-specific effects from
+  experiment-to-experiment irreproducibility (founder effects, library composition).
   Among alleles that are drift-confirmed in both environments of a pair, the sign agrees in
   32–88% of cases (88% for the two guaiacol hosts, 62% for the two 4MXB experiments;
   `allele_concordance.csv`).
-- **A183 is the one verA that is drift-confirmed favoured in every environment** (+0.006 to
-  +0.060/gen), and the guaiacol sweeps are A183 sweeps; its TFMN4 value rests entirely on the
-  suspect T10/T13 A183 reads (§4.2), and in TFMN7 4MXB the marginal is small (+0.016/gen)
-  because only sub-library 1 carries A183.
-- **Absolute per-hour rates are least trustworthy where selection is strongest.** The s12
-  global fit reproduces the counts well (freq R² 0.82–0.99) but its community rate departs
-  from the measured μ_bulk by 0.23–0.33/h in guaiacol (vs 0.06–0.15/h elsewhere), where some
-  fitted per-hour rates are even negative: read those environments' rates as advantages over
-  μ̄ (`rel_advantage_per_h`), as the cross-environment figure does.
+- **A183 is the one verA above the community mean (and beyond the drift null) in every
+  environment** (+0.006 to +0.060/gen), and the guaiacol sweeps are A183 sweeps; its TFMN4 value
+  rests entirely on the suspect T10/T13 reads (§4.2), and in TFMN7 4MXB the marginal is small
+  (+0.016/gen) because only sub-library 1 carries A183. ("Above the community mean" is relative
+  to each environment's own variant set — compare ranks, not values, across environments.)
+- **The single-static-rate model (s12) breaks down in guaiacol.** It reproduces the counts
+  well elsewhere (freq R² 0.88–0.99; community-rate mismatch 0.06–0.15/h) but not in the
+  guaiacol sweeps (R² 0.89 / 0.80; mismatch 0.23 / 0.53/h; some per-hour rates negative, and
+  ~0.75/h "advantages" in ACN3882): a constant rate cannot follow a sweep that completes in two
+  cycles and then plateaus. Read guaiacol's s12 rates as rankings only; elsewhere read them as
+  advantages over μ̄ (`rel_advantage_per_h`), as the cross-environment figure does.
 
 ## 5. Copy-number environments
 
@@ -210,11 +282,13 @@ top rank of A183-B63 rest on the suspect reads.**
 | dgoA · pyruvate · EASy | 22 (22) | 0 / 0 | long-term lineages (T203–T642), CN ≈ 1–2, no significant trend |
 | Kan cassette · pyruvate · EASy | 22 (22) | 0 / 0 | starts at CN 15–27 (as high in the noDNA controls — consistent with a multicopy element), falls to ≈1 in some lineages; no FDR call |
 | verAB · isovanillate · TFMN2 | 21 (21) | 1 / 0 | modest amplification (median +0.007/transfer) |
-| verAB · vanillate · TFMN2 | 15 (15) | **5 / 0** | small but consistent verAB amplification (+0.004 to +0.010/transfer) |
+| verAB · vanillate · TFMN2 | 15 (15) | 5 / 0 | all 15 lineages rise slightly (+0.001 to +0.010/transfer) — but so do the ver cassette and the adjacent 6 kb region (same samples, 85 bp downstream; median +0.0043 vs verAB +0.0041, paired p = 0.68): either a ≥15 kb co-amplified segment or a technical drift; the DB has no distal control region to tell |
 | verAB · methoxybenzoate · TFMN2+TFMN3 | 26 (4) | 0 / 0 | TFMN2 4MXB lineages were only measured at T2 |
 | verC · methoxybenzoate · TFMN4 exp2 | 34 (11) | 0 / 0 | flat |
 
-EASy rates are per EASy transfer and are not comparable with robotic-transfer rates.
+EASy rates are per EASy transfer and are not comparable with robotic-transfer rates. Copy
+number is read depth relative to the genome average, so a slow uniform drift shared by all
+lineages (as in vanillate) needs a distal control region before it can be called amplification.
 
 ## 6. What to trust (caveats)
 
@@ -226,15 +300,27 @@ EASy rates are per EASy transfer and are not comparable with robotic-transfer ra
 3. **Many variants are seen once.** Deep amplicons reveal thousands of variants, but 32–95% of
    (culture, variant) pairs are present at a single timepoint (not estimable). Their s12 rates
    are prior-driven (hollow points in the caterpillar plots).
-4. **s12b error bars in the large environments are approximate.** The bootstrap / LOSO /
-   sensitivity refits keep the repo's 300-iteration L-BFGS. On these deep, ill-conditioned
-   problems a diagnostic (one converged reference refit per replicate, TFMN4 amplicon) showed
-   they recover ~80% of the true bootstrap displacement with a per-variant correlation of ~0.5,
-   so `se_boot` / `loso_heterogeneity_sd` are conservative-low there; `se_laplace` (exact Hessian
-   at the converged optimum) is the reliable per-variant error. The `identifiability` flag is
-   "anchor/prior-driven" for almost every variant in these environments because the OD weight
-   shifts the whole level by more than 0.05/h — the relative ordering is still data-pinned.
-5. **Un-called alleles** are excluded; a few cultures carry a large half-called lineage (§1.1).
-6. **A183 in TFMN4** (§4.2) and the **contaminated noDNA well** (§1.1) should be resolved with
+4. **Bootstrap vs Laplace errors (s12b).** Every s12b refit is converged (§3.1), so the
+   bootstrap, leave-one-sample-out and sensitivity columns are the repo's error layers as
+   intended, and the figures use bootstrap CIs. For variants with slope information the two
+   errors agree (median bootstrap/Laplace SE ratio 0.91–1.20 across environments). For variants
+   seen at a single timepoint the bootstrap SE is only 0.25–0.44× the Laplace SE: resampling
+   counts cannot move a rate that the counts do not inform, whereas the Laplace SE reports the
+   prior's width — use `se_laplace` for those (hollow points in the caterpillars). Bootstrap
+   intervals are wide and skewed for variants with only 1–3 reads at a timepoint (resampling often
+   removes them from it), which is why several "fastest variants" in
+   `top_variants_by_environment.png` have intervals reaching the community mean. Identifiability
+   (data-pinned / mixed / anchor-or-prior-driven): TFMN4 4MXB 50/1532/327, guaiacol ACN3788
+   0/1511/1589, ACN3882 1109/1910/1846, isovanillate 412/860/0, TFMN7 4MXB 202/1815/1161,
+   veratrate 1561/4/0, DB WGS 44/208/62 (the repo's capped solves gave 44/230/40 on the same
+   data).
+5. **"Robust" means beyond multinomial sampling noise.** The drift null resamples counts at the
+   observed depth; it does not model culture-to-culture variability (founder effects). At
+   ~4,000 reads it passes small effects (A81: +0.016/cycle), so read `robust_selection` as
+   "not a sampling artefact", not as "reproducible across cultures" (see §4.4).
+6. **The 4-parameter out-of-sample test is run on the adopted trajectories**, which were chosen
+   using all their timepoints (the repo's protocol), so the LOOCV gain is somewhat optimistic.
+7. **Un-called alleles** are excluded; a few cultures carry a large half-called lineage (§1.1).
+8. **A183 in TFMN4** (§4.2) and the **contaminated noDNA well** (§1.1) should be resolved with
    the wet lab before the TFMN4 A183 result is used; every other TFMN4 conclusion is unchanged
    without A183.

@@ -56,7 +56,7 @@
         verB B75    s=-0.136/cyc  R_OD≈0.287/h (corr 6.2% of bulk)
 [s10] wrote allele_growth_advantage.csv
 ----------------------------------------------------------------------
-[s12] optimize: success=True final_loss=16489.9 grad_norm=2.21e-02 (314 global rates + 460 intercepts)
+[s12] optimize: success=True final_loss=16489.9 grad_norm=2.08e-02 (314 global rates + 460 intercepts)
 [s12] community mu_bar=0.318/h; fitted r range [0.154,0.461]/h; median SE=0.0389
 [s12] FIT QUALITY: freq pseudo-R2=0.946; community-rate (rbar vs mu_bulk) RMSE=0.147/h on 26 cells
 [s12] fastest variants (with slope info):
@@ -66,9 +66,10 @@
         A81-B8     r=0.385±0.007/h (rel +0.067)
 [s12] wrote global_variant_growth_rates.csv
 ----------------------------------------------------------------------
-[s12b] bootstrap B=60; median boot SE=0.0195/h, median Laplace SE=0.0388/h
-[s12b] LOSO heterogeneity median=0.0104/h (max=0.045)
-[s12b] absolute-level shift when OD weight 0->20: -0.0312/h; identifiability: {'mixed': 230, 'data-pinned': 44, 'anchor/prior-driven': 40}
+[s12b] refit |grad| medians bootstrap=8.62e-10, loso=4.77e-08, sensitivity_wOD=0=5.49e-08, sensitivity_wOD=20=1.74e-10 -> bootstrap/LOSO converged=True
+[s12b] bootstrap B=60; median boot SE=0.0191/h, median Laplace SE=0.0388/h
+[s12b] LOSO heterogeneity median=0.0124/h (max=0.051)
+[s12b] absolute-level shift when OD weight 0->20: -0.0314/h; identifiability: {'mixed': 208, 'anchor/prior-driven': 62, 'data-pinned': 44}
 [s12b] wrote augmented global_variant_growth_rates.csv + figures/global_growth_fit.png
 ----------------------------------------------------------------------
 [s14] 237 estimable trajectories; 66 breakpoint-testable (>= 4 obs, >= 2/segment).
@@ -103,7 +104,7 @@
 [s07] wrote /home/freiburger/Documents/TFMN4/outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_wgs/figures/growth_matrix_overview.png  (168 variants x 11 samples, 237 cells, 11 winners marked)
 [s11] wrote /home/freiburger/Documents/TFMN4/outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_wgs/figures/od_anchor_falsification.png
 [s12c] wrote /home/freiburger/Documents/TFMN4/outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_wgs/figures/global_growth_forest_all.png  (314 variants; 168 with slope info, 146 prior-driven)
-[s12c] rate range [0.153, 0.461]/h; identifiability: {'mixed': 230, 'data-pinned': 44, 'anchor/prior-driven': 40}
+[s12c] rate range [0.153, 0.461]/h; identifiability: {'mixed': 208, 'anchor/prior-driven': 62, 'data-pinned': 44}
 [s14] wrote figures/segmented_growth_examples.png (6 panels)
 [s14c] wrote figures/segmented_overview.png
 [s14c] wrote figures/segmented_parameters.png

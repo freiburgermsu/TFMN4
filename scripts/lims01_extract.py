@@ -65,7 +65,7 @@ WGS_RELIABLE_OD = (6, 13)        # ... and its original reliable-OD transfers
 SENSITIVITY_EXCLUSIONS = {
     "TFMN4_methoxybenzoate_ACN3788_amplicon": dict(
         verA=["A183"], tag="excl_A183",
-        reason=("verA A183 is essentially absent from all 11 TFMN4 cultures through T8 (5 reads in 66 "
+        reason=("verA A183 is essentially absent from all 11 TFMN4 cultures through T8 (10 reads in 66 "
                 "culture-transfers, ~260k reads) and from every WGS sample (0 reads, incl. T13), then "
                 "appears at T10/T13 in all 11 cultures at once - dominated by A183-B63 (6-30% at T10, "
                 "11-25% at T13; ~30 WGS reads per culture expected at T13, 0 seen) plus a dozen other A183 "
@@ -284,8 +284,13 @@ def barcode_datasets(con, ts, cell, meta, conds):
         if len(keep) < 2 or len(tset) < 3:
             continue
         carbon, mM = g["carbon"].iloc[0], g["carbon_mM"].iloc[0]
+        runs = g[["Robotic_run", "Plate_name"]].dropna().drop_duplicates()
+        if len(runs) > 1:   # one OD source per dataset (the run/plate of its wells)
+            raise SystemExit(f"[lims01] {exp}/{cond}/{strain}: cultures span several robotic runs/plates {runs.values.tolist()}")
         exp_short = "TFMN7" if str(exp).startswith("TFMN7") else str(exp)
         name = f"{exp_short}_{CARBON_SHORT.get(carbon, carbon)}_{strain}_{assay}"
+        if any(d["name"] == name for d in datasets):      # same carbon at another concentration
+            name = f"{exp_short}_{CARBON_SHORT.get(carbon, carbon)}{mM:g}mM_{strain}_{assay}"
         datasets.append(dict(
             id=f"lims_{name}", name=name, kind="barcode", experiment=exp, condition=cond,
             carbon=carbon, carbon_mM=mM, strain=strain, assay=assay,
@@ -358,10 +363,11 @@ def write_od_dataset(ds, con):
     ds["od_well_name_mismatches"] = int(sum(
         1 for _, r in nm.iterrows() if r.sample_name not in ds["cultures"]
         and str(r.sample_name).split(".")[0] == ds["cultures"][0].split(".")[0]))
-    if ds["assay"] == "wgs":
-        ds["reliable_od"] = list(WGS_RELIABLE_OD)
-    else:
-        ds["reliable_od"] = list(ds["transfers"])
+    # The repo's rule for the community rate: only the LAST TWO sampled transfers carry a usable
+    # within-cycle mu_bulk (wgs {3,4,6,13} -> (6,13); amplicon {3,4,13} -> (4,13)). Early cycles
+    # (e.g. TFMN7's T1, the first cycle after transformation, ~0.13-0.16/h in every environment)
+    # are atypically slow and would bias mu_bar, tau_exp and the s12 anchor/time axis.
+    ds["reliable_od"] = list(WGS_RELIABLE_OD) if ds["assay"] == "wgs" else list(ds["transfers"][-2:])
     return od
 
 

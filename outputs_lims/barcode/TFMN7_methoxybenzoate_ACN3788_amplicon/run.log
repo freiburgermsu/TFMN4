@@ -28,14 +28,14 @@
 [s05] wrote allele_effects_verA.csv, allele_effects_verB.csv
 ----------------------------------------------------------------------
 [s08] mu_bulk per (Sample,transfer): 86/95 reliable (by transfer: T1 16/19, T2 13/19, T3 19/19, T4 19/19, T17 19/19).
-[s08] reliable mu_bulk median=0.266/h (doubling 2.61 h); tau_exp median=7.9 h
+[s08] reliable mu_bulk median=0.266/h (doubling 2.60 h); tau_exp median=8.3 h
 [s08] community mu_bulk by construct (the only honestly-absolute OD/h number):
-        verABLib_sub_1: median 0.264/h (n=20)
-        verABLib_sub_2: median 0.262/h (n=20)
-        verABLib_sub_4: median 0.269/h (n=12)
-        verABLib_sub_5: median 0.313/h (n=10)
-        verABLib_sub_6: median 0.263/h (n=20)
-        verABLib_sub_9: median 0.461/h (n=4)
+        verABLib_sub_1: median 0.257/h (n=8)
+        verABLib_sub_2: median 0.266/h (n=8)
+        verABLib_sub_4: median 0.269/h (n=6)
+        verABLib_sub_5: median 0.250/h (n=6)
+        verABLib_sub_6: median 0.260/h (n=8)
+        verABLib_sub_9: median 0.461/h (n=2)
 [s08] wrote od_bulk_rate.csv, od_bulk_condition_summary.csv
 ----------------------------------------------------------------------
 [s09] bridge graph: 3 connected component(s), 51 edges, 480 bridge variants; gen/cycle=3.20
@@ -47,83 +47,84 @@
 [s09b] single-sample mean lambda=0.49  vs multi-sample mean lambda=0.66
 [s09b] wrote variant_pooled.csv
 ----------------------------------------------------------------------
-[s10] community mu_bulk interval 0.262-0.461/h, tau_exp=7.9h, gen/cycle=3.20
-[s10] robust (drift-confirmed) alleles: 58; their OD-clock correction is 0.7%-8.1% of mu_bulk
-        verA A88    s=+0.216/cyc  R_OD≈0.389/h (corr 7.6% of bulk)
-        verA A166   s=+0.148/cyc  R_OD≈0.381/h (corr 5.2% of bulk)
-        verA A24    s=+0.121/cyc  R_OD≈0.377/h (corr 4.3% of bulk)
-        verA A28    s=+0.117/cyc  R_OD≈0.377/h (corr 4.1% of bulk)
-        verA A25    s=+0.090/cyc  R_OD≈0.373/h (corr 3.2% of bulk)
-        verA A193   s=+0.089/cyc  R_OD≈0.373/h (corr 3.1% of bulk)
-        verA A4     s=+0.085/cyc  R_OD≈0.372/h (corr 3.0% of bulk)
-        verA A93    s=+0.068/cyc  R_OD≈0.370/h (corr 2.4% of bulk)
-        verA A38    s=+0.066/cyc  R_OD≈0.370/h (corr 2.3% of bulk)
-        verA A183   s=+0.052/cyc  R_OD≈0.368/h (corr 1.8% of bulk)
-        verA A176   s=+0.044/cyc  R_OD≈0.367/h (corr 1.5% of bulk)
-        verA A196   s=+0.028/cyc  R_OD≈0.365/h (corr 1.0% of bulk)
-        verA A81    s=-0.019/cyc  R_OD≈0.359/h (corr 0.7% of bulk)
-        verA A20    s=-0.031/cyc  R_OD≈0.358/h (corr 1.1% of bulk)
-        verA A90    s=-0.044/cyc  R_OD≈0.356/h (corr 1.5% of bulk)
-        verA A78    s=-0.051/cyc  R_OD≈0.355/h (corr 1.8% of bulk)
-        verA A83    s=-0.052/cyc  R_OD≈0.355/h (corr 1.8% of bulk)
-        verA A162   s=-0.059/cyc  R_OD≈0.354/h (corr 2.1% of bulk)
-        verA A100   s=-0.101/cyc  R_OD≈0.349/h (corr 3.5% of bulk)
-        verA A16    s=-0.101/cyc  R_OD≈0.349/h (corr 3.5% of bulk)
-        verB B102   s=+0.232/cyc  R_OD≈0.391/h (corr 8.1% of bulk)
-        verB B57    s=+0.194/cyc  R_OD≈0.386/h (corr 6.8% of bulk)
-        verB B177   s=+0.171/cyc  R_OD≈0.383/h (corr 6.0% of bulk)
-        verB B109   s=+0.138/cyc  R_OD≈0.379/h (corr 4.8% of bulk)
-        verB B46    s=+0.138/cyc  R_OD≈0.379/h (corr 4.8% of bulk)
-        verB B151   s=+0.129/cyc  R_OD≈0.378/h (corr 4.5% of bulk)
-        verB B171   s=+0.114/cyc  R_OD≈0.376/h (corr 4.0% of bulk)
-        verB B61    s=+0.095/cyc  R_OD≈0.374/h (corr 3.3% of bulk)
-        verB B154   s=+0.094/cyc  R_OD≈0.374/h (corr 3.3% of bulk)
-        verB B91    s=+0.079/cyc  R_OD≈0.372/h (corr 2.8% of bulk)
-        verB B120   s=+0.079/cyc  R_OD≈0.372/h (corr 2.8% of bulk)
-        verB B77    s=+0.079/cyc  R_OD≈0.372/h (corr 2.8% of bulk)
-        verB B132   s=+0.073/cyc  R_OD≈0.371/h (corr 2.6% of bulk)
-        verB B59    s=+0.067/cyc  R_OD≈0.370/h (corr 2.4% of bulk)
-        verB B87    s=+0.057/cyc  R_OD≈0.369/h (corr 2.0% of bulk)
-        verB B66    s=+0.049/cyc  R_OD≈0.368/h (corr 1.7% of bulk)
-        verB B79    s=+0.041/cyc  R_OD≈0.367/h (corr 1.5% of bulk)
-        verB B6     s=-0.032/cyc  R_OD≈0.358/h (corr 1.1% of bulk)
-        verB B166   s=-0.046/cyc  R_OD≈0.356/h (corr 1.6% of bulk)
-        verB B130   s=-0.046/cyc  R_OD≈0.356/h (corr 1.6% of bulk)
-        verB B155   s=-0.048/cyc  R_OD≈0.355/h (corr 1.7% of bulk)
-        verB B165   s=-0.051/cyc  R_OD≈0.355/h (corr 1.8% of bulk)
-        verB B85    s=-0.051/cyc  R_OD≈0.355/h (corr 1.8% of bulk)
-        verB B168   s=-0.053/cyc  R_OD≈0.355/h (corr 1.9% of bulk)
-        verB B11    s=-0.055/cyc  R_OD≈0.355/h (corr 1.9% of bulk)
-        verB B75    s=-0.059/cyc  R_OD≈0.354/h (corr 2.1% of bulk)
-        verB B5     s=-0.059/cyc  R_OD≈0.354/h (corr 2.1% of bulk)
-        verB B158   s=-0.059/cyc  R_OD≈0.354/h (corr 2.1% of bulk)
-        verB B134   s=-0.066/cyc  R_OD≈0.353/h (corr 2.3% of bulk)
-        verB B84    s=-0.072/cyc  R_OD≈0.352/h (corr 2.5% of bulk)
-        verB B101   s=-0.073/cyc  R_OD≈0.352/h (corr 2.6% of bulk)
-        verB B26    s=-0.078/cyc  R_OD≈0.352/h (corr 2.8% of bulk)
-        verB B30    s=-0.080/cyc  R_OD≈0.351/h (corr 2.8% of bulk)
-        verB B119   s=-0.085/cyc  R_OD≈0.351/h (corr 3.0% of bulk)
-        verB B136   s=-0.087/cyc  R_OD≈0.351/h (corr 3.1% of bulk)
-        verB B42    s=-0.089/cyc  R_OD≈0.350/h (corr 3.1% of bulk)
-        verB B70    s=-0.101/cyc  R_OD≈0.349/h (corr 3.6% of bulk)
-        verB B34    s=-0.140/cyc  R_OD≈0.344/h (corr 4.9% of bulk)
+[s10] community mu_bulk interval 0.250-0.461/h, tau_exp=8.3h, gen/cycle=3.20
+[s10] robust (drift-confirmed) alleles: 58; their OD-clock correction is 0.6%-7.8% of mu_bulk
+        verA A88    s=+0.216/cyc  R_OD≈0.382/h (corr 7.3% of bulk)
+        verA A166   s=+0.148/cyc  R_OD≈0.373/h (corr 5.0% of bulk)
+        verA A24    s=+0.121/cyc  R_OD≈0.370/h (corr 4.1% of bulk)
+        verA A28    s=+0.117/cyc  R_OD≈0.370/h (corr 3.9% of bulk)
+        verA A25    s=+0.090/cyc  R_OD≈0.366/h (corr 3.0% of bulk)
+        verA A193   s=+0.089/cyc  R_OD≈0.366/h (corr 3.0% of bulk)
+        verA A4     s=+0.085/cyc  R_OD≈0.366/h (corr 2.9% of bulk)
+        verA A93    s=+0.068/cyc  R_OD≈0.364/h (corr 2.3% of bulk)
+        verA A38    s=+0.066/cyc  R_OD≈0.364/h (corr 2.2% of bulk)
+        verA A183   s=+0.052/cyc  R_OD≈0.362/h (corr 1.7% of bulk)
+        verA A176   s=+0.044/cyc  R_OD≈0.361/h (corr 1.5% of bulk)
+        verA A196   s=+0.028/cyc  R_OD≈0.359/h (corr 0.9% of bulk)
+        verA A81    s=-0.019/cyc  R_OD≈0.353/h (corr 0.6% of bulk)
+        verA A20    s=-0.031/cyc  R_OD≈0.352/h (corr 1.1% of bulk)
+        verA A90    s=-0.044/cyc  R_OD≈0.350/h (corr 1.5% of bulk)
+        verA A78    s=-0.051/cyc  R_OD≈0.349/h (corr 1.7% of bulk)
+        verA A83    s=-0.052/cyc  R_OD≈0.349/h (corr 1.8% of bulk)
+        verA A162   s=-0.059/cyc  R_OD≈0.348/h (corr 2.0% of bulk)
+        verA A100   s=-0.101/cyc  R_OD≈0.344/h (corr 3.4% of bulk)
+        verA A16    s=-0.101/cyc  R_OD≈0.344/h (corr 3.4% of bulk)
+        verB B102   s=+0.232/cyc  R_OD≈0.383/h (corr 7.8% of bulk)
+        verB B57    s=+0.194/cyc  R_OD≈0.379/h (corr 6.5% of bulk)
+        verB B177   s=+0.171/cyc  R_OD≈0.376/h (corr 5.8% of bulk)
+        verB B109   s=+0.138/cyc  R_OD≈0.372/h (corr 4.6% of bulk)
+        verB B46    s=+0.138/cyc  R_OD≈0.372/h (corr 4.6% of bulk)
+        verB B151   s=+0.129/cyc  R_OD≈0.371/h (corr 4.3% of bulk)
+        verB B171   s=+0.114/cyc  R_OD≈0.369/h (corr 3.9% of bulk)
+        verB B61    s=+0.095/cyc  R_OD≈0.367/h (corr 3.2% of bulk)
+        verB B154   s=+0.094/cyc  R_OD≈0.367/h (corr 3.2% of bulk)
+        verB B91    s=+0.079/cyc  R_OD≈0.365/h (corr 2.7% of bulk)
+        verB B120   s=+0.079/cyc  R_OD≈0.365/h (corr 2.7% of bulk)
+        verB B77    s=+0.079/cyc  R_OD≈0.365/h (corr 2.7% of bulk)
+        verB B132   s=+0.073/cyc  R_OD≈0.364/h (corr 2.5% of bulk)
+        verB B59    s=+0.067/cyc  R_OD≈0.364/h (corr 2.3% of bulk)
+        verB B87    s=+0.057/cyc  R_OD≈0.362/h (corr 1.9% of bulk)
+        verB B66    s=+0.049/cyc  R_OD≈0.362/h (corr 1.7% of bulk)
+        verB B79    s=+0.041/cyc  R_OD≈0.361/h (corr 1.4% of bulk)
+        verB B6     s=-0.032/cyc  R_OD≈0.352/h (corr 1.1% of bulk)
+        verB B166   s=-0.046/cyc  R_OD≈0.350/h (corr 1.6% of bulk)
+        verB B130   s=-0.046/cyc  R_OD≈0.350/h (corr 1.6% of bulk)
+        verB B155   s=-0.048/cyc  R_OD≈0.350/h (corr 1.6% of bulk)
+        verB B165   s=-0.051/cyc  R_OD≈0.350/h (corr 1.7% of bulk)
+        verB B85    s=-0.051/cyc  R_OD≈0.350/h (corr 1.7% of bulk)
+        verB B168   s=-0.053/cyc  R_OD≈0.349/h (corr 1.8% of bulk)
+        verB B11    s=-0.055/cyc  R_OD≈0.349/h (corr 1.8% of bulk)
+        verB B75    s=-0.059/cyc  R_OD≈0.349/h (corr 2.0% of bulk)
+        verB B5     s=-0.059/cyc  R_OD≈0.349/h (corr 2.0% of bulk)
+        verB B158   s=-0.059/cyc  R_OD≈0.348/h (corr 2.0% of bulk)
+        verB B134   s=-0.066/cyc  R_OD≈0.348/h (corr 2.2% of bulk)
+        verB B84    s=-0.072/cyc  R_OD≈0.347/h (corr 2.4% of bulk)
+        verB B101   s=-0.073/cyc  R_OD≈0.347/h (corr 2.5% of bulk)
+        verB B26    s=-0.078/cyc  R_OD≈0.346/h (corr 2.6% of bulk)
+        verB B30    s=-0.080/cyc  R_OD≈0.346/h (corr 2.7% of bulk)
+        verB B119   s=-0.085/cyc  R_OD≈0.345/h (corr 2.9% of bulk)
+        verB B136   s=-0.087/cyc  R_OD≈0.345/h (corr 2.9% of bulk)
+        verB B42    s=-0.089/cyc  R_OD≈0.345/h (corr 3.0% of bulk)
+        verB B70    s=-0.101/cyc  R_OD≈0.344/h (corr 3.4% of bulk)
+        verB B34    s=-0.140/cyc  R_OD≈0.339/h (corr 4.7% of bulk)
 [s10] wrote allele_growth_advantage.csv
 ----------------------------------------------------------------------
-[s12] large problem: L-BFGS stopped at |grad|=2.74e+02; trust-krylov polish -> |grad|=1.25e-05; max|Δr|=0.0099/h
+[s12] large problem: L-BFGS stopped at |grad|=1.93e+02; trust-krylov polish -> |grad|=3.06e-06; max|Δr|=0.0104/h
 [s12] blocked Laplace: 19 logA blocks; max |cross-sample HAA| = 0.00e+00
-[s12] optimize: success=True final_loss=746603.2 grad_norm=1.25e-05 (3178 global rates + 5077 intercepts)
-[s12] community mu_bar=0.266/h; fitted r range [0.023,0.465]/h; median SE=0.0670
+[s12] optimize: success=True final_loss=746613.9 grad_norm=3.06e-06 (3178 global rates + 5077 intercepts)
+[s12] community mu_bar=0.266/h; fitted r range [0.023,0.465]/h; median SE=0.0671
 [s12] FIT QUALITY: freq pseudo-R2=0.952; community-rate (rbar vs mu_bulk) RMSE=0.144/h on 86 cells
 [s12] fastest variants (with slope info):
         A81-B25    r=0.465±0.005/h (rel +0.199)
-        A63-B141   r=0.459±0.010/h (rel +0.194)
+        A63-B141   r=0.460±0.010/h (rel +0.194)
         A63-B132   r=0.454±0.005/h (rel +0.188)
         A81-B153   r=0.451±0.012/h (rel +0.185)
 [s12] wrote global_variant_growth_rates.csv
 ----------------------------------------------------------------------
-[s12b] bootstrap B=60; median boot SE=0.0067/h, median Laplace SE=0.0670/h
-[s12b] LOSO heterogeneity median=0.0032/h (max=0.049)
-[s12b] absolute-level shift when OD weight 0->20: -0.0429/h; identifiability: {'mixed': 1670, 'anchor/prior-driven': 1261, 'data-pinned': 247}
+[s12b] large problem: refit |grad| medians bootstrap=7.26e-09, loso=8.25e-09, sensitivity_wOD=0=7.26e-09, sensitivity_wOD=20=4.34e-07 -> bootstrap/LOSO converged=True
+[s12b] bootstrap B=60; median boot SE=0.0225/h, median Laplace SE=0.0671/h
+[s12b] LOSO heterogeneity median=0.0115/h (max=0.055)
+[s12b] absolute-level shift when OD weight 0->20: -0.0462/h; identifiability: {'mixed': 1815, 'anchor/prior-driven': 1161, 'data-pinned': 202}
 [s12b] wrote augmented global_variant_growth_rates.csv + figures/global_growth_fit.png
 ----------------------------------------------------------------------
 [s14] 1755 estimable trajectories; 769 breakpoint-testable (>= 4 obs, >= 2/segment).

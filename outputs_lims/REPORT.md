@@ -104,39 +104,40 @@ The WGS counts ingested from the DB were run through the same code and compared 
 
 | file | status | max_abs_numeric_diff | column_of_max | text_cells_differing |
 |---|---|---|---|---|
-| global_variant_growth_rates.csv | differs | 0.013 | ci_boot_lo | 11 |
+| global_variant_growth_rates.csv | differs | 0.0718 | ci_boot_lo | 39 |
 | model_comparison_summary.csv | differs | 0 |  | 3 |
 | model_fit_error.csv | differs | 0 |  | 1 |
 | segmented_model_selection.csv | differs | 0 |  | 1 |
 
 
-Every number is identical except in `global_variant_growth_rates.csv`, where only the s12b bootstrap / LOSO / sensitivity refits move (capped-iteration L-BFGS solves; the point estimates `r_global_per_h` and `se_laplace` agree to the 4th decimal, and the same drift appears when the repo's own code is re-run unchanged on this machine). `model_comparison_summary.csv`, `model_fit_error.csv`, `segmented_model_selection.csv` differ only in free text: the `dataset` label, and the `interpretation` sentences, which LIMS runs generate from their own numbers — on this data they reach the same conclusions the repo states (LOOCV parity once the elbow is learned, a clear gain when it is supplied, a larger optimism gap for the 4-var).
+Every number is identical except in `global_variant_growth_rates.csv`. There the s12 point estimates `r_global_per_h` and `se_laplace` agree to 0.0001/h (4th-decimal rounding), while the s12b bootstrap / LOSO / OD-weight-sensitivity columns differ by up to 0.072/h (39/314 `identifiability` labels change): the LIMS runs solve those refits to convergence, whereas the committed `outputs/` holds the repo's iteration-capped refits, which are not reproducible across machines anyway (docs/LIMS_REANALYSIS.md §3). 
+`model_comparison_summary.csv`, `model_fit_error.csv`, `segmented_model_selection.csv` differ only in free text: the `dataset` label, and the `interpretation` sentences, which LIMS runs generate from their own numbers — on this data they reach the same conclusions the repo states (LOOCV parity once the elbow is learned, a clear gain when it is supplied, a larger optimism gap for the 4-var).
 
 ## 4. Barcode results per environment
 
 | environment | richness_first_median | richness_last_median | mu_bulk_median_per_h | n_estimable | s_per_gen_median | s_per_gen_p95 | top_winner_verA | top_winner_verA_wins | n_robust_verA | n_robust_verB |
 |---|---|---|---|---|---|---|---|---|---|---|
-| TFMN4 · 4MXB · ACN3788 | 159 | 44 | 0.3119 | 1329 | -0.019 | +0.054 | A81 | 6 | 23 | 57 |
+| TFMN4 · 4MXB · ACN3788 | 159 | 44 | 0.3196 | 1329 | -0.019 | +0.054 | A81 | 6 | 23 | 57 |
 | TFMN4 · 4MXB · ACN3788 · WGS | 30 | 9 | 0.318 | 237 | -0.015 | +0.060 | A81 | 6 | 3 | 7 |
-| TFMN7 · guaiacol · ACN3788 | 415 | 46 | 0.2945 | 1013 | -0.011 | +0.055 | A183 | 8 | 6 | 43 |
-| TFMN7 · guaiacol · ACN3882 | 669 | 23 | 0.1759 | 343 | -0.017 | +0.051 | A183 | 8 | 10 | 10 |
-| TFMN7 · isovanillate · ACN3788 | 297 | 170 | 0.2646 | 1217 | -0.014 | +0.039 | A186 | 2 | 14 | 37 |
-| TFMN7 · 4MXB · ACN3788 | 195 | 17 | 0.2657 | 1755 | -0.012 | +0.049 | A88 | 4 | 20 | 38 |
-| TFMN7 · veratrate · ACN3788 | 400 | 222 | 0.2437 | 1582 | -0.017 | +0.035 | A183 | 2 | 18 | 64 |
-| TFMN4 · 4MXB · ACN3788 · excl A183 (all partners) | 157 | 41 | 0.3119 | 1312 | -0.018 | +0.055 | A81 | 6 | 22 | 57 |
+| TFMN7 · guaiacol · ACN3788 | 415 | 46 | 0.2941 | 1013 | -0.011 | +0.055 | A183 | 8 | 6 | 43 |
+| TFMN7 · guaiacol · ACN3882 | 669 | 23 | 0.3006 | 343 | -0.017 | +0.051 | A183 | 8 | 10 | 10 |
+| TFMN7 · isovanillate · ACN3788 | 297 | 170 | 0.2626 | 1217 | -0.014 | +0.039 | A186 | 2 | 14 | 37 |
+| TFMN7 · 4MXB · ACN3788 | 195 | 17 | 0.2663 | 1755 | -0.012 | +0.049 | A88 | 4 | 20 | 38 |
+| TFMN7 · veratrate · ACN3788 | 400 | 222 | 0.237 | 1582 | -0.017 | +0.035 | A183 | 2 | 18 | 64 |
+| TFMN4 · 4MXB · ACN3788 · excl A183 (all partners) | 157 | 41 | 0.3196 | 1312 | -0.018 | +0.055 | A81 | 6 | 22 | 57 |
 
 
 
 | environment | top_robust_verA | top_robust_verB | bridge_components | global_fit_freq_R2 | global_fit_OD_rmse_per_h | global_rate_min | global_rate_max |
 |---|---|---|---|---|---|---|---|
-| TFMN4 · 4MXB · ACN3788 | A183 (+0.060/gen) | B63 (+0.071/gen) | 1 | 0.948 | 0.114 | 0.088 | 0.445 |
+| TFMN4 · 4MXB · ACN3788 | A183 (+0.060/gen) | B63 (+0.071/gen) | 1 | 0.948 | 0.116 | 0.09 | 0.452 |
 | TFMN4 · 4MXB · ACN3788 · WGS | A90 (+0.030/gen) | B3 (+0.078/gen) | 1 | 0.946 | 0.147 | 0.153 | 0.461 |
 | TFMN7 · guaiacol · ACN3788 | A181 (+0.043/gen) | B2 (+0.075/gen) | 1 | 0.887 | 0.227 | -0.474 | 0.616 |
-| TFMN7 · guaiacol · ACN3882 | A81 (+0.064/gen) | B72 (+0.087/gen) | 1 | 0.820 | 0.330 | -0.151 | 0.787 |
-| TFMN7 · isovanillate · ACN3788 | A153 (+0.042/gen) | B142 (+0.069/gen) | 1 | 0.989 | 0.074 | 0.109 | 0.336 |
+| TFMN7 · guaiacol · ACN3882 | A81 (+0.064/gen) | B72 (+0.087/gen) | 1 | 0.797 | 0.525 | -0.241 | 1.078 |
+| TFMN7 · isovanillate · ACN3788 | A153 (+0.042/gen) | B142 (+0.069/gen) | 1 | 0.989 | 0.073 | 0.108 | 0.334 |
 | TFMN7 · 4MXB · ACN3788 | A88 (+0.068/gen) | B102 (+0.072/gen) | 3 | 0.952 | 0.144 | 0.023 | 0.465 |
-| TFMN7 · veratrate · ACN3788 | A20 (+0.033/gen) | B66 (+0.069/gen) | 1 | 0.875 | 0.063 | 0.039 | 0.3 |
-| TFMN4 · 4MXB · ACN3788 · excl A183 (all partners) | A65 (+0.049/gen) | B174 (+0.049/gen) | 1 | 0.960 | 0.116 | 0.089 | 0.485 |
+| TFMN7 · veratrate · ACN3788 | A20 (+0.033/gen) | B66 (+0.069/gen) | 1 | 0.876 | 0.060 | 0.036 | 0.294 |
+| TFMN4 · 4MXB · ACN3788 · excl A183 (all partners) | A65 (+0.049/gen) | B174 (+0.049/gen) | 1 | 0.960 | 0.118 | 0.091 | 0.493 |
 
 
 _`global_fit_OD_rmse_per_h` = mismatch between the model's community rate and the measured μ_bulk; large values mean the per-hour level of `r_global_per_h` is not OD-anchored — read the rates relative to μ̄ (`rel_advantage_per_h`)._
@@ -173,14 +174,13 @@ Per-environment folders (tables + the full figure suite of the original pipeline
 
 ### 4b. Suspected contamination in TFMN4 · 4MXB · ACN3788: A183 (all partners)
 
-verA A183 is essentially absent from all 11 TFMN4 cultures through T8 (5 reads in 66 culture-transfers, ~260k reads) and from every WGS sample (0 reads, incl. T13), then appears at T10/T13 in all 11 cultures at once - dominated by A183-B63 (6-30% at T10, 11-25% at T13; ~30 WGS reads per culture expected at T13, 0 seen) plus a dozen other A183 pairings at 1-6 reads - and only in the two June 2026 amplicon orders (ZQT7PJ, KZGC3B) -> suspected contamination of the T10/T13 amplicon material by an A183-carrying population.
+verA A183 is essentially absent from all 11 TFMN4 cultures through T8 (10 reads in 66 culture-transfers, ~260k reads) and from every WGS sample (0 reads, incl. T13), then appears at T10/T13 in all 11 cultures at once - dominated by A183-B63 (6-30% at T10, 11-25% at T13; ~30 WGS reads per culture expected at T13, 0 seen) plus a dozen other A183 pairings at 1-6 reads - and only in the two June 2026 amplicon orders (ZQT7PJ, KZGC3B) -> suspected contamination of the T10/T13 amplicon material by an A183-carrying population.
 
-Systematic cross-assay check (same culture & transfer, both directions; a variant counts as discordant when the lower 95% bound of its frequency in one assay predicts reads in the other but none were seen, Poisson P<0.001):
+Systematic cross-assay check (same culture & transfer, both directions; a variant counts as discordant when the lower 95% bound of its frequency in one assay predicts reads in the other but none were seen; Poisson P below a Bonferroni threshold over all tested cells):
 
 | Candidate | n_cells | median_amplicon_freq | wgs_reads |
 |---|---|---|---|
 | A183-B63 | 11 | 14.5% | 0.0 |
-| A16-B117 | 1 | 3.2% | 0.0 |
 
 
 The main run keeps every read; the sensitivity run `outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_amplicon_excl_A183/` drops A183 (all partners). What changes:
@@ -201,8 +201,8 @@ The main run keeps every read; the sensitivity run `outputs_lims/barcode/TFMN4_m
 | A81_marginal_s_per_cycle_main_vs_excl | +0.016 vs +0.021 (robust True vs True) |
 | A90_marginal_s_per_cycle_main_vs_excl | -0.116 vs -0.112 (robust True vs True) |
 | A78_marginal_s_per_cycle_main_vs_excl | -0.036 vs -0.032 (robust True vs True) |
-| global_rel_advantage_spearman_main_vs_excl | 0.9969 |
-| global_rel_advantage_max_abs_change_per_h | 0.0414 |
+| global_rel_advantage_spearman_main_vs_excl | 0.9968 |
+| global_rel_advantage_max_abs_change_per_h | 0.0422 |
 | top12_fastest_overlap | 11/12 |
 | n_breakpoint_testable_main_vs_excl | 702 vs 701 |
 | n_two_phase_adopted_increasing_main_vs_excl | 53 vs 53 |
@@ -239,7 +239,16 @@ The main run keeps every read; the sensitivity run `outputs_lims/barcode/TFMN4_m
 ### WGS vs amplicon on the same TFMN4 cultures
 
 - frequency concordance (variants seen by both): Pearson r(log) = 0.78, Spearman = 0.76; 95% of WGS-detected variant×cells are also seen by the amplicon; dominant variant agrees in 82% of 44 cells.
-- same estimand (s per cycle on T3/T4/T6/T13): Spearman = 0.60 over 236 trajectories; median Δ(amplicon − WGS) = -0.015.
+- same transfers (s per cycle on T3/T4/T6/T13): Spearman = 0.60 over 236 trajectories. Absolute levels are NOT comparable across assays (each slope is relative to the geometric mean of the variants that assay detects), so alleles are compared as a difference from the median allele / percentile:
+
+| verA | wgs_4T_minus_median | wgs_4T_percentile | amp_4T_minus_median | amp_4T_percentile | amp_allT_minus_median | amp_allT_percentile |
+|---|---|---|---|---|---|---|
+| A78 | 0.063 | 0.875 | -0.0006 | 0.5 | -0.1041 | 0.227 |
+| A81 | 0.0218 | 0.812 | 0.0189 | 0.538 | -0.0515 | 0.32 |
+| A83 | -0.0278 | 0.375 | -0.0513 | 0.192 | -0.0309 | 0.413 |
+| A90 | 0.1066 | 0.938 | 0.0481 | 0.596 | -0.1838 | 0.067 |
+| A183 |  |  | 0.8597 | 1.0 | 0.1376 | 0.947 |
+
 - estimable trajectories: WGS 237 → amplicon (8 transfers) 1329; amplicon 4- vs 8-transfer slopes Spearman = 0.87.
 
 ![wgs vs amplicon](comparison/figures/wgs_vs_amplicon_TFMN4.png)

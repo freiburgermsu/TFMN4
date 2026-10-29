@@ -2,7 +2,7 @@ file,status,max_abs_numeric_diff,column_of_max,text_cells_differing
 allele_effects_verA.csv,identical,0.0,,0
 allele_effects_verB.csv,identical,0.0,,0
 allele_growth_advantage.csv,identical,0.0,,0
-global_variant_growth_rates.csv,differs,0.013000000000000012,ci_boot_lo,11
+global_variant_growth_rates.csv,differs,0.07179999999999997,ci_boot_lo,39
 growth_matrix_selection_per_cycle.csv,identical,0.0,,0
 growth_matrix_selection_per_generation.csv,identical,0.0,,0
 intermediate/barcode_4transfer_long.csv,identical,0.0,,0

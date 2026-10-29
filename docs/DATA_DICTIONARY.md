@@ -273,6 +273,12 @@ Same files and columns as `outputs/` and `outputs_copynumber/`, one folder per e
   are comparable only within a component).
 - `segmented_sample_summary.csv`: one `bp_T<k>` column per interior sampled transfer.
 - `intermediate/s12_solution.npy`: the converged s12 optimum (large problems only; reused by s12b).
+- `global_variant_growth_rates.csv`: the s12b bootstrap / leave-one-sample-out / OD-weight
+  sensitivity refits are solved to convergence (damped Newton), not iteration-capped; extra
+  columns `ci_laplace_lo/hi` (`r_global_per_h ± 1.96·se_laplace`) and
+  `boot_loso_refits_converged` (every bootstrap/LOSO refit ended with ‖grad‖ < 10⁻²).
+- `intermediate/s12b_refit_convergence.csv`: final gradient norm of every s12b refit
+  (`refit` = bootstrap / loso / sensitivity_wOD=0 / sensitivity_wOD=20, `grad_norm`).
 - copy number: file names carry the region (`verAB_growth_rates.csv`, `KanR_segmented.csv`, …).
 - `*_excl_A183/`: the TFMN4 amplicon sensitivity run with verA A183 removed (suspected contamination).
 
