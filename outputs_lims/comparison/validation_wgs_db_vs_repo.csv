@@ -2,7 +2,7 @@ file,status,max_abs_numeric_diff,column_of_max,text_cells_differing
 allele_effects_verA.csv,identical,0.0,,0
 allele_effects_verB.csv,identical,0.0,,0
 allele_growth_advantage.csv,identical,0.0,,0
-global_variant_growth_rates.csv,differs,0.07179999999999997,ci_boot_lo,39
+global_variant_growth_rates.csv,identical,0.0,,0
 growth_matrix_selection_per_cycle.csv,identical,0.0,,0
 growth_matrix_selection_per_generation.csv,identical,0.0,,0
 intermediate/barcode_4transfer_long.csv,identical,0.0,,0
@@ -10,6 +10,7 @@ intermediate/depth_by_sample_transfer.csv,identical,0.0,,0
 intermediate/od_bulk_condition_summary.csv,identical,0.0,,0
 intermediate/od_bulk_rate.csv,identical,0.0,,0
 intermediate/od_time_axis.csv,identical,0.0,,0
+intermediate/s12b_refit_convergence.csv,differs,8.850858903604815e-07,grad_norm,0
 intermediate/sample_well_map.csv,identical,0.0,,0
 model_comparison_by_trajectory.csv,identical,0.0,,0
 model_comparison_summary.csv,differs,0.0,,3

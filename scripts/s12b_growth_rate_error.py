@@ -32,6 +32,7 @@ import matplotlib.pyplot as plt
 import os
 import config as C
 from s12_global_growth_fit import build_design, LN2, W_OD, W_R, W_A, SIG_OD, LARGE_PROBLEM
+from newton_solver import NewtonSolver
 
 RNG = np.random.default_rng(0)
 N_BOOT = 60
@@ -78,18 +79,17 @@ def main():
                        options=dict(maxiter=maxiter, ftol=1e-11, gtol=1e-7))
         return res.x
 
-    # The repo's refits are iteration-capped L-BFGS: they stop short of their optimum (far short
-    # on the large, deep-count LIMS problems), and their values move by ~0.015/h from run to run
-    # (CPU vs GPU, or two GPU runs). For the LIMS datasets every refit (bootstrap, LOSO, OD-weight
-    # sensitivity) is instead solved to convergence by damped Newton on the dense Hessian (batched
-    # HVPs, Cholesky, Armijo backtracking) -- same loss, same resampled data and random draws;
-    # identical results on CPU and GPU. Measured: 73 refits of a 4,910-parameter problem take
-    # 1m40s on an RTX 5070 Ti and 62 min on a shared 64-core CPU. TFMN4_S12B_REFITS=capped
-    # restores the capped refits (large problems: sensitivity solves still converged; Laplace CIs
-    # used for figures). The original (non-LIMS) datasets keep the repo's code path. Final
-    # gradient norms of the refits are recorded for the LIMS datasets.
+    # Every refit (bootstrap, leave-one-sample-out, OD-weight sensitivity) is solved to
+    # convergence: L-BFGS with an iteration cap stops short of the optimum (far short on the
+    # large, deep-count LIMS problems) at a point that moves by ~0.015/h between machines, CPU vs
+    # GPU, or two GPU runs. Damped Newton on the exact Hessian (newton_solver.py) lands on the same
+    # optimum everywhere -- same loss, same resampled data and random draws. Measured: 73 refits of
+    # a 4,910-parameter problem take 1m40s on an RTX 5070 Ti and 62 min on a shared 64-core CPU.
+    # TFMN4_S12B_REFITS=capped restores the repo's original capped refits (large problems:
+    # sensitivity solves still converged; Laplace CIs used for figures). Final gradient norms of
+    # the refits are written to intermediate/s12b_refit_convergence.csv.
     large = n_par > LARGE_PROBLEM
-    converge_all = (large or C.IS_LIMS) and os.environ.get("TFMN4_S12B_REFITS", "converged") != "capped"
+    converge_all = os.environ.get("TFMN4_S12B_REFITS", "converged") != "capped"
     refit_gnorm = []
 
     def loss_t(params, cnt, row_keep, cell_keep, w_od, w_r, cmu_t):
@@ -106,58 +106,17 @@ def main():
         L_od = w_od * jnp.sum(cell_keep * crelj * (rbar - cmu_t) ** 2) / SIG_OD ** 2
         return L_count + L_od + w_r * jnp.sum((r - mu_bar) ** 2) + W_A * jnp.sum((logA - logA0) ** 2)
 
-    f_t = jax.jit(loss_t)
-    g_t = jax.jit(jax.grad(loss_t))
-    hvb_t = jax.jit(jax.vmap(lambda x, v, *a: jax.jvp(lambda q: jax.grad(loss_t)(q, *a), (x,), (v,))[1],
-                             in_axes=(None, 0, None, None, None, None, None, None)))
-    chunk = int(max(32, min(1024, 1e9 / (len(cnt0) * 8 * 12))))      # HVPs per batch (~1 GB)
-    eye_idx = jnp.arange(n_par)
-    # in-place (donated) updates avoid extra n_par x n_par copies; measured peak GPU memory of the
-    # whole s12b process: 4.4 GiB at 8,255 parameters, 8.4 GiB at 11,931
-    put_rows = jax.jit(lambda H, blk, s0: jax.lax.dynamic_update_slice(H, blk, (s0, 0)), donate_argnums=0)
-    add_diag = jax.jit(lambda H, d: H.at[eye_idx, eye_idx].add(d), donate_argnums=0)
-    chol = jax.jit(lambda H: jax.lax.linalg.cholesky(H, symmetrize_input=False))   # reads the lower triangle
+    solver = NewtonSolver(loss_t, n_par, rows=len(cnt0))
 
     def targs(cnt, row_keep, cell_keep, w_od, w_r, cmu_t=None):
         return (jnp.asarray(cnt, dtype=jnp.float64), jnp.asarray(row_keep, dtype=jnp.float64),
                 jnp.asarray(cell_keep, dtype=jnp.float64), jnp.asarray(float(w_od)),
                 jnp.asarray(float(w_r)), cmuj if cmu_t is None else jnp.asarray(cmu_t))
 
-    def dense_hessian(x, a):
-        H = jnp.zeros((n_par, n_par))
-        for s0 in range(0, n_par, chunk):
-            k = min(chunk, n_par - s0)
-            E = jnp.zeros((k, n_par)).at[jnp.arange(k), jnp.arange(s0, s0 + k)].set(1.0)
-            H = put_rows(H, hvb_t(x, E, *a), s0)
-        return H
-
-    def newton_refit(a, p_init, kind, max_iter=60, tol=1e-6):
-        x = jnp.asarray(p_init)
-        for _ in range(max_iter):
-            gx = g_t(x, *a)
-            if float(jnp.linalg.norm(gx)) < tol:
-                break
-            H = dense_hessian(x, a)
-            L = None; added = 0.0
-            for damp in (0.0, 1e-8, 1e-6, 1e-4, 1e-2, 1.0, 1e2):   # damp only if not pos. def.
-                if damp > added:
-                    H = add_diag(H, damp - added); added = damp
-                Lc = chol(H)
-                if bool(jnp.all(jnp.isfinite(Lc))):
-                    L = Lc
-                    break
-                del Lc
-            del H
-            if L is None:
-                break
-            step = -jax.scipy.linalg.cho_solve((L, True), gx)
-            del L
-            f0 = float(f_t(x, *a)); slope = float(gx @ step); t = 1.0
-            while t > 1e-6 and float(f_t(x + t * step, *a)) > f0 + 1e-4 * t * slope:
-                t *= 0.5
-            x = x + t * step
-        refit_gnorm.append((kind, float(jnp.linalg.norm(g_t(x, *a)))))
-        return np.asarray(x)
+    def newton_refit(a, p_init, kind):
+        x, gn = solver.solve(p_init, a)
+        refit_gnorm.append((kind, gn))
+        return x
     grad_loss = jax.grad(loss)
     gj = jax.jit(grad_loss)
     hvpj = jax.jit(lambda x, v, *a: jax.jvp(lambda q: grad_loss(q, *a), (x,), (v,))[1])
@@ -180,7 +139,7 @@ def main():
         return res.x
 
     ones_row = np.ones_like(cnt0); ones_cell = np.ones(nc)
-    sol = C.INTER / "s12_solution.npy"      # written by s12 for large (LIMS) problems only
+    sol = C.INTER / "s12_solution.npy"      # the converged s12 optimum
     if sol.exists() and np.load(sol).shape == (n_par,):
         p_map = np.load(sol)                 # the converged s12 optimum of the same loss
     else:

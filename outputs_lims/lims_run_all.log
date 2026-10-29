@@ -21,20 +21,20 @@
 [lims01] wrote lims_data/manifest.json + barcodes/ od/ copy_number/ inventory/
 [lims] JAX backend: gpu; running 15 environment pipelines (8 in parallel, at most 2 barcode) ...
 [lims] cn      verAB_methoxybenzoate_TFMN2-TFMN3            ok               0.0 min
-[lims] cn      dgoA_pyruvate_EASy                           ok               0.1 min
-[lims] cn      verAB_vanillate_TFMN2                        ok               0.1 min
+[lims] cn      verAB_vanillate_TFMN2                        ok               0.0 min
+[lims] cn      dgoA_pyruvate_EASy                           ok               0.0 min
+[lims] cn      KanR_pyruvate_EASy                           ok               0.0 min
 [lims] cn      verAB_isovanillate_TFMN2                     ok               0.1 min
-[lims] cn      KanR_pyruvate_EASy                           ok               0.1 min
 [lims] cn      dgoA_pyruvate_TFMN1-TFMN4exp1                ok               0.1 min
-[lims] cn      verC_methoxybenzoate_TFMN4exp2               ok               0.1 min
-[lims] barcode TFMN4_methoxybenzoate_ACN3788_wgs            ok               0.7 min
-[lims] barcode TFMN4_methoxybenzoate_ACN3788_amplicon       ok               4.1 min
-[lims] barcode TFMN7_guaiacol_ACN3788_amplicon              ok               9.1 min
-[lims] barcode TFMN7_isovanillate_ACN3788_amplicon          ok               5.1 min
-[lims] barcode TFMN7_guaiacol_ACN3882_amplicon              ok              27.4 min
-[lims] barcode TFMN7_methoxybenzoate_ACN3788_amplicon       ok              18.3 min
-[lims] barcode TFMN7_veratrate_ACN3788_amplicon             ok               3.3 min
-[lims] barcode TFMN4_methoxybenzoate_ACN3788_amplicon_excl_A183 ok               3.9 min
+[lims] cn      verC_methoxybenzoate_TFMN4exp2               ok               0.0 min
+[lims] barcode TFMN4_methoxybenzoate_ACN3788_wgs            ok               0.6 min
+[lims] barcode TFMN4_methoxybenzoate_ACN3788_amplicon       ok               3.2 min
+[lims] barcode TFMN7_guaiacol_ACN3788_amplicon              ok               9.6 min
+[lims] barcode TFMN7_isovanillate_ACN3788_amplicon          ok               3.9 min
+[lims] barcode TFMN7_methoxybenzoate_ACN3788_amplicon       ok              14.9 min
+[lims] barcode TFMN7_guaiacol_ACN3882_amplicon              ok              27.6 min
+[lims] barcode TFMN7_veratrate_ACN3788_amplicon             ok               3.4 min
+[lims] barcode TFMN4_methoxybenzoate_ACN3788_amplicon_excl_A183 ok               3.7 min
 [lims_compare] wrote figures/environment_overview.png
 [lims_compare] wrote figures/allele_effects_heatmap.png
 [lims_compare] wrote figures/allele_concordance.png

@@ -45,6 +45,7 @@ import jax.numpy as jnp
 from jax.ops import segment_sum
 from scipy.optimize import minimize
 import config as C
+from newton_solver import NewtonSolver, GRAD_TOL
 
 LN2 = float(np.log(2.0))
 LARGE_PROBLEM = 3000   # params; above this the Hessian is built by batched HVPs and the
@@ -161,27 +162,17 @@ def main():
                        options=dict(maxiter=8000, maxfun=80000, ftol=1e-13,
                                     gtol=1e-7, maxls=60))
         p = res.x
-    gnorm = float(np.linalg.norm(g(p)))
-    converged = bool(res.success)
-    sol = C.INTER / "s12_solution.npy"
-    if n_var + n_A > LARGE_PROBLEM:
-        if gnorm > 1e-2:
-            # Deep-count LIMS problems are ill-conditioned: L-BFGS stops at its iteration cap
-            # short of the optimum. Polish to the SAME loss's optimum with a trust-region
-            # Newton-Krylov solve on exact jax Hessian-vector products (only the optimizer
-            # changes; the model, loss and weights are untouched).
-            hvp = jax.jit(lambda x, v: jax.jvp(jax.grad(loss), (x,), (v,))[1])
-            res = minimize(f, p, jac=g, method="trust-krylov",
-                           hessp=lambda x, v: np.asarray(hvp(jnp.asarray(x), jnp.asarray(v)), float),
-                           options=dict(maxiter=200, gtol=1e-6))
-            g_new = float(np.linalg.norm(g(res.x)))
-            print(f"[s12] large problem: L-BFGS stopped at |grad|={gnorm:.2e}; "
-                  f"trust-krylov polish -> |grad|={g_new:.2e}; max|Δr|={np.abs(res.x[:n_var] - p[:n_var]).max():.4f}/h")
-            p, gnorm = res.x, g_new
-        converged = gnorm < 1e-2
-        np.save(sol, p)                      # s12b re-uses this converged optimum
-    elif sol.exists():
-        sol.unlink()
+    # L-BFGS stops at its iteration cap short of the optimum (on the deep-count LIMS problems far
+    # short), at a point that depends on rounding (CPU vs GPU, library versions). Converge with
+    # damped Newton on the exact Hessian -- same loss, only the optimizer changes (newton_solver.py).
+    g_lbfgs = float(np.linalg.norm(g(p)))
+    p_new, gnorm = NewtonSolver(loss, n_var + n_A, rows=len(D["cnt"])).solve(p)
+    print(f"[s12] L-BFGS stopped at |grad|={g_lbfgs:.2e}; Newton -> |grad|={gnorm:.2e}; "
+          f"max|Δr|={np.abs(p_new[:n_var] - p[:n_var]).max():.4f}/h")
+    p = p_new
+    converged = gnorm < GRAD_TOL
+    final_loss = f(p)
+    np.save(C.INTER / "s12_solution.npy", p)     # s12b's refits start from this converged optimum
     r = p[:n_var]
 
     # ---- Laplace SE on r (full Hessian, marginalize logA via Schur complement) ----
@@ -224,7 +215,7 @@ def main():
     out = out.sort_values("r_global_per_h", ascending=False)
     out.to_csv(C.OUT / "global_variant_growth_rates.csv", index=False)
 
-    print(f"[s12] optimize: success={converged} final_loss={res.fun:.1f} "
+    print(f"[s12] optimize: success={converged} final_loss={final_loss:.1f} "
           f"grad_norm={gnorm:.2e} ({n_var} global rates + {n_A} intercepts)")
     print(f"[s12] community mu_bar={mu_bar:.3f}/h; fitted r range "
           f"[{r.min():.3f},{r.max():.3f}]/h; median SE={np.nanmedian(se):.4f}")

@@ -96,9 +96,9 @@
         verB B55    s=-0.174/cyc  R_OD≈0.270/h (corr 8.2% of bulk)
 [s10] wrote allele_growth_advantage.csv
 ----------------------------------------------------------------------
-[s12] large problem: L-BFGS stopped at |grad|=2.83e+01; trust-krylov polish -> |grad|=3.79e-06; max|Δr|=0.0058/h
+[s12] L-BFGS stopped at |grad|=3.91e+01; Newton -> |grad|=7.26e-09; max|Δr|=0.0045/h
 [s12] blocked Laplace: 10 logA blocks; max |cross-sample HAA| = 0.00e+00
-[s12] optimize: success=True final_loss=620941.8 grad_norm=3.79e-06 (3100 global rates + 5134 intercepts)
+[s12] optimize: success=True final_loss=620941.8 grad_norm=7.26e-09 (3100 global rates + 5134 intercepts)
 [s12] community mu_bar=0.294/h; fitted r range [-0.474,0.616]/h; median SE=0.0882
 [s12] FIT QUALITY: freq pseudo-R2=0.887; community-rate (rbar vs mu_bulk) RMSE=0.227/h on 38 cells
 [s12] fastest variants (with slope info):
@@ -108,7 +108,7 @@
         A166-B174  r=0.591±0.003/h (rel +0.297)
 [s12] wrote global_variant_growth_rates.csv
 ----------------------------------------------------------------------
-[s12b] large problem: refit |grad| medians bootstrap=1.09e-08, loso=6.78e-09, sensitivity_wOD=0=4.97e-09, sensitivity_wOD=20=5.69e-09 -> bootstrap/LOSO converged=True
+[s12b] large problem: refit |grad| medians bootstrap=8.78e-09, loso=6.98e-09, sensitivity_wOD=0=8.31e-09, sensitivity_wOD=20=3.77e-09 -> bootstrap/LOSO converged=True
 [s12b] bootstrap B=60; median boot SE=0.0222/h, median Laplace SE=0.0882/h
 [s12b] LOSO heterogeneity median=0.0134/h (max=0.101)
 [s12b] absolute-level shift when OD weight 0->20: -0.0683/h; identifiability: {'anchor/prior-driven': 1589, 'mixed': 1511}

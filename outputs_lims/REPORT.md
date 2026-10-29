@@ -100,17 +100,17 @@ Barcode sequencing orders (live rows):
 
 ## 3. Validation — the DB reproduces the repo
 
-The WGS counts ingested from the DB were run through the same code and compared with the committed `outputs/`: **21/25 output tables identical**. Differences:
+The WGS counts ingested from the DB were run through the same code and compared with the committed `outputs/`: **22/26 output tables identical**. Differences:
 
 | file | status | max_abs_numeric_diff | column_of_max | text_cells_differing |
 |---|---|---|---|---|
-| global_variant_growth_rates.csv | differs | 0.0718 | ci_boot_lo | 39 |
+| intermediate/s12b_refit_convergence.csv | differs | 8.85e-07 | grad_norm | 0 |
 | model_comparison_summary.csv | differs | 0 |  | 3 |
 | model_fit_error.csv | differs | 0 |  | 1 |
 | segmented_model_selection.csv | differs | 0 |  | 1 |
 
 
-Every number is identical except in `global_variant_growth_rates.csv`. There the s12 point estimates `r_global_per_h` and `se_laplace` agree to 0.0001/h (4th-decimal rounding), while the s12b bootstrap / LOSO / OD-weight-sensitivity columns differ by up to 0.072/h (39/314 `identifiability` labels change): the LIMS runs solve those refits to convergence, whereas the committed `outputs/` holds the repo's iteration-capped refits, which are not reproducible across machines anyway (docs/LIMS_REANALYSIS.md §3). 
+Every result number is identical, `global_variant_growth_rates.csv` included (both runs solve every fit to convergence); `intermediate/s12b_refit_convergence.csv` differs only in the residual gradient norms at which the converged refits stopped (all < 10⁻⁶). 
 `model_comparison_summary.csv`, `model_fit_error.csv`, `segmented_model_selection.csv` differ only in free text: the `dataset` label, and the `interpretation` sentences, which LIMS runs generate from their own numbers — on this data they reach the same conclusions the repo states (LOOCV parity once the elbow is learned, a clear gain when it is supplied, a larger optimism gap for the 4-var).
 
 ## 4. Barcode results per environment

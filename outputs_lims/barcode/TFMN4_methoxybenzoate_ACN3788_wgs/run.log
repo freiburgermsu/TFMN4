@@ -56,7 +56,8 @@
         verB B75    s=-0.136/cyc  R_OD≈0.287/h (corr 6.2% of bulk)
 [s10] wrote allele_growth_advantage.csv
 ----------------------------------------------------------------------
-[s12] optimize: success=True final_loss=16489.9 grad_norm=2.08e-02 (314 global rates + 460 intercepts)
+[s12] L-BFGS stopped at |grad|=1.47e-02; Newton -> |grad|=7.07e-11; max|Δr|=0.0000/h
+[s12] optimize: success=True final_loss=16489.9 grad_norm=7.07e-11 (314 global rates + 460 intercepts)
 [s12] community mu_bar=0.318/h; fitted r range [0.154,0.461]/h; median SE=0.0389
 [s12] FIT QUALITY: freq pseudo-R2=0.946; community-rate (rbar vs mu_bulk) RMSE=0.147/h on 26 cells
 [s12] fastest variants (with slope info):
@@ -66,7 +67,7 @@
         A81-B8     r=0.385±0.007/h (rel +0.067)
 [s12] wrote global_variant_growth_rates.csv
 ----------------------------------------------------------------------
-[s12b] refit |grad| medians bootstrap=8.62e-10, loso=4.77e-08, sensitivity_wOD=0=5.49e-08, sensitivity_wOD=20=1.74e-10 -> bootstrap/LOSO converged=True
+[s12b] refit |grad| medians bootstrap=2.03e-09, loso=4.89e-08, sensitivity_wOD=0=4.94e-08, sensitivity_wOD=20=1.14e-10 -> bootstrap/LOSO converged=True
 [s12b] bootstrap B=60; median boot SE=0.0191/h, median Laplace SE=0.0388/h
 [s12b] LOSO heterogeneity median=0.0124/h (max=0.051)
 [s12b] absolute-level shift when OD weight 0->20: -0.0314/h; identifiability: {'mixed': 208, 'anchor/prior-driven': 62, 'data-pinned': 44}

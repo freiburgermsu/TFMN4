@@ -263,7 +263,9 @@ OD growth.
 `η_{c,i,t} = logA_{c,i} + r_i·x_t` with `x_t` = cumulative exponential-phase hours
 (`cumgen × ln2/μ_bar`); predicted frequency = softmax over a sample's variants;
 predicted community rate `r̄_{c,t} = Σ_i f_{c,i,t} r_i`. Fit in **jax** (autodiff) +
-scipy L-BFGS over ~314 global rates + ~460 per-(sample,variant) intercepts.
+scipy L-BFGS over ~314 global rates + ~460 per-(sample,variant) intercepts, then
+converged with damped Newton steps on the exact Hessian (`newton_solver.py`;
+‖grad‖ < 10⁻⁶ — an iteration-capped L-BFGS stops at a rounding-dependent point).
 Loss = multinomial NLL (recreate counts) + `w_OD·(r̄−μ_bulk)²` (recreate OD growth)
 + ridge `w_r·(r_i−μ_bar)²` ("mostly static, minimally flexible") + data-anchored
 `logA` conditioning.
@@ -277,13 +279,20 @@ limited by noisy μ_bulk). Rates span ≈ **0.15–0.46 h⁻¹** around μ_bar �
 1. **Laplace SE** — inverse Hessian (Schur-complement over the `logA` nuisance);
    median ≈ 0.039/h.
 2. **Bootstrap 95% CI** — resample multinomial counts at observed depths + jitter
-   μ_bulk; median SE ≈ 0.020/h (agrees with Laplace to ~2×).
-3. **LOSO heterogeneity** — leave-one-sample-out SD; median ≈ 0.010/h (small →
+   μ_bulk; median SE ≈ 0.019/h. For variants with slope information it matches the
+   Laplace SE (median ratio 0.91); for variants seen at one timepoint it is ~0.35×,
+   because resampling counts cannot move a rate the counts do not inform (the
+   Laplace SE reports the prior's width there).
+3. **LOSO heterogeneity** — leave-one-sample-out SD; median ≈ 0.012/h (small →
    the rates really are near-static across samples, validating the assumption).
 4. **Weight sensitivity** — the absolute level shifts only ≈ 0.03/h as the OD
    anchor goes off→strong, and most rates move 0.02–0.05/h → the **relative
    structure is data-pinned but the absolute level is anchor-dependent** (the
    `identifiability` column flags data-pinned vs anchor/prior-driven variants).
+
+Every refit in layers 2–4 (60 bootstrap, one per left-out sample, two OD weights) is
+solved to convergence like the main fit; final gradient norms are in
+`intermediate/s12b_refit_convergence.csv`.
 
 **Honesty.** This delivers the requested per-variant absolute (OD/h) rates, but they
 remain **community-dominated**: the relative ordering and spread are robust and

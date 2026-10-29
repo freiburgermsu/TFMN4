@@ -86,11 +86,13 @@ schedules, libraries and runs) and are compared afterwards. Within an environmen
 joins the design if ≥50% of cultures passed QC there, and a culture is kept only with a
 complete trajectory (the repo's rule).
 
-**What had to be generalised.** Each change leaves the original datasets' code path untouched —
-verified by running the original code (`origin/main`) and the current code side by side on the
-repo's own WGS, both amplicon and the copy-number datasets (same machine, CPU): all 83 output
-tables are identical. One deliberate exception:
-the OD-anchor figure of the two original amplicon datasets
+**What had to be generalised.** None of these changes alters the original datasets' results —
+running the original code (`origin/main`) and the generalised code side by side on the repo's own
+WGS, both amplicon and the copy-number datasets (same machine, CPU) gave identical output tables
+(83/83). Two changes are deliberate: (1) every iterative fit is now solved to convergence, on every
+dataset (§3.1) — for the original datasets this changes only the s12b error columns of
+`global_variant_growth_rates.csv` and the s13 joint fit's assay-drift sensitivity; (2) the
+OD-anchor figure of the two original amplicon datasets
 (`outputs_amplicon_*/figures/od_anchor_falsification.png`) now carries their correct
 reliable-transfer label and ticks (T4/T13) instead of the WGS-specific "T6/T13".
 
@@ -98,8 +100,8 @@ reliable-transfer label and ticks (T4/T13) instead of the WGS-specific "T6/T13".
 |---|---|
 | s09/s10 generations-per-cycle | used T3→T13 explicitly; now the first→last sampled transfer |
 | s09 bridge model | TFMN7 4MXB cultures come from disjoint sub-libraries → 3 unconnected components; each now gets its own sum-to-zero gauge (`bridge_component` column) instead of an assertion failure |
-| s12 global fit | 3,000–12,000 parameters: dense `jax.hessian` replaced by batched Hessian-vector products + an exact per-culture block Schur complement; L-BFGS hits its iteration cap on deep counts, so the optimum is polished with a trust-region Newton step (same loss). Every large LIMS fit ends at ‖grad‖ < 10⁻³ (the small DB-WGS fit keeps the repo's L-BFGS) |
-| s12b error layers | every refit — 60 bootstrap, one per left-out culture, and the two OD-weight sensitivity solves that set `identifiability` — is solved to convergence by damped Newton on the dense Hessian (batched Hessian-vector products, Cholesky, backtracking line search) instead of the repo's iteration-capped L-BFGS: same loss, same resampled data and random draws; largest final ‖grad‖ 1.0×10⁻⁶ over the 66–81 refits of every environment (`intermediate/s12b_refit_convergence.csv`). The original datasets keep the capped refits (§3.1) |
+| s12 global fit | 3,000–12,000 parameters: dense `jax.hessian` replaced by batched Hessian-vector products + an exact per-culture block Schur complement for the Laplace SE. L-BFGS stops at its iteration cap (far from the optimum on deep counts), so every fit — any size, any dataset — is then converged with damped Newton steps on the exact Hessian (`scripts/newton_solver.py`; ‖grad‖ < 10⁻⁶; same loss) |
+| s12b error layers | every refit — 60 bootstrap, one per left-out culture, and the two OD-weight sensitivity solves that set `identifiability` — is solved to convergence by damped Newton on the dense Hessian (batched Hessian-vector products, Cholesky, backtracking line search) instead of the repo's iteration-capped L-BFGS: same loss, same resampled data and random draws; final ‖grad‖ ≤ 10⁻⁶ for every refit (`intermediate/s12b_refit_convergence.csv`). Applied to every dataset (§3.1) |
 | s14d LOOCV | design matrices were hard-coded for 3 points (4 transfers) |
 | s14b/s14c | breakpoint columns/colours were fixed to T4/T6; knots are now one ordinal colour ramp |
 | figures | per-variant forests/galleries capped or drawn as ranked caterpillars when there are thousands of variants; sample-name prefixes generic |
@@ -109,21 +111,22 @@ reliable-transfer label and ticks (T4/T13) instead of the WGS-specific "T6/T13".
 ## 3. Validation
 
 The DB's WGS counts, run through the generalised code (`outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_wgs/`),
-reproduce the committed `outputs/`: **every number in 24 of 25 tables is identical**
-(A90 +0.104/cycle, freq R² 0.946, 13/66 two-phase switches, LOOCV 1.707 vs 1.691, …). The
-exception is `global_variant_growth_rates.csv`: its s12 point estimates (`r_global_per_h`,
-`se_laplace`) agree to the 4th decimal, but the s12b bootstrap / leave-one-sample-out /
-sensitivity columns differ by up to 0.072/h (median 0.013/h for the lower CI bound) and 39/314
-`identifiability` labels change — the LIMS runs solve those refits to convergence, `outputs/`
-holds the repo's iteration-capped ones (§3.1). The remaining text differences are the dataset
-label and the generated interpretation sentences (`validation_wgs_db_vs_repo.csv`).
+reproduce the repo's `outputs/`: **every result number is identical** across its 26 tables
+(A90 +0.104/cycle, freq R² 0.946, 13/66 two-phase switches, LOOCV 1.707 vs 1.691, …),
+`global_variant_growth_rates.csv` included, now that both runs solve every fit to convergence.
+The remaining differences are the refits' residual gradient norms (convergence diagnostics, all
+< 10⁻⁶), the dataset label and the generated interpretation sentences
+(`validation_wgs_db_vs_repo.csv`). With the repo's original iteration-capped refits, the s12b
+columns of that table had differed by up to 0.072/h, with 39/314 `identifiability` labels (§3.1).
 
-### 3.1 CPU vs GPU — and why the s12b refits are now converged
+### 3.1 CPU vs GPU — and why every fit is now converged
 
-Only three scripts use JAX (`s12`, `s12b`, `s13`); everything else is numpy/pandas/scipy and
-runs on the CPU regardless. The JAX steps give the same numbers on either platform **once the
-refits are converged**; the repo's iteration-capped refits reproduce only on the same machine and
-platform (same data throughout; max |difference| per column group):
+Only three scripts fit iteratively, all in JAX (`s12`, `s12b`, `s13`); everything else is
+closed-form numpy/pandas/scipy and runs on the CPU regardless. The repo originally ran those fits
+as iteration-capped L-BFGS. They give the same numbers on either platform **once converged**; the
+capped versions reproduced only on the same machine and platform. Measured on the same data
+(max |difference| per column group; "capped" rows describe the original fits, now replaced on
+every dataset):
 
 | comparison | s12 estimates | s12b refit columns |
 |---|---|---|
@@ -133,6 +136,8 @@ platform (same data throughout; max |difference| per column group):
 | GPU vs GPU, same code run twice — capped refits | ≤ 0.0001/h | 0.014/h; 10 labels flip |
 | capped vs converged refits (DB WGS) | ≤ 0.0001/h | 0.072/h; 39 labels flip |
 | capped vs converged refits (TFMN4 amplicon) | — | 0.096/h |
+| capped vs converged, original datasets: WGS / amplicon 4MXB / amplicon pyruvate | ≤ 0.0004/h | 0.072 / 0.10 / 0.11 /h; 39/314, 60/212, 27/251 labels flip |
+| capped vs converged, s13 joint 4MXB fit (`r_sensitivity_to_b_amp`) | ≤ 0.0001/h | up to 0.25/h → 0 (spurious) |
 | CPU vs GPU — converged refits, whole pipeline (TFMN7 isovanillate, 26 tables) | identical | identical (only the diagnostic residual ‖grad‖ differs, ~10⁻⁷) |
 | CPU vs GPU — converged refits (TFMN4 amplicon) | identical | identical |
 | GPU vs GPU, two runs — converged refits (TFMN4 amplicon) | identical | identical |
@@ -312,8 +317,8 @@ lineages (as in vanillate) needs a distal control region before it can be called
    `top_variants_by_environment.png` have intervals reaching the community mean. Identifiability
    (data-pinned / mixed / anchor-or-prior-driven): TFMN4 4MXB 50/1532/327, guaiacol ACN3788
    0/1511/1589, ACN3882 1109/1910/1846, isovanillate 412/860/0, TFMN7 4MXB 202/1815/1161,
-   veratrate 1561/4/0, DB WGS 44/208/62 (the repo's capped solves gave 44/230/40 on the same
-   data).
+   veratrate 1561/4/0, DB WGS 44/208/62 — the same as the repo's converged WGS run (its original
+   capped run gave 39/229/46).
 5. **"Robust" means beyond multinomial sampling noise.** The drift null resamples counts at the
    observed depth; it does not model culture-to-culture variability (founder effects). At
    ~4,000 reads it passes small effects (A81: +0.016/cycle), so read `robust_selection` as

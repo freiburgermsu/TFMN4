@@ -49,7 +49,8 @@ f_{c,i}   = softmax over the well's variant union           # per-cell, native d
 - **Loss** = multinomial NLL (native per-cell depth → deep amplicon tightens
   B4-present rates) + OD anchor (community rate = within-cycle OD slope μ_bulk,
   entered **once** per physical well) + ridge(`r`→μ_bar) + ridge(`logA`→data) +
-  strong ridge(`b_amp`). Fit in jax + L-BFGS; Laplace SE via Schur complement
+  strong ridge(`b_amp`). Fit in jax + L-BFGS, converged with damped Newton steps
+  (`newton_solver.py`; every fit and refit ends at ‖grad‖ < 10⁻⁶); Laplace SE via Schur complement
   marginalizing `logA` and `b_amp`.
 
 ## 4. Decisions log (with the verified numbers)

@@ -44,7 +44,7 @@ layout and column meanings as `outputs/`; see DATA_DICTIONARY.md).
 | global variant rate range | 0.16–0.39 /h | 0.60–1.09 /h |
 | global fit freq R² | 0.996 | 0.995 |
 | absolute-level identifiability | mostly `mixed` (weak anchor) | mostly `data-pinned` (clean anchor) |
-| LOSO heterogeneity (median) | 0.013 /h | 0.011 /h |
+| LOSO heterogeneity (median) | 0.015 /h | 0.011 /h |
 
 - **One static rate per variant reproduces the relative counts almost perfectly**
   (freq R² ≈ 0.995 in both) — far tighter than the WGS R² ≈ 0.95, thanks to depth.
@@ -55,7 +55,7 @@ layout and column meanings as `outputs/`; see DATA_DICTIONARY.md).
   under 4MXB. Shared-variant rate correlation across conditions r ≈ 0.64 — the same
   players, with the selective environment modulating the rates.
 - **Technical reproducibility is excellent:** leave-one-primerset-out heterogeneity
-  ≈ 0.01 /h, i.e. the three primer sets agree closely (little primer/PCR bias in the
+  ≈ 0.01–0.015 /h, i.e. the three primer sets agree closely (little primer/PCR bias in the
   rate estimates).
 - **Absolute level is better anchored under pyruvate** (faster, cleaner exponential
   phase → better μ_bulk), so most pyruvate rates are `data-pinned`; under 4MXB the

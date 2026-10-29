@@ -379,10 +379,11 @@ def s12_vs_repo():
     b = rd(bc_dir(WGS) / "global_variant_growth_rates.csv")
     j = a.merge(b, on="Candidate", suffixes=("_repo", "_db"))
     mx = lambda cols: float(max((j[f"{c}_repo"] - j[f"{c}_db"]).abs().max() for c in cols))
+    conv = lambda d: bool(d["boot_loso_refits_converged"].all()) if "boot_loso_refits_converged" in d else False
     return dict(s12=mx(["r_global_per_h", "se_laplace"]),
                 s12b=mx(["ci_boot_lo", "ci_boot_hi", "se_boot", "loso_heterogeneity_sd", "sens_to_OD_weight"]),
                 ident=int((j.identifiability_repo != j.identifiability_db).sum()), n=len(j),
-                converged=bool(b["boot_loso_refits_converged"].all()) if "boot_loso_refits_converged" in b else False)
+                converged=conv(b), repo_converged=conv(a))
 
 
 def sensitivity():
@@ -809,17 +810,22 @@ def report(summ, cn_sum, along, conc, st, val, sens=None):
                                                            "text_cells_differing"], {"max_abs_numeric_diff": "{:.3g}"}))
         txt_only = val[(val.status != "identical") & (val.max_abs_numeric_diff == 0)]["file"].tolist()
         num_diff = val.loc[val.max_abs_numeric_diff.fillna(0) > 0, "file"].tolist()
+        diag = "intermediate/s12b_refit_convergence.csv"     # residual |grad| of each converged refit
         g = s12_vs_repo()
-        if g is not None and num_diff == ["global_variant_growth_rates.csv"]:
-            L.append(f"\nEvery number is identical except in `global_variant_growth_rates.csv`. There the s12 point "
-                     f"estimates `r_global_per_h` and `se_laplace` agree to {g['s12']:.4f}/h (4th-decimal rounding), "
-                     f"while the s12b bootstrap / LOSO / OD-weight-sensitivity columns differ by up to {g['s12b']:.3f}/h "
-                     f"({g['ident']}/{g['n']} `identifiability` labels change): "
-                     + ("the LIMS runs solve those refits to convergence, whereas the committed `outputs/` holds the "
-                        "repo's iteration-capped refits, which are not reproducible across machines anyway "
-                        "(docs/LIMS_REANALYSIS.md §3). " if g["converged"] else
-                        "those are iteration-capped refits, which are not reproducible across machines "
-                        "(docs/LIMS_REANALYSIS.md §3). "))
+        if num_diff in ([], [diag]):
+            L.append("\nEvery result number is identical, `global_variant_growth_rates.csv` included (both runs solve "
+                     "every fit to convergence)"
+                     + (f"; `{diag}` differs only in the residual gradient norms at which the converged refits "
+                        f"stopped (all < 10⁻⁶). " if num_diff else ". "))
+        elif g is not None and [f for f in num_diff if f != diag] == ["global_variant_growth_rates.csv"]:
+            L.append(f"\nEvery number is identical except in `global_variant_growth_rates.csv`, where the s12 point "
+                     f"estimates `r_global_per_h` and `se_laplace` agree to {g['s12']:.4f}/h and the s12b bootstrap / "
+                     f"LOSO / OD-weight-sensitivity columns to {g['s12b']:.4f}/h ({g['ident']}/{g['n']} "
+                     "`identifiability` labels differ)"
+                     + (" — 4th-decimal rounding: both runs solve every fit to convergence. "
+                        if g["converged"] and g["repo_converged"] else
+                        ": one of the two holds iteration-capped refits, which are not reproducible across machines "
+                        "(docs/LIMS_REANALYSIS.md §3.1). "))
         else:
             L.append(f"\nFiles with numeric differences: {', '.join(f'`{f}`' for f in num_diff) or 'none'}. ")
         L.append(f"{', '.join(f'`{f}`' for f in txt_only)} differ only in free text: the `dataset` label, and the "

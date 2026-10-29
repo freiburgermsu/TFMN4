@@ -115,14 +115,14 @@ region × carbon source × platform), each saved and visualised in its own folde
   (`TFMN4_CN_DATASET=lims_cn_<env>`) → `outputs_lims/copy_number/<env>/`.
 - `scripts/lims_compare.py` — cross-environment tables/figures → `outputs_lims/comparison/`, and the
   auto-generated **[`outputs_lims/REPORT.md`](outputs_lims/REPORT.md)**.
-- the JAX fits (`s12`/`s12b`) run on the GPU when JAX can see one (CPU otherwise; same results);
-  on the large LIMS problems that is what makes converging every s12b refit affordable.
+- the iterative fits (`s12`/`s12b`/`s13`, JAX) are solved to convergence on every dataset and run
+  on the GPU when JAX can see one (CPU otherwise; same results) — on the large LIMS problems the
+  GPU is what makes converging every s12b refit affordable.
 
 **Headlines** (full write-up and caveats: [`docs/LIMS_REANALYSIS.md`](docs/LIMS_REANALYSIS.md)):
-- **Validation:** the DB's WGS counts reproduce `outputs/` exactly (every number in 24/25 tables;
-  the 25th differs only in s12b's bootstrap/LOSO/sensitivity columns, which the LIMS runs solve to
-  convergence — the repo's iteration-capped refits move by up to ~0.015/h between machines, between
-  CPU and GPU, and even between two GPU runs, while converged ones give identical results everywhere).
+- **Validation:** the DB's WGS counts reproduce `outputs/` exactly — every result number, now that
+  every fit is solved to convergence (the repo's original iteration-capped refits moved by up to
+  ~0.015/h between machines, between CPU and GPU, and even between two GPU runs).
 - **Dense TFMN4 time series (8 transfers, ~3,900 reads/cell):** 5.6× more estimable trajectories;
   A81 still wins 6/11 sweeps with no marginal advantage (founder effect); the WGS-era **A90/A78
   advantages do not replicate**; the 4-parameter breakpoint model now predicts held-out
@@ -160,6 +160,7 @@ scripts/
   s11_falsification_figures.py  OD-anchor go/no-go + bridge graph + forest
   s12_global_growth_fit.py      global static per-variant rate (jax; counts + OD)
   s12b_growth_rate_error.py     Laplace + bootstrap + LOSO + sensitivity error
+  newton_solver.py              damped Newton on the exact Hessian: converges the s12/s12b/s13 fits
   s14_segmented_growth.py       COMPLEMENTARY two-phase (breakpoint) per-variant fit
   s14b_segmented_summary.py     segmented rollups (model-selection audit, sample, allele)
   s14c_segmented_figures.py     segmented figure suite (overview, params, gallery, allele)
@@ -243,7 +244,8 @@ variant is seen at only one timepoint (not estimable). Read it alongside the
   all samples) that jointly reproduces the relative counts (**freq R²≈0.95**) and the
   community OD; rates span **0.15–0.46 h⁻¹** (doubling 1.5–4.5 h) around μ_bar≈0.32.
 - Rates come **with error** (Laplace SE, bootstrap CI, leave-one-sample-out
-  heterogeneity, OD-weight sensitivity). Cross-sample heterogeneity is small (~0.01/h
+  heterogeneity, OD-weight sensitivity); the fit and every refit behind them are solved
+  to convergence. Cross-sample heterogeneity is small (~0.01/h
   → rates really are near-static), but the **absolute level is anchor-dependent**
   (most rates flagged `mixed`/`anchor-driven`) — the relative ordering is what's
   robust. See `global_growth_fit.png` and METHODS §9.
