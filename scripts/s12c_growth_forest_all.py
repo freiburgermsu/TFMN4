@@ -23,6 +23,38 @@ from matplotlib.lines import Line2D
 import config as C
 
 COLOR = {"data-pinned": "#2ca02c", "mixed": "#ff7f0e", "anchor/prior-driven": "#d62728"}
+MAX_FOREST_ROWS = 400   # beyond this a one-row-per-variant forest is unreadable ->
+                        # the same data as a ranked caterpillar (every variant, CI as a line)
+
+
+def caterpillar(df, mu_bar):
+    n = len(df); x = np.arange(n)
+    lo = df["ci_boot_lo"].to_numpy(float); hi = df["ci_boot_hi"].to_numpy(float)
+    r = df["r_global_per_h"].to_numpy(float)
+    slope = df["has_slope_info"].astype(bool).to_numpy()
+    fig, ax = plt.subplots(figsize=(12, 6.5))
+    for ident, col in COLOR.items():
+        m = (df["identifiability"] == ident).to_numpy()
+        ax.vlines(x[m], lo[m], hi[m], color=col, lw=0.45, alpha=0.55, zorder=1)
+        ax.scatter(x[m & slope], r[m & slope], s=6, color=col, zorder=2, label=ident)
+        ax.scatter(x[m & ~slope], r[m & ~slope], s=6, facecolors="white", edgecolors=col,
+                   linewidths=0.5, zorder=2)
+    ax.axhline(mu_bar, color="k", ls="--", lw=1.0, label=f"community μ_bar = {mu_bar:.2f}/h")
+    lab = df[df.has_slope_info]
+    fast = "\n".join(f"{r.Candidate:>10s}  {r.r_global_per_h:.3f}" for r in lab.tail(6).iloc[::-1].itertuples())
+    slow = "\n".join(f"{r.Candidate:>10s}  {r.r_global_per_h:.3f}" for r in lab.head(6).itertuples())
+    ax.text(0.985, 0.03, f"fastest 6 (slope info), r per h\n{fast}\n\nslowest 6\n{slow}",
+            transform=ax.transAxes, ha="right", va="bottom", fontsize=6.5, family="monospace",
+            bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="#cccccc", alpha=0.9))
+    ax.set_xlim(-n * 0.01, n * 1.01)
+    ax.set_xlabel(f"variant rank (all {n}, sorted by rate)")
+    ax.set_ylabel("global static growth rate  r  (per hour)  ±  bootstrap 95% CI")
+    ax.set_title(f"All {n} variants: global static growth rate ± error (ranked caterpillar)\n"
+                 f"color = identifiability; hollow = no slope info (prior-driven)", fontsize=11)
+    ax.legend(fontsize=7, loc="upper left")
+    ax.grid(axis="y", alpha=0.25)
+    fig.tight_layout()
+    return fig
 
 
 def main():
@@ -33,6 +65,13 @@ def main():
 
     df = df.sort_values("r_global_per_h").reset_index(drop=True)
     n = len(df)
+    if n > MAX_FOREST_ROWS:
+        fig = caterpillar(df, mu_bar)
+        out = C.FIG / "global_growth_forest_all.png"
+        fig.savefig(out, dpi=140, bbox_inches="tight"); plt.close(fig)
+        print(f"[s12c] wrote {out}  ({n} variants as a ranked caterpillar; "
+              f"{int(df.has_slope_info.sum())} with slope info)")
+        return
     y = np.arange(n)
     lo = (df["r_global_per_h"] - df["ci_boot_lo"]).clip(lower=0)
     hi = (df["ci_boot_hi"] - df["r_global_per_h"]).clip(lower=0)

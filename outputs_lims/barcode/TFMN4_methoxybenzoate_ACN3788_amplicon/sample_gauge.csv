@@ -1,0 +1,12 @@
+Sample,gamma_c,bridge_degree,n_bridge_variants,weakly_anchored
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.1,-0.045,10,88,False
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.3,-0.0303,10,35,False
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.5,-0.0297,10,70,False
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.3,-0.0211,10,68,False
+TFMN4.exp2.ACN3788.concX_smallLib_PCR_DpnI_cleanup.3,-0.0069,10,45,False
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.2,-0.0043,10,102,False
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.4,0.0005,10,93,False
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.1,0.0018,10,54,False
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.4,0.0248,10,115,False
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.3,0.0385,10,101,False
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.2,0.0716,10,77,False

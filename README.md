@@ -94,6 +94,46 @@ mostly **saturates** (20/24 testable lineages amplify-then-plateau), which the
 increasing-only 4-var can't fit, and a bidirectional broken-stick predicts only *modestly*
 better out-of-sample (Wilcoxon p≈0.08). Full write-up: [`docs/COPY_NUMBER.md`](docs/COPY_NUMBER.md).
 
+## LIMS mirror re-analysis — every environment simulated separately (`lims_*`)
+
+`lims_mirror.backup.db` (the lab LIMS mirror; SQLite, 445 MB, git-ignored) holds everything
+above **plus** an 8-transfer amplicon time series of the 11 TFMN4 4MXB cultures, the TFMN7verAB
+competition on four carbon sources (guaiacol in two host strains, isovanillate,
+4-methoxybenzoate, veratrate), and new copy-number data (EASy dgoA/Kan, verAB cassette on
+isovanillate/vanillate/methoxybenzoate, verC). The same pipelines are re-applied **one
+environment at a time** (experiment × carbon source × host strain × assay; copy number:
+region × carbon source × platform), each saved and visualised in its own folder:
+
+```bash
+~/Documents/py_venv/bin/python scripts/lims_run_all.py   # extract -> 15 environment runs (parallel) -> comparison
+```
+
+- `scripts/lims01_extract.py` — evaluates the DB (read-only) and writes QC'd inputs per environment
+  to `lims_data/` (+ `lims_data/inventory/` = the database evaluation).
+- every barcode environment runs the full `run_all.py` (`TFMN4_DATASET=lims_<env>`) →
+  `outputs_lims/barcode/<env>/`; every copy-number environment runs `cn_run_all.py`
+  (`TFMN4_CN_DATASET=lims_cn_<env>`) → `outputs_lims/copy_number/<env>/`.
+- `scripts/lims_compare.py` — cross-environment tables/figures → `outputs_lims/comparison/`, and the
+  auto-generated **[`outputs_lims/REPORT.md`](outputs_lims/REPORT.md)**.
+
+**Headlines** (full write-up and caveats: [`docs/LIMS_REANALYSIS.md`](docs/LIMS_REANALYSIS.md)):
+- **Validation:** the DB's WGS counts reproduce `outputs/` exactly (every number in 24/25 tables;
+  only s12b's capped-iteration bootstrap columns drift, as they do re-running the repo unchanged).
+- **Dense TFMN4 time series (8 transfers, ~3,900 reads/cell):** 5.6× more estimable trajectories;
+  A81 still wins 6/11 sweeps with no marginal advantage (founder effect); the WGS-era **A90/A78
+  advantages do not replicate**; the 4-parameter breakpoint model now predicts held-out
+  timepoints better (LOOCV ratio 0.65, 50/53) instead of parity.
+- **Suspected contamination:** verA **A183** (mostly A183-B63) appears abruptly at T10/T13 in all
+  11 TFMN4 cultures, only in two amplicon orders and never in the WGS of the same cultures → a
+  sensitivity run without A183 is provided (`…_amplicon_excl_A183/`).
+- **Carbon source sets selection strength (TFMN7):** guaiacol = hard sweeps by verA A183 in both host
+  strains (richness 415→46 and 669→23); isovanillate/veratrate = weak selection (richness stays
+  >150); 4MXB = intermediate with sub-library-specific winners. Allele effects barely correlate
+  between environments (Spearman −0.13…+0.28).
+- **Copy number:** dgoA/pyruvate reproduces the repo (only `TFMN1.pgi.1` amplifies, FDR); EASy
+  lineages show no FDR-significant dgoA/Kan trend; the verAB cassette amplifies slightly but
+  significantly on vanillate (5/15 lineages) and isovanillate (1/21).
+
 ## Repository layout
 
 ```
@@ -119,10 +159,16 @@ scripts/
   s14d_model_comparison.py      1-var (s03) vs 4-var (s14) head-to-head (tables + figures)
   s14e_fit_error.py             focused 1-var vs 4-var fit-error comparison (table + figure)
   run_all.py               run the whole pipeline in order
+  lims01_extract.py        evaluate the LIMS DB; per-environment inputs -> lims_data/
+  lims_run_all.py          run every LIMS environment (barcode + copy number) in parallel
+  lims_compare.py          cross-environment comparison + outputs_lims/REPORT.md
 docs/
   METHODS.md                model derivation, identifiability, cross-sample integration
   DATA_DICTIONARY.md        every output file + column
   EXPERIMENTAL_REQUIREMENTS.md   what data gives which growth-rate quantity (+ absolute)
+  LIMS_REANALYSIS.md        the LIMS DB evaluation + per-environment re-analysis
+lims_data/                 per-environment inputs extracted from the LIMS DB (+ inventory/)
+outputs_lims/              barcode/<env>/, copy_number/<env>/, comparison/, REPORT.md
 outputs/
   growth_matrix_selection_per_cycle.csv        <-- HEADLINE: variants x samples x growth
   growth_matrix_selection_per_generation.csv
@@ -170,6 +216,9 @@ variant is seen at only one timepoint (not estimable). Read it alongside the
   neutral-drift envelope** (it wins by starting abundance / founder effect).
 - **verA `A90` (+0.104/cycle) and `A78` (+0.061/cycle)** are the **robust,
   drift-confirmed** growth advantages, despite rarely winning a sweep outright.
+  *Update (LIMS re-analysis): the deep 8-transfer amplicon of the same cultures does not
+  reproduce these — on the same four transfers A90 shrinks to +0.043 and A78 to −0.006, and
+  over the full series both are disfavoured; see [`docs/LIMS_REANALYSIS.md`](docs/LIMS_REANALYSIS.md) §4.1.*
 
 ### Cross-sample integration + absolute rates (`s08`–`s11`)
 - The 11 samples form **one connected bridge graph**, so variant effects integrate

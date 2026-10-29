@@ -1,0 +1,5 @@
+lineage,genotype,context,model_selected,direction,unconstrained_direction,breakpoint_testable,logA_init,r_init_per_transfer,r_final_per_transfer,breakpoint_transfer,rel_rate_change,delta_bic,r2_constant,r2_two_phase,s_constant_per_transfer,n_transfers
+TFMN3.ACN3749.Mxb.noDNA.3,ACN3749.Mxb.noDNA,control (noDNA),constant,constant,accelerating,True,-0.1135,0.01017,0.01017,,1.006,4.921,0.3163,0.8587,0.01017,4
+TFMN3.ACN3749.Mxb.noDNA.4,ACN3749.Mxb.noDNA,control (noDNA),constant,constant,accelerating,True,-0.1056,0.01327,0.01327,,0.3921,1.174,0.7556,0.8711,0.01327,4
+TFMN3.ACN3749.Mxb.noDNA.5,ACN3749.Mxb.noDNA,control (noDNA),two_phase,accelerating,accelerating,True,-0.0562,0.00049,0.1244,8.0,2.4783,17.728,0.624,0.9968,0.04243,4
+TFMN3.ACN3749.Mxb.noDNA.2,ACN3749.Mxb.noDNA,control (noDNA),two_phase,accelerating,accelerating,True,-0.0347,-0.00176,0.02595,8.0,0.5542,12.879,0.5121,0.9862,0.00762,4

@@ -1,0 +1,10 @@
+Sample,DNA_construct,n_estimable,n_testable,n_accelerating,n_held_decrease,frac_accelerating,bp_T2,bp_T3,bp_T4,median_r_init_adopted,median_r_final_adopted,median_acceleration_adopted,median_logA_init
+TFMN7verAB.ACN3882.Gua.verABLib_large.2,verABLib_large,21,2,0,2,0.0,0,0,0,,,,1.3974
+TFMN7verAB.ACN3882.Gua.verABLib_large.3,verABLib_large,22,0,0,0,,0,0,0,,,,2.6587
+TFMN7verAB.ACN3882.Gua.verABLib_large.4,verABLib_large,11,0,0,0,,0,0,0,,,,0.5008
+TFMN7verAB.ACN3882.Gua.verABLib_large.5,verABLib_large,36,1,0,1,0.0,0,0,0,,,,3.5716
+TFMN7verAB.ACN3882.Gua.verABLib_sub_1.1,verABLib_sub_1,50,0,0,0,,0,0,0,,,,2.0042
+TFMN7verAB.ACN3882.Gua.verABLib_sub_1.2,verABLib_sub_1,49,2,0,2,0.0,0,0,0,,,,2.0649
+TFMN7verAB.ACN3882.Gua.verABLib_sub_1.3,verABLib_sub_1,42,4,0,4,0.0,0,0,0,,,,1.0274
+TFMN7verAB.ACN3882.Gua.verABLib_sub_1.4,verABLib_sub_1,58,1,0,1,0.0,0,0,0,,,,1.8009
+TFMN7verAB.ACN3882.Gua.verABLib_sub_1.5,verABLib_sub_1,54,3,0,3,0.0,0,0,0,,,,1.4266

@@ -71,8 +71,8 @@ def compute(bt):
 
 
 def main():
-    bt_long = pd.read_csv(CN.INTER / "dgoA_bytransfer.csv")
-    idx = pd.read_csv(CN.INTER / "dgoA_lineage_index.csv")
+    bt_long = pd.read_csv(CN.INTER / f"{CN.TAG}_bytransfer.csv")
+    idx = pd.read_csv(CN.INTER / f"{CN.TAG}_lineage_index.csv")
     n_est = int(idx.estimable.sum())
     bt = compute(bt_long)
     n_test = len(bt)
@@ -92,6 +92,26 @@ def main():
         s = pd.to_numeric(s, errors="coerce").dropna()
         return round(float(s.median()), 4) if len(s) else np.nan
 
+    # interpretation strings: the legacy dgoA run keeps its reviewed wording; LIMS
+    # environments get the same statements computed from their own numbers
+    if CN.IS_LIMS:
+        r2_txt = f"{med(bt.r2_1var)} -> {med(bt.r2_4var_form)}"
+        form_better = bool(len(nz) and np.median(nz) > 0)        # diff = 1-var - FORM
+        sig = (f"significant: FORM {'better' if form_better else 'WORSE'} than the line"
+               if np.isfinite(wil_p) and wil_p < 0.05 else "not significant")
+        form_txt = f"the bidirectional broken-stick FORM ({r2_txt})"
+        loto_txt = (f"out-of-sample; FORM better on {n_form_better}/{len(lg)}, Wilcoxon p={wil_p:.2f} "
+                    f"({sig})")
+        fe_loto = f"FORM better on {n_form_better}/{len(lg)} lineages; Wilcoxon p={wil_p:.2f} ({sig})"
+        print_sig = f"({sig})"
+    else:
+        r2_txt = "0.24 -> 0.90"
+        form_txt = "the bidirectional broken-stick FORM captures saturation (0.24 -> 0.90)"
+        loto_txt = (f"out-of-sample; FORM better on {n_form_better}/{len(lg)}, Wilcoxon p={wil_p:.2f} "
+                    f"(a MODEST, not significant, gain — do not overstate)")
+        fe_loto = f"FORM better on {n_form_better}/{len(lg)} lineages; Wilcoxon p={wil_p:.2f} (modest)"
+        print_sig = "(modest, NOT significant)"
+
     summ = pd.DataFrame([
         ("free_parameters", "2 (logA + rate)", "4 (logA, r_init, r_final, breakpoint)", "the models"),
         ("lineages_fittable", n_est, n_test, "1-var >=3 transfers; 4-var >=4"),
@@ -101,21 +121,17 @@ def main():
          f"of {n_test}: amplify-then-plateau (saturation); increasing-only cannot fit these"),
         ("median_R2_testable_DEPLOYED", med(bt.r2_1var), med(bt.r2_4var_deployed),
          "the deployed 4-var barely moves R² (fires on few)"),
-        ("median_R2_testable_FORM", med(bt.r2_1var), med(bt.r2_4var_form),
-         "the bidirectional broken-stick FORM captures saturation (0.24 -> 0.90)"),
+        ("median_R2_testable_FORM", med(bt.r2_1var), med(bt.r2_4var_form), form_txt),
         ("BIC_prefers_broken_stick_FORM", "-", int(bt.bic_prefers_form.sum()), f"of {n_test}"),
-        ("median_LOTO_RMSE_FORM_vs_line", med(bt.loto_rmse_1var), med(bt.loto_rmse_form),
-         f"out-of-sample; FORM better on {n_form_better}/{len(lg)}, Wilcoxon p={wil_p:.2f} "
-         f"(a MODEST, not significant, gain — do not overstate)"),
+        ("median_LOTO_RMSE_FORM_vs_line", med(bt.loto_rmse_1var), med(bt.loto_rmse_form), loto_txt),
     ], columns=["metric", "one_variable", "four_variable", "interpretation"])
     summ.to_csv(CN.OUT / "model_comparison_summary.csv", index=False)
 
     fe = pd.DataFrame([
         ("in_sample_lnCN_RMSE_FORM", med(bt.rmse_1var), med(bt.rmse_form_insample),
          "broken-stick FORM vs line (captures saturation)"),
-        ("in_sample_R2_FORM", med(bt.r2_1var), med(bt.r2_4var_form), "0.24 -> 0.90"),
-        ("out_of_sample_LOTO_RMSE_FORM", med(bt.loto_rmse_1var), med(bt.loto_rmse_form),
-         f"FORM better on {n_form_better}/{len(lg)} lineages; Wilcoxon p={wil_p:.2f} (modest)"),
+        ("in_sample_R2_FORM", med(bt.r2_1var), med(bt.r2_4var_form), r2_txt),
+        ("out_of_sample_LOTO_RMSE_FORM", med(bt.loto_rmse_1var), med(bt.loto_rmse_form), fe_loto),
         ("in_sample_RMSE_DEPLOYED", med(bt.rmse_1var), med(bt.rmse_4var_deployed),
          "the DEPLOYED increasing-only 4-var differs on only a few lineages"),
         ("lineages_identical_error_deployed", n_ident, n_ident, f"of {n_est} estimable"),
@@ -126,7 +142,7 @@ def main():
     print(f"[cn04] SATURATION: {len(decel)}/{n_test} testable DECELERATE (amplify then plateau).")
     print(f"[cn04] in-sample median R² 1-var={med(bt.r2_1var)} vs broken-stick FORM={med(bt.r2_4var_form)}.")
     print(f"[cn04] out-of-sample LOTO median RMSE 1-var={med(bt.loto_rmse_1var)} FORM={med(bt.loto_rmse_form)}; "
-          f"FORM better on {n_form_better}/{len(lg)}, Wilcoxon p={wil_p:.2f} (modest, NOT significant).")
+          f"FORM better on {n_form_better}/{len(lg)}, Wilcoxon p={wil_p:.2f} {print_sig}.")
     print("[cn04] wrote model_comparison_summary.csv, model_comparison_by_lineage.csv, model_fit_error.csv")
     return bt, summ, fe
 

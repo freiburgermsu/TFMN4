@@ -1,0 +1,5 @@
+lineage,context,deployed_model,unconstrained_direction,r2_1var,r2_4var_deployed,r2_4var_form,rmse_1var,rmse_4var_deployed,rmse_form_insample,rse_dofadj_1var,rse_dofadj_4var_deployed,bic_prefers_form,bic_prefers_increasing,loto_rmse_1var,loto_rmse_form,loto_folds,n_transfers
+TFMN3.ACN3749.Mxb.noDNA.2,control (noDNA),two_phase,accelerating,0.5121,0.9862,0.9862,0.03,0.005,0.005,0.0424,0.0101,True,True,0.0736,0.0739,4,4
+TFMN3.ACN3749.Mxb.noDNA.3,control (noDNA),constant,accelerating,0.3163,0.3163,0.8587,0.0603,0.0603,0.0274,0.0852,0.0852,True,True,0.1309,0.1939,4,4
+TFMN3.ACN3749.Mxb.noDNA.4,control (noDNA),constant,accelerating,0.7556,0.7556,0.8711,0.0304,0.0304,0.0221,0.043,0.043,True,True,0.0558,0.1172,4,4
+TFMN3.ACN3749.Mxb.noDNA.5,control (noDNA),two_phase,accelerating,0.624,0.9968,0.9968,0.1328,0.0122,0.0122,0.1878,0.0243,True,True,0.3335,0.3008,4,4

@@ -1,0 +1,52 @@
+region,Seqorder,experiment,condition,n_rows,n_lineages,transfers,modelled
+del_30kb_tfmn3,SeqCenter_2026-09-01_QUO1024636,TFMN3,Methoxybenzoate 3 mM + Kan,32,4,12,"deletion marker (0 = deleted), not an amplification trajectory"
+del_6kb_acn3560,Plasmidsaurus_2026-03-04_GFHFWC,TFMN2,Isovanillate 3 mM + Kan,126,21,"1,2,3,7,13,20","deletion marker (0 = deleted), not an amplification trajectory"
+del_6kb_acn3560,Plasmidsaurus_2026-03-04_GFHFWC,TFMN2,Methoxybenzoate 3 mM + Kan,21,21,2,"deletion marker (0 = deleted), not an amplification trajectory"
+del_6kb_acn3560,Plasmidsaurus_2026-03-04_GFHFWC,TFMN2,Vanillate 3 mM + Kan,90,15,"1,2,3,7,13,20","deletion marker (0 = deleted), not an amplification trajectory"
+del_6kb_acn3560,Plasmidsaurus_2026-03-04_GFHFWC,TFMN3,Methoxybenzoate 3 mM + Kan,18,5,"1,5,8,12","deletion marker (0 = deleted), not an amplification trajectory"
+del_6kb_acn3560,Plasmidsaurus_2026-03-24_YWLYRK,TFMN2,Isovanillate 3 mM + Kan,37,18,"1,2,3,7,13","deletion marker (0 = deleted), not an amplification trajectory"
+del_6kb_acn3560,Plasmidsaurus_2026-03-24_YWLYRK,TFMN2,Methoxybenzoate 3 mM + Kan,8,8,2,"deletion marker (0 = deleted), not an amplification trajectory"
+del_6kb_acn3560,Plasmidsaurus_2026-03-24_YWLYRK,TFMN2,Vanillate 3 mM + Kan,21,12,"1,2,3,7,13,20","deletion marker (0 = deleted), not an amplification trajectory"
+del_6kb_acn3560,Plasmidsaurus_2026-04-13_WTN32D,TFMN2,Isovanillate 3 mM + Kan,2,2,2,"deletion marker (0 = deleted), not an amplification trajectory"
+del_6kb_acn3560,Plasmidsaurus_2026-04-13_WTN32D,TFMN2,Methoxybenzoate 3 mM + Kan,1,1,2,"deletion marker (0 = deleted), not an amplification trajectory"
+del_6kb_acn3560,Plasmidsaurus_2026-04-13_WTN32D,TFMN2,Vanillate 3 mM + Kan,1,1,1,"deletion marker (0 = deleted), not an amplification trajectory"
+del_6kb_acn3560,SeqCenter_2026-09-01_QUO1024636,TFMN3,Methoxybenzoate 3 mM + Kan,32,4,12,"deletion marker (0 = deleted), not an amplification trajectory"
+dgoa,Plasmidsaurus_2026-08-01_P4PPZ6,strain_stocks,,6,0,,ancestral-stock colonies only (no trajectory)
+dgoa-star,Plasmidsaurus_2025-09-30_P4CYGL,strain_stocks,Pyruvate 20 mM + Kan + amino acids,2,0,,yes
+dgoa-star,Plasmidsaurus_2025-12-22_MQRBN8,TFMN1,Pyruvate 20 mM + Kan,209,31,"1,5,6,7,8,9,10,11,12,13,14,15,18,20,25,32",yes
+dgoa-star,Plasmidsaurus_2026-05-09_KPF9J2,TFMN1,Pyruvate 20 mM + Kan,15,15,32,yes
+dgoa-star,SeqCenter_2026-05-26_QUO1022807,TFMN4,Pyruvate 20 mM + Kan,168,60,"8,9,30",yes
+dgoa-star,SeqCenter_2026-06-23_QUO1023432,EASyTwist25,Pyruvate 20 mM + Kan,44,11,"203,207,214,218,239,267,286,358",yes
+dgoa-star,SeqCenter_2026-06-23_QUO1023432,EASyUnchar22,Pyruvate 20 mM + Kan,46,11,"474,488,504,537,593,642",yes
+kanamycin,SeqCenter_2026-06-23_QUO1023432,EASyTwist25,Pyruvate 20 mM + Kan,44,11,"203,207,214,218,239,267,286,358",yes
+kanamycin,SeqCenter_2026-06-23_QUO1023432,EASyUnchar22,Pyruvate 20 mM + Kan,46,11,"474,488,504,537,593,642",yes
+kanr,Plasmidsaurus_2026-08-01_P4PPZ6,strain_stocks,,6,0,,ancestral-stock colonies only (no trajectory)
+rpoa,Plasmidsaurus_2026-05-09_KPF9J2,TFMN1,Pyruvate 20 mM + Kan,15,15,32,"housekeeping reference, single timepoint only"
+rpoa,Plasmidsaurus_2026-08-01_P4PPZ6,strain_stocks,,12,0,,"housekeeping reference, single timepoint only"
+ver_cassette,Plasmidsaurus_2026-03-04_GFHFWC,TFMN2,Isovanillate 3 mM + Kan,126,21,"1,2,3,7,13,20",same cassette as verAB (see inventory correlation); verAB is modelled
+ver_cassette,Plasmidsaurus_2026-03-04_GFHFWC,TFMN2,Methoxybenzoate 3 mM + Kan,21,21,2,same cassette as verAB (see inventory correlation); verAB is modelled
+ver_cassette,Plasmidsaurus_2026-03-04_GFHFWC,TFMN2,Vanillate 3 mM + Kan,90,15,"1,2,3,7,13,20",same cassette as verAB (see inventory correlation); verAB is modelled
+ver_cassette,Plasmidsaurus_2026-03-04_GFHFWC,TFMN3,Methoxybenzoate 3 mM + Kan,18,5,"1,5,8,12",same cassette as verAB (see inventory correlation); verAB is modelled
+ver_cassette,Plasmidsaurus_2026-03-24_YWLYRK,TFMN2,Isovanillate 3 mM + Kan,37,18,"1,2,3,7,13",same cassette as verAB (see inventory correlation); verAB is modelled
+ver_cassette,Plasmidsaurus_2026-03-24_YWLYRK,TFMN2,Methoxybenzoate 3 mM + Kan,8,8,2,same cassette as verAB (see inventory correlation); verAB is modelled
+ver_cassette,Plasmidsaurus_2026-03-24_YWLYRK,TFMN2,Vanillate 3 mM + Kan,21,12,"1,2,3,7,13,20",same cassette as verAB (see inventory correlation); verAB is modelled
+ver_cassette,Plasmidsaurus_2026-04-13_WTN32D,TFMN2,Isovanillate 3 mM + Kan,2,2,2,same cassette as verAB (see inventory correlation); verAB is modelled
+ver_cassette,Plasmidsaurus_2026-04-13_WTN32D,TFMN2,Methoxybenzoate 3 mM + Kan,1,1,2,same cassette as verAB (see inventory correlation); verAB is modelled
+ver_cassette,Plasmidsaurus_2026-04-13_WTN32D,TFMN2,Vanillate 3 mM + Kan,1,1,1,same cassette as verAB (see inventory correlation); verAB is modelled
+ver_cassette,Plasmidsaurus_2026-08-28_2QRF54,strain_stocks,,3,0,,same cassette as verAB (see inventory correlation); verAB is modelled
+ver_cassette,SeqCenter_2026-09-01_QUO1024636,TFMN3,Methoxybenzoate 3 mM + Kan,32,4,12,same cassette as verAB (see inventory correlation); verAB is modelled
+verab,Plasmidsaurus_2026-03-04_GFHFWC,TFMN2,Isovanillate 3 mM + Kan,126,21,"1,2,3,7,13,20",yes
+verab,Plasmidsaurus_2026-03-04_GFHFWC,TFMN2,Methoxybenzoate 3 mM + Kan,21,21,2,yes
+verab,Plasmidsaurus_2026-03-04_GFHFWC,TFMN2,Vanillate 3 mM + Kan,90,15,"1,2,3,7,13,20",yes
+verab,Plasmidsaurus_2026-03-04_GFHFWC,TFMN3,Methoxybenzoate 3 mM + Kan,18,5,"1,5,8,12",yes
+verab,Plasmidsaurus_2026-03-24_YWLYRK,TFMN2,Isovanillate 3 mM + Kan,37,18,"1,2,3,7,13",yes
+verab,Plasmidsaurus_2026-03-24_YWLYRK,TFMN2,Methoxybenzoate 3 mM + Kan,8,8,2,yes
+verab,Plasmidsaurus_2026-03-24_YWLYRK,TFMN2,Vanillate 3 mM + Kan,21,12,"1,2,3,7,13,20",yes
+verab,Plasmidsaurus_2026-04-13_WTN32D,TFMN2,Isovanillate 3 mM + Kan,2,2,2,yes
+verab,Plasmidsaurus_2026-04-13_WTN32D,TFMN2,Methoxybenzoate 3 mM + Kan,1,1,2,yes
+verab,Plasmidsaurus_2026-04-13_WTN32D,TFMN2,Vanillate 3 mM + Kan,1,1,1,yes
+verab,SeqCenter_2026-09-01_QUO1024636,TFMN3,Methoxybenzoate 3 mM + Kan,32,4,12,yes
+verc,Plasmidsaurus_2026-05-15_PMWYSM,strain_stocks,Pyruvate 20 mM + Kan,7,0,,yes
+verc,Plasmidsaurus_2026-08-28_2QRF54,strain_stocks,,3,0,,yes
+verc,SeqCenter_2026-05-26_QUO1022807,TFMN4,Methoxybenzoate 4 mM + Kan,78,34,"3,4,6,13",yes
+verc,SeqCenter_2026-09-01_QUO1024636,strain_stocks,,3,0,,yes

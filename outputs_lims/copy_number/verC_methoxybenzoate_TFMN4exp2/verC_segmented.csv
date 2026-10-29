@@ -1,0 +1,13 @@
+lineage,genotype,context,model_selected,direction,unconstrained_direction,breakpoint_testable,logA_init,r_init_per_transfer,r_final_per_transfer,breakpoint_transfer,rel_rate_change,delta_bic,r2_constant,r2_two_phase,s_constant_per_transfer,n_transfers
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.4,ACN3788.concX_largeLib_SpeI,TFMN4 concX,constant,constant,accelerating,True,0.1091,-0.00622,-0.00622,,0.1951,4.672,0.8731,0.9721,-0.00622,4
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.4,ACN3788.concY_largeLib_PCR_DpnI_cleanup,TFMN4 concY,constant,constant,accelerating,True,0.0977,0.00328,0.00328,,0.4666,1.883,0.1928,0.6436,0.00328,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.3,ACN3788.concX_largeLib_SpeI_cleanup,TFMN4 concX,constant,constant,accelerating,True,0.0071,0.00166,0.00166,,0.8967,0.129,0.0457,0.3467,0.00166,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.1,ACN3788.concX_largeLib_SpeI_cleanup,TFMN4 concX,constant,constant,accelerating,True,0.0538,-0.00731,-0.00731,,0.9917,0.067,0.1276,0.3934,-0.00731,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.1,ACN3788.concX_largeLib_SpeI,TFMN4 concX,constant,constant,accelerating,True,-0.0183,0.0037,0.0037,,1.0979,-0.225,0.0275,0.2725,0.0037,4
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.3,ACN3788.concY_largeLib_PCR_DpnI_cleanup,TFMN4 concY,constant,constant,accelerating,True,0.05,0.00743,0.00743,,0.6805,-0.711,0.4513,0.5365,0.00743,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.2,ACN3788.concX_largeLib_SpeI,TFMN4 concX,constant,constant,decelerating,True,0.0622,0.00076,0.00076,,,,0.0079,,0.00076,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.3,ACN3788.concX_largeLib_SpeI,TFMN4 concX,constant,constant,decelerating,True,0.69,-0.00514,-0.00514,,,,0.2804,,-0.00514,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.5,ACN3788.concX_largeLib_SpeI,TFMN4 concX,constant,constant,decelerating,True,0.044,0.00604,0.00604,,,,0.3379,,0.00604,4
+TFMN4.exp2.ACN3788.concX_pBAC2264_BglI.2,ACN3788.concX_pBAC2264_BglI,TFMN4 concX,constant,constant,none,False,0.0293,0.00549,0.00549,,,,0.8005,,0.00549,3
+TFMN4.exp2.ACN3788.concX_smallLib_PCR_DpnI_cleanup.3,ACN3788.concX_smallLib_PCR_DpnI_cleanup,TFMN4 concX,constant,constant,decelerating,True,0.0848,-0.00264,-0.00264,,,,0.1107,,-0.00264,4
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.2,ACN3788.concY_largeLib_PCR_DpnI_cleanup,TFMN4 concY,two_phase,accelerating,accelerating,True,0.092,-0.02613,0.00315,4.0,0.5855,14.783,0.2148,0.9862,0.00147,4

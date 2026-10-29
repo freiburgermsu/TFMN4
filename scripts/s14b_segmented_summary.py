@@ -71,6 +71,10 @@ def model_selection_table(r, cls):
     return pd.DataFrame(rows, columns=["metric", "value"])
 
 
+# interior knots tallied per culture (the legacy datasets keep their T4/T6 columns)
+BP_KNOTS = tuple(C.TRANSFERS[1:-1]) if C.IS_LIMS else (4, 6)
+
+
 def sample_summary_table(r, cls):
     adopted = cls["adopted"]
     out = []
@@ -87,7 +91,7 @@ def sample_summary_table(r, cls):
             n_accelerating=len(ga),
             n_held_decrease=len(gh),
             frac_accelerating=round(len(ga) / len(gt), 4) if len(gt) else np.nan,
-            bp_T4=int(bp.get(4, 0)), bp_T6=int(bp.get(6, 0)),
+            **{f"bp_T{k}": int(bp.get(k, 0)) for k in BP_KNOTS},
             median_r_init_adopted=round(float(ga.r_init_per_cycle.median()), 4) if len(ga) else np.nan,
             median_r_final_adopted=round(float(ga.r_final_per_cycle.median()), 4) if len(ga) else np.nan,
             median_acceleration_adopted=round(float(ga.abs_rate_change.median()), 4) if len(ga) else np.nan,

@@ -20,6 +20,8 @@ The 4-variable model is the same increasing-only broken-stick used for the barco
 (s14), fit per lineage on the per-transfer means.
 """
 from __future__ import annotations
+import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -33,8 +35,29 @@ from s14_segmented_growth import (fit_constant, fit_two_phase, bic,
                                    BIC_MARGIN, REL_RATE_CHANGE_MIN, R_SCALE_FLOOR)
 
 ROOT = Path(__file__).resolve().parent.parent
+# Dataset switch (env var TFMN4_CN_DATASET). Default = the original dgoA CSV ->
+# outputs_copynumber/. A lims_cn_<name> id runs the SAME models on one copy-number
+# environment extracted from the LIMS DB (lims_data/manifest.json) ->
+# outputs_lims/copy_number/<name>/; TAG names the region in file names and labels.
+CN_DATASET = os.environ.get("TFMN4_CN_DATASET", "dgoA")
+IS_LIMS = CN_DATASET.startswith("lims_")
+LIMS = None
 CN_CSV = ROOT / "copy-number-dgoA_.csv"
 OUT = ROOT / "outputs_copynumber"
+TAG = "dgoA"                 # region tag used in output file names
+REGION_LABEL = "dgoA"        # region name used in figure labels
+if IS_LIMS:
+    _man = ROOT / "lims_data" / "manifest.json"
+    if not _man.exists():
+        raise SystemExit(f"{_man} missing - run scripts/lims01_extract.py first")
+    _cn = {d["id"]: d for d in json.loads(_man.read_text())["copy_number_datasets"]}
+    if CN_DATASET not in _cn:
+        raise SystemExit(f"Unknown TFMN4_CN_DATASET={CN_DATASET!r}; LIMS sets: {sorted(_cn)}")
+    LIMS = _cn[CN_DATASET]
+    CN_CSV = ROOT / LIMS["cn_csv"]
+    OUT = ROOT / LIMS["out"]
+    TAG = LIMS["tag"]
+    REGION_LABEL = f"{LIMS['tag']} ({LIMS['carbon']}, {LIMS['platform']})"
 INTER = OUT / "intermediate"
 FIG = OUT / "figures"
 for _d in (OUT, INTER, FIG):

@@ -47,6 +47,8 @@ from scipy.optimize import minimize
 import config as C
 
 LN2 = float(np.log(2.0))
+LARGE_PROBLEM = 3000   # params; above this the Hessian is built by batched HVPs and the
+                       # Schur complement uses HAA's exact per-sample block-diagonal form
 W_OD = 5.0       # weight on the OD-anchor term
 W_R = 50.0       # ridge toward community mean (minimal flexibility)
 W_A = 0.05       # conditioning: pull logA toward its data value (fixes flat dirs)
@@ -160,19 +162,42 @@ def main():
                                     gtol=1e-7, maxls=60))
         p = res.x
     gnorm = float(np.linalg.norm(g(p)))
+    converged = bool(res.success)
+    sol = C.INTER / "s12_solution.npy"
+    if n_var + n_A > LARGE_PROBLEM:
+        if gnorm > 1e-2:
+            # Deep-count LIMS problems are ill-conditioned: L-BFGS stops at its iteration cap
+            # short of the optimum. Polish to the SAME loss's optimum with a trust-region
+            # Newton-Krylov solve on exact jax Hessian-vector products (only the optimizer
+            # changes; the model, loss and weights are untouched).
+            hvp = jax.jit(lambda x, v: jax.jvp(jax.grad(loss), (x,), (v,))[1])
+            res = minimize(f, p, jac=g, method="trust-krylov",
+                           hessp=lambda x, v: np.asarray(hvp(jnp.asarray(x), jnp.asarray(v)), float),
+                           options=dict(maxiter=200, gtol=1e-6))
+            g_new = float(np.linalg.norm(g(res.x)))
+            print(f"[s12] large problem: L-BFGS stopped at |grad|={gnorm:.2e}; "
+                  f"trust-krylov polish -> |grad|={g_new:.2e}; max|Δr|={np.abs(res.x[:n_var] - p[:n_var]).max():.4f}/h")
+            p, gnorm = res.x, g_new
+        converged = gnorm < 1e-2
+        np.save(sol, p)                      # s12b re-uses this converged optimum
+    elif sol.exists():
+        sol.unlink()
     r = p[:n_var]
 
     # ---- Laplace SE on r (full Hessian, marginalize logA via Schur complement) ----
-    H = np.asarray(jax.hessian(loss)(jnp.asarray(p)), float)
-    Hrr, HrA, HAA = H[:n_var, :n_var], H[:n_var, n_var:], H[n_var:, n_var:]
-    # Schur complement: cov(r) = (Hrr - HrA HAA^-1 HAr)^-1
-    try:
-        HAA_inv_HAr = np.linalg.solve(HAA + 1e-8 * np.eye(n_A), HrA.T)
-        S = Hrr - HrA @ HAA_inv_HAr
-        cov_r = np.linalg.inv(S + 1e-8 * np.eye(n_var))
-        se = np.sqrt(np.clip(np.diag(cov_r), 0, None))
-    except np.linalg.LinAlgError:
-        se = np.full(n_var, np.nan)
+    if n_var + n_A <= LARGE_PROBLEM:
+        H = np.asarray(jax.hessian(loss)(jnp.asarray(p)), float)
+        Hrr, HrA, HAA = H[:n_var, :n_var], H[:n_var, n_var:], H[n_var:, n_var:]
+        # Schur complement: cov(r) = (Hrr - HrA HAA^-1 HAr)^-1
+        try:
+            HAA_inv_HAr = np.linalg.solve(HAA + 1e-8 * np.eye(n_A), HrA.T)
+            S = Hrr - HrA @ HAA_inv_HAr
+            cov_r = np.linalg.inv(S + 1e-8 * np.eye(n_var))
+            se = np.sqrt(np.clip(np.diag(cov_r), 0, None))
+        except np.linalg.LinAlgError:
+            se = np.full(n_var, np.nan)
+    else:
+        se = laplace_se_blocked(loss, p, n_var, meta)
 
     # ---- fit diagnostics: predicted vs observed frequency + community rate ----
     diag = fit_diagnostics(p, D, cell_mu, cell_rel, meta)
@@ -199,7 +224,7 @@ def main():
     out = out.sort_values("r_global_per_h", ascending=False)
     out.to_csv(C.OUT / "global_variant_growth_rates.csv", index=False)
 
-    print(f"[s12] optimize: success={res.success} final_loss={res.fun:.1f} "
+    print(f"[s12] optimize: success={converged} final_loss={res.fun:.1f} "
           f"grad_norm={gnorm:.2e} ({n_var} global rates + {n_A} intercepts)")
     print(f"[s12] community mu_bar={mu_bar:.3f}/h; fitted r range "
           f"[{r.min():.3f},{r.max():.3f}]/h; median SE={np.nanmedian(se):.4f}")
@@ -212,6 +237,47 @@ def main():
               f"(rel {x.rel_advantage_per_h:+.3f})")
     print("[s12] wrote global_variant_growth_rates.csv")
     return out, diag
+
+
+def hessian_hvp(loss, p, chunk=256):
+    """Dense Hessian from batched Hessian-vector products (forward-over-reverse) --
+    the same quantity as jax.hessian, with memory bounded by the batch size."""
+    pj = jnp.asarray(p); n = pj.shape[0]
+    g = jax.grad(loss)
+    hvp = jax.jit(jax.vmap(lambda v: jax.jvp(g, (pj,), (v,))[1]))
+    H = np.empty((n, n))
+    for s in range(0, n, chunk):
+        e = min(s + chunk, n)
+        V = jnp.zeros((e - s, n)).at[jnp.arange(e - s), jnp.arange(s, e)].set(1.0)
+        H[:, s:e] = np.asarray(hvp(V), float).T
+    return 0.5 * (H + H.T)
+
+
+def laplace_se_blocked(loss, p, n_var, meta):
+    """Laplace SE of r for large problems. logA_{c,i} enters only sample c's softmax and
+    OD term, so HAA is exactly block-diagonal by sample and the Schur complement
+    S = Hrr - sum_c HrA_c HAA_c^-1 HAr_c is computed block by block (identical to the
+    dense solve, without the O(n_A^3) factorization)."""
+    H = hessian_hvp(loss, p)
+    Hrr, HrA, HAA = H[:n_var, :n_var], H[:n_var, n_var:], H[n_var:, n_var:]
+    samp = np.array([s for s, _ in meta["sa_pairs"]])
+    S = Hrr.copy(); off = 0.0
+    try:
+        for s in meta["samples"]:
+            idx = np.where(samp == s)[0]
+            if idx.size == 0:
+                continue
+            other = np.where(samp != s)[0]
+            if other.size:
+                off = max(off, float(np.abs(HAA[np.ix_(idx, other)]).max()))
+            Hb = HAA[np.ix_(idx, idx)] + 1e-8 * np.eye(idx.size)
+            S -= HrA[:, idx] @ np.linalg.solve(Hb, HrA[:, idx].T)
+        cov_r = np.linalg.inv(S + 1e-8 * np.eye(n_var))
+        se = np.sqrt(np.clip(np.diag(cov_r), 0, None))
+    except np.linalg.LinAlgError:
+        se = np.full(n_var, np.nan)
+    print(f"[s12] blocked Laplace: {len(meta['samples'])} logA blocks; max |cross-sample HAA| = {off:.2e}")
+    return se
 
 
 def fit_diagnostics(p, D, cell_mu, cell_rel, meta):

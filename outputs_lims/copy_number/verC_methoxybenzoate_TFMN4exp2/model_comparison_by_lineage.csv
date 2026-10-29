@@ -1,0 +1,12 @@
+lineage,context,deployed_model,unconstrained_direction,r2_1var,r2_4var_deployed,r2_4var_form,rmse_1var,rmse_4var_deployed,rmse_form_insample,rse_dofadj_1var,rse_dofadj_4var_deployed,bic_prefers_form,bic_prefers_increasing,loto_rmse_1var,loto_rmse_form,loto_folds,n_transfers
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.1,TFMN4 concX,constant,accelerating,0.0275,0.0275,0.2725,0.0858,0.0858,0.0742,0.1214,0.1214,False,False,0.165,0.4777,4,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.2,TFMN4 concX,constant,decelerating,0.0079,0.0079,0.9982,0.0332,0.0332,0.0014,0.0469,0.0469,True,False,0.1464,0.1477,4,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.3,TFMN4 concX,constant,decelerating,0.2804,0.2804,0.9428,0.0321,0.0321,0.0091,0.0455,0.0455,True,False,0.1379,0.0969,4,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.4,TFMN4 concX,constant,accelerating,0.8731,0.8731,0.9721,0.0093,0.0093,0.0043,0.0131,0.0131,True,True,0.0364,0.0537,4,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.5,TFMN4 concX,constant,decelerating,0.3379,0.3379,0.9924,0.033,0.033,0.0035,0.0467,0.0467,True,False,0.1455,0.1261,4,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.1,TFMN4 concX,constant,accelerating,0.1276,0.1276,0.3934,0.0747,0.0747,0.0623,0.1056,0.1056,True,True,0.1347,0.4039,4,4
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.3,TFMN4 concX,constant,accelerating,0.0457,0.0457,0.3467,0.0296,0.0296,0.0245,0.0418,0.0418,True,True,0.0528,0.159,4,4
+TFMN4.exp2.ACN3788.concX_smallLib_PCR_DpnI_cleanup.3,TFMN4 concX,constant,decelerating,0.1107,0.1107,0.9823,0.0292,0.0292,0.0041,0.0412,0.0412,True,False,0.1281,0.107,4,4
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.2,TFMN4 concY,two_phase,accelerating,0.2148,0.9862,0.9862,0.0109,0.0015,0.0015,0.0155,0.0029,True,True,0.04,0.0176,4,4
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.3,TFMN4 concY,constant,accelerating,0.4513,0.4513,0.5365,0.032,0.032,0.0294,0.0452,0.0452,False,False,0.0709,0.1865,4,4
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.4,TFMN4 concY,constant,accelerating,0.1928,0.1928,0.6436,0.0262,0.0262,0.0174,0.037,0.037,True,True,0.0894,0.1599,4,4

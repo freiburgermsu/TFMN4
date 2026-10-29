@@ -260,3 +260,50 @@ Microtiter_plate_well, Transfer, verA, verB, Candidate, Count, depth, freq`.
 
 ### `outputs_joint_4MXB/figures/joint_error_reduction.png`
 SE scatter (joint vs WGS-only), ESS histogram, top-tightened forest, B4 concordance.
+
+---
+
+## LIMS re-analysis (`lims_data/`, `outputs_lims/`; see docs/LIMS_REANALYSIS.md)
+
+### `outputs_lims/barcode/<env>/` and `outputs_lims/copy_number/<env>/`
+Same files and columns as `outputs/` and `outputs_copynumber/`, one folder per environment
+(`run.log` = the full console output). Differences:
+- `variant_bridged_relative.csv`, `sample_gauge.csv`: extra `bridge_component` when the
+  cultures' variant-overlap graph splits (each component has its own sum-to-zero gauge; effects
+  are comparable only within a component).
+- `segmented_sample_summary.csv`: one `bp_T<k>` column per interior sampled transfer.
+- `intermediate/s12_solution.npy`: the converged s12 optimum (large problems only; reused by s12b).
+- copy number: file names carry the region (`verAB_growth_rates.csv`, `KanR_segmented.csv`, …).
+- `*_excl_A183/`: the TFMN4 amplicon sensitivity run with verA A183 removed (suspected contamination).
+
+### `lims_data/`
+| file | content |
+|---|---|
+| `manifest.json` | every environment: id, experiment, condition, carbon source, strain, assay, transfers, cultures, wells, depth, hours/transfer, reliable-OD transfers, input/output paths; QC settings |
+| `barcodes/<env>.csv` | `Sample, DNA_construct, Replicate, Microtiter_plate_well, Transfer, verA, verB, Candidate, Count, Seqorder` (QC'd, complete trajectories) |
+| `od/<env>.csv` | `Robotic_OD` rows of the environment's wells (run/plate) |
+| `copy_number/<env>.csv` | `region, lineage, sample, transfer, copy_number, seqorder, experiment, condition, strain, context, genotype` |
+| `inventory/tables.csv` | rows per DB table (live vs soft-deleted) |
+| `inventory/barcode_orders.csv` | per sequencing order: assay, samples, reads, share of un-called-allele reads |
+| `inventory/barcode_cells.csv` | every culture × transfer × order cell: identified depth, all reads, UNK share, top half-called lineage, `selected_run`, `qc_pass`, `qc_reason` |
+| `inventory/barcode_cultures.csv` | every time-series culture: LIMS metadata, carbon source, control flag, inclusion + reason, UNK flag |
+| `inventory/barcode_nodna_controls.csv` | barcode reads found in noDNA controls (contamination check) |
+| `inventory/barcode_not_modelable.csv` | single-timepoint seqsamples and why they cannot be fitted |
+| `inventory/copy_number_inventory.csv`, `copy_number_lineages.csv` | copy-number regions × orders × experiments (modelled or why not); per-lineage transfers |
+| `inventory/od_runs.csv` | OD rows per robotic run × plate × condition |
+
+### `outputs_lims/comparison/`
+| file | content |
+|---|---|
+| `environment_summary_barcode.csv` | one row per barcode environment: design (cultures, transfers, depth, variants), richness first/last, μ_bulk, τ_exp, generations/cycle, selection spread (`s_per_gen_*`), sweep winners, robust alleles, bridge components, s12 fit (`global_fit_freq_R2`, `global_fit_OD_rmse_per_h`, rate range), 4-var model counts and LOOCV ratios |
+| `environment_summary_copy_number.csv` | one row per copy-number environment: lineages, CI-reliable, FDR amplifying/losing, median rate, top amplifier, testable/adopted/decelerating, LOTO verdict |
+| `allele_effects_across_environments.csv` | `allele_growth_advantage.csv` rows stacked with an `environment` column |
+| `allele_concordance.csv` | per environment pair: shared alleles (≥3 pairs each), Spearman/Pearson of marginal s per generation, alleles robust in both, sign agreement among them |
+| `variant_effects_across_environments.csv` | bridged per-variant effects + s12 global rates per environment |
+| `wgs_vs_amplicon_TFMN4_frequency.csv` | same culture × transfer × variant: counts and frequencies in both assays |
+| `wgs_vs_amplicon_TFMN4_slopes.csv` | per (culture, variant): `s_wgs_4T`, `s_amp_4T` (amplicon re-scored on T3/4/6/13), `s_amp_8T` |
+| `wgs_vs_amplicon_TFMN4_stats.csv` | concordance statistics of the two files above |
+| `cross_assay_discordance_TFMN4.csv` | cells where one assay predicts reads the other does not see (Poisson P < 0.001) |
+| `sensitivity_excl_A183.csv` | main vs sensitivity run: allele-effect correlation, robust-set changes, rate correlation, top-12 overlap, 4-var counts, fit R² |
+| `validation_wgs_db_vs_repo.csv` | DB-ingested WGS run vs committed `outputs/`, file by file |
+| `figures/` | `environment_overview`, `allele_effects_heatmap`, `allele_concordance`, `top_variants_by_environment`, `wgs_vs_amplicon_TFMN4`, `copy_number_by_environment`, `sensitivity_excl_A183` |

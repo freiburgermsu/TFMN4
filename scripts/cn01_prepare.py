@@ -31,17 +31,21 @@ def main():
     d = d.dropna(subset=["transfer"]).copy()
     d["transfer"] = d["transfer"].astype(int)
     d = d[d["copy_number"] > 0].copy()
-    d["genotype"] = d["lineage"].map(CN.genotype_of)
-    d["context"] = d["lineage"].map(CN.context_of)
+    if "context" in d.columns and "genotype" in d.columns:   # LIMS extract supplies them
+        d["context"] = d["context"].fillna(d["lineage"].map(CN.context_of))
+        d["genotype"] = d["genotype"].fillna(d["lineage"].map(CN.genotype_of))
+    else:
+        d["genotype"] = d["lineage"].map(CN.genotype_of)
+        d["context"] = d["lineage"].map(CN.context_of)
     d["ln_cn"] = np.log(d["copy_number"].to_numpy(float))
 
     long = d[["lineage", "genotype", "context", "transfer", "copy_number", "ln_cn"]] \
         .sort_values(["context", "lineage", "transfer"])
-    long.to_csv(CN.INTER / "dgoA_copynumber_long.csv", index=False)
+    long.to_csv(CN.INTER / f"{CN.TAG}_copynumber_long.csv", index=False)
 
     bt = CN.by_transfer(long).merge(
         d[["lineage", "genotype", "context"]].drop_duplicates(), on="lineage", how="left")
-    bt.to_csv(CN.INTER / "dgoA_bytransfer.csv", index=False)
+    bt.to_csv(CN.INTER / f"{CN.TAG}_bytransfer.csv", index=False)
 
     idx_rows = []
     for lin, g in d.groupby("lineage"):
@@ -56,17 +60,17 @@ def main():
             breakpoint_testable=bool(nt >= CN.MIN_UNIQUE_TRANSFERS),
         ))
     idx = pd.DataFrame(idx_rows).sort_values(["context", "lineage"])
-    idx.to_csv(CN.INTER / "dgoA_lineage_index.csv", index=False)
+    idx.to_csv(CN.INTER / f"{CN.TAG}_lineage_index.csv", index=False)
 
     stock_cn = float(stock["copy_number"].iloc[0]) if len(stock) else np.nan
     print(f"[cn01] {n_raw} rows -> {len(d)} measurements ({len(bt)} per-transfer means) across "
-          f"{d['lineage'].nunique()} lineages (ancestral stock dgoA copy_number={stock_cn:.2f}).")
+          f"{d['lineage'].nunique()} lineages (ancestral stock {CN.TAG} copy_number={stock_cn:.2f}).")
     print("[cn01] contexts: " + ", ".join(
         f"{c}={g['lineage'].nunique()}" for c, g in d.groupby("context")))
     print(f"[cn01] estimable (>=3 transfers): {int(idx.estimable.sum())}; "
           f"CI-reliable (>=4 transfers): {int(idx.ci_reliable.sum())}; "
           f"lineages with technical replicates: {int(idx.has_replicates.sum())}.")
-    print("[cn01] wrote dgoA_copynumber_long.csv, dgoA_bytransfer.csv, dgoA_lineage_index.csv")
+    print(f"[cn01] wrote {CN.TAG}_copynumber_long.csv, {CN.TAG}_bytransfer.csv, {CN.TAG}_lineage_index.csv")
     return long, bt, idx
 
 

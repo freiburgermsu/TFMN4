@@ -104,12 +104,17 @@ def summary_table(seg, bt):
          "the fitting objective (weighted); lower is better"),
         ("in_sample_R2__adopted", med(ad.r2_1var), med(ad.r2_4var), "weighted R² on the adopted set"),
         ("dof_adjusted_residual_SE__testable", med(bt.rse_dofadj_1var), med(bt.rse_dofadj_4var),
+         f"sqrt(RSS/(n−k)); charges the 4-var for its extra parameter (n={N})" if C.IS_LIMS else
          "sqrt(RSS/(n−k)); charges the 4-var for its extra parameter (n=4)"),
         ("out_of_sample_LOOCV_RMSE__adopted", med(ad.loocv_rmse_1var), med(ad.loocv_rmse_4var),
          "held-out error, elbow re-learned per fold — the honest test"),
         ("optimism_gap__adopted", round(med(ad.loocv_rmse_1var) - med(ad.rmse_1var), 4),
          round(med(ad.loocv_rmse_4var) - med(ad.rmse_4var), 4),
-         "LOOCV − in-sample; the 4-var's larger gap = more of its in-sample gain is overfitting"),
+         (("LOOCV − in-sample; the 4-var's gap is "
+           + ("larger (more of its in-sample gain is overfitting)"
+              if med(ad.loocv_rmse_4var) - med(ad.rmse_4var) > med(ad.loocv_rmse_1var) - med(ad.rmse_1var)
+              else "not larger (its in-sample gain carries over out-of-sample)")) if C.IS_LIMS else
+          "LOOCV − in-sample; the 4-var's larger gap = more of its in-sample gain is overfitting")),
         ("trajectories_with_identical_error", n_ident, n_ident,
          f"of {len(seg)} estimable — the 4-var equals the 1-var except on {len(ad)}"),
     ]
@@ -121,20 +126,25 @@ def make_figure(bt, rbt, seg):
     ad = bt[bt.deployed_model == "two_phase"].copy().sort_values("rmse_1var")
     if ad.empty:
         return
+    n_ad = len(ad)
+    n_same = len(seg) - n_ad
     fig, ax = plt.subplots(2, 2, figsize=(13, 9.5))
 
     # (a) in-sample CLR RMSE per adopted variant (dumbbell) -------------------
     a = ax[0, 0]
-    y = np.arange(len(ad))
-    a.hlines(y, ad.rmse_4var, ad.rmse_1var, color=BASELINE, lw=2.2, zorder=1)
-    a.scatter(ad.rmse_1var, y, s=52, color=ONE, edgecolors="white", linewidths=0.6,
+    dumb = ad if n_ad <= 40 else ad.nlargest(40, "rmse_1var").sort_values("rmse_1var")
+    y = np.arange(len(dumb))
+    a.hlines(y, dumb.rmse_4var, dumb.rmse_1var, color=BASELINE, lw=2.2, zorder=1)
+    a.scatter(dumb.rmse_1var, y, s=52, color=ONE, edgecolors="white", linewidths=0.6,
               zorder=3, label="1-var (constant)")
-    a.scatter(ad.rmse_4var, y, s=52, color=FOUR, edgecolors="white", linewidths=0.6,
+    a.scatter(dumb.rmse_4var, y, s=52, color=FOUR, edgecolors="white", linewidths=0.6,
               zorder=3, label="4-var (segmented)")
     a.set_yticks(y); a.set_yticklabels([f"{c} ({_short_sample(s)})" for c, s in
-                                        zip(ad.Candidate, ad.Sample)], fontsize=7)
+                                        zip(dumb.Candidate, dumb.Sample)],
+                                       fontsize=7 if len(dumb) <= 25 else 5.5)
     a.set_xlabel("in-sample CLR RMSE"); a.set_xlim(left=0)
-    a.set_title("(a) In-sample fit error drops on the 13 refined variants")
+    a.set_title(f"(a) In-sample fit error drops on the {n_ad} refined variants" if len(dumb) == n_ad else
+                f"(a) In-sample fit error — the {len(dumb)} worst 1-var fits of {n_ad} refined")
     a.legend(fontsize=7.5, loc="lower right", framealpha=0.9); a.grid(axis="y", visible=False)
 
     # (b) residual structure by timepoint (adopted) ---------------------------
@@ -146,7 +156,8 @@ def make_figure(bt, rbt, seg):
           linewidth=1.5, label="4-var (segmented)")
     a.set_xticks(xt); a.set_xticklabels([f"T{int(t)}" for t in rbt.transfer])
     a.set_xlabel("transfer"); a.set_ylabel("mean |residual|  (CLR)")
-    a.set_title("(b) The 1-var error is structured — worst at the ends")
+    a.set_title("(b) Where the 1-var misfits: mean |residual| by transfer" if C.IS_LIMS
+                else "(b) The 1-var error is structured — worst at the ends")
     a.legend(fontsize=7.5, loc="upper center", framealpha=0.9); a.grid(axis="x", visible=False)
 
     # (c) in-sample vs out-of-sample error ladder (adopted) -------------------
@@ -163,7 +174,10 @@ def make_figure(bt, rbt, seg):
                    ha="center", va="bottom", fontsize=8.5, fontweight="bold", color=INK)
     a.set_xticks(xt); a.set_xticklabels(groups)
     a.set_ylabel("median CLR RMSE"); a.set_ylim(0, max(v1 + v4) * 1.2)
-    a.set_title("(c) The in-sample edge is optimism — it vanishes out-of-sample")
+    survives = v4[1] < 0.9 * v1[1]
+    a.set_title(("(c) The edge survives out-of-sample (LOOCV, elbow re-learned)" if survives else
+                 "(c) The in-sample edge is optimism — it vanishes out-of-sample") if C.IS_LIMS
+                else "(c) The in-sample edge is optimism — it vanishes out-of-sample")
     a.legend(fontsize=7.5, loc="upper left", framealpha=0.9); a.grid(axis="x", visible=False)
 
     # (d) paired in-sample error across all testable — identical except on 13 -----
@@ -177,7 +191,7 @@ def make_figure(bt, rbt, seg):
               label=f"4-var refines ({len(ad)}) — below")
     a.set_xlim(0, lim); a.set_ylim(0, lim); a.set_aspect("equal")
     a.set_xlabel("1-var in-sample CLR RMSE"); a.set_ylabel("4-var in-sample CLR RMSE")
-    a.set_title(f"(d) Error identical on 224/{len(seg)}; only the 13 drop")
+    a.set_title(f"(d) Error identical on {n_same}/{len(seg)}; only the {n_ad} drop")
     a.legend(fontsize=7.5, loc="lower right", framealpha=0.9)
 
     fig.suptitle(f"Fit error: 1-variable vs 4-variable growth model  [{C.DATASET}]", fontsize=13)
@@ -207,8 +221,13 @@ def main():
     print(f"[s14e] in-sample CLR RMSE (adopted): 1-var={ad.rmse_1var.median():.3f} -> "
           f"4-var={ad.rmse_4var.median():.3f} ({ad.rmse_4var.median()/ad.rmse_1var.median():.2f}× ); "
           f"R² {ad.r2_1var.median():.2f}->{ad.r2_4var.median():.2f}.")
+    if C.IS_LIMS:
+        keep = ad.loocv_rmse_4var.median() < 0.9 * ad.loocv_rmse_1var.median()
+        tail = ("the 4-var's advantage holds out-of-sample" if keep else "in-sample gain is largely optimism")
+    else:
+        tail = "in-sample gain is largely optimism"
     print(f"[s14e] out-of-sample LOOCV RMSE (adopted): 1-var={ad.loocv_rmse_1var.median():.3f} "
-          f"4-var={ad.loocv_rmse_4var.median():.3f}  -> in-sample gain is largely optimism.")
+          f"4-var={ad.loocv_rmse_4var.median():.3f}  -> {tail}.")
     print(f"[s14e] dof-adjusted residual SE (testable): 1-var={bt.rse_dofadj_1var.median():.3f} "
           f"4-var={bt.rse_dofadj_4var.median():.3f}.")
     print("[s14e] wrote model_fit_error.csv, model_fit_error_by_trajectory.csv")

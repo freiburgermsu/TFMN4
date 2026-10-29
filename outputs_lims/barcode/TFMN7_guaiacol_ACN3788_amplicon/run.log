@@ -1,0 +1,165 @@
+======================================================================
+[s01:lims_TFMN7_guaiacol_ACN3788_amplicon] TFMN7verAB | Guaiacol 4 mM + Kan | ACN3788 | amplicon; transfers [1, 2, 3, 4, 17]
+[s01:lims_TFMN7_guaiacol_ACN3788_amplicon] 10 samples, 7585 rows, 3100 distinct Candidates; depth/cell min=2506 median=4182 max=4742
+----------------------------------------------------------------------
+[s02] measured cycle length = 26.72 h/transfer (task stated 10.0 h)
+[s02] sampled-transfer axis:
+        T1      0.1 h   cumgen=1.08
+        T2     33.2 h   cumgen=2.99
+        T3     66.2 h   cumgen=7.41
+        T4     99.7 h   cumgen=10.30
+        T17   462.6 h   cumgen=50.03
+[s02] median Delta g/cycle (focus wells) = 3.02 generations
+[s02] wrote od_time_axis.csv
+----------------------------------------------------------------------
+[s03] 5134 (Sample,Candidate) pairs; 1013 estimable (>=2 timepoints), 4121 single-timepoint (non-estimable).
+[s03] s_per_cycle range (estimable): [-0.511, 0.542]
+[s03] wrote selection_coefficients_long.csv
+----------------------------------------------------------------------
+[s04] growth matrix: 294 variants x 10 samples (1013 filled cells).
+[s04] verA winners across samples: {'A183': 8, 'A166': 2}
+[s04] wrote growth_matrix_selection_per_cycle.csv, growth_matrix_selection_per_generation.csv, sample_summary.csv
+----------------------------------------------------------------------
+[s05] verA: 25 alleles, 8 exceed the drift null (p<0.05).
+[s05] top verA by marginal selection (of 10 samples):
+        A181   s=+0.130/cycle  wins=0  drift_p=0.000
+        A166   s=+0.093/cycle  wins=2  drift_p=0.000
+        A183   s=+0.092/cycle  wins=8  drift_p=0.007
+[s05] wrote allele_effects_verA.csv, allele_effects_verB.csv
+----------------------------------------------------------------------
+[s08] mu_bulk per (Sample,transfer): 38/50 reliable (by transfer: T1 8/10, T2 0/10, T3 10/10, T4 10/10, T17 10/10).
+[s08] reliable mu_bulk median=0.295/h (doubling 2.35 h); tau_exp median=6.2 h
+[s08] community mu_bulk by construct (the only honestly-absolute OD/h number):
+        verABLib_large: median 0.293/h (n=19)
+        verABLib_sub_1: median 0.298/h (n=19)
+[s08] wrote od_bulk_rate.csv, od_bulk_condition_summary.csv
+----------------------------------------------------------------------
+[s09] bridge graph: 1 connected component(s), 45 edges, 183 bridge variants; gen/cycle=3.06
+[s09] overdispersion phi = 0.68  (SEs inflated by 0.82x); weakly-anchored: []
+[s09] beta_per_cycle range [-0.179,+0.315]; 183 bridged / 294 variants
+[s09] wrote variant_bridged_relative.csv, sample_gauge.csv
+----------------------------------------------------------------------
+[s09b] tau^2(between-variant)=0.0005; mean shrinkage lambda=0.22 (single-sample variants shrink hardest)
+[s09b] single-sample mean lambda=0.12  vs multi-sample mean lambda=0.28
+[s09b] wrote variant_pooled.csv
+----------------------------------------------------------------------
+[s10] community mu_bulk interval 0.293-0.298/h, tau_exp=6.2h, gen/cycle=3.06
+[s10] robust (drift-confirmed) alleles: 49; their OD-clock correction is 1.2%-12.5% of mu_bulk
+        verA A181   s=+0.130/cyc  R_OD≈0.316/h (corr 7.1% of bulk)
+        verA A166   s=+0.093/cyc  R_OD≈0.310/h (corr 5.1% of bulk)
+        verA A183   s=+0.092/cyc  R_OD≈0.310/h (corr 5.0% of bulk)
+        verA A119   s=+0.061/cyc  R_OD≈0.305/h (corr 3.3% of bulk)
+        verA A135   s=+0.059/cyc  R_OD≈0.305/h (corr 3.2% of bulk)
+        verA A88    s=-0.057/cyc  R_OD≈0.286/h (corr 3.1% of bulk)
+        verB B2     s=+0.231/cyc  R_OD≈0.332/h (corr 12.5% of bulk)
+        verB B174   s=+0.198/cyc  R_OD≈0.327/h (corr 10.7% of bulk)
+        verB B145   s=+0.190/cyc  R_OD≈0.326/h (corr 10.3% of bulk)
+        verB B142   s=+0.164/cyc  R_OD≈0.321/h (corr 8.9% of bulk)
+        verB B51    s=+0.143/cyc  R_OD≈0.318/h (corr 7.8% of bulk)
+        verB B98    s=+0.142/cyc  R_OD≈0.318/h (corr 7.7% of bulk)
+        verB B27    s=+0.141/cyc  R_OD≈0.318/h (corr 7.7% of bulk)
+        verB B169   s=+0.138/cyc  R_OD≈0.317/h (corr 7.5% of bulk)
+        verB B149   s=+0.132/cyc  R_OD≈0.316/h (corr 7.1% of bulk)
+        verB B130   s=+0.131/cyc  R_OD≈0.316/h (corr 7.1% of bulk)
+        verB B23    s=+0.129/cyc  R_OD≈0.316/h (corr 7.0% of bulk)
+        verB B143   s=+0.113/cyc  R_OD≈0.313/h (corr 6.2% of bulk)
+        verB B71    s=+0.111/cyc  R_OD≈0.313/h (corr 6.0% of bulk)
+        verB B113   s=+0.109/cyc  R_OD≈0.313/h (corr 5.9% of bulk)
+        verB B101   s=+0.102/cyc  R_OD≈0.311/h (corr 5.5% of bulk)
+        verB B177   s=+0.100/cyc  R_OD≈0.311/h (corr 5.4% of bulk)
+        verB B102   s=+0.097/cyc  R_OD≈0.311/h (corr 5.3% of bulk)
+        verB B11    s=+0.093/cyc  R_OD≈0.310/h (corr 5.1% of bulk)
+        verB B140   s=+0.082/cyc  R_OD≈0.308/h (corr 4.5% of bulk)
+        verB B123   s=+0.058/cyc  R_OD≈0.304/h (corr 3.2% of bulk)
+        verB B87    s=+0.053/cyc  R_OD≈0.304/h (corr 2.9% of bulk)
+        verB B120   s=+0.048/cyc  R_OD≈0.303/h (corr 2.6% of bulk)
+        verB B75    s=+0.047/cyc  R_OD≈0.303/h (corr 2.6% of bulk)
+        verB B12    s=+0.032/cyc  R_OD≈0.300/h (corr 1.8% of bulk)
+        verB B168   s=-0.022/cyc  R_OD≈0.292/h (corr 1.2% of bulk)
+        verB B147   s=-0.044/cyc  R_OD≈0.288/h (corr 2.4% of bulk)
+        verB B107   s=-0.048/cyc  R_OD≈0.287/h (corr 2.6% of bulk)
+        verB B108   s=-0.057/cyc  R_OD≈0.286/h (corr 3.1% of bulk)
+        verB B26    s=-0.058/cyc  R_OD≈0.286/h (corr 3.2% of bulk)
+        verB B76    s=-0.059/cyc  R_OD≈0.286/h (corr 3.2% of bulk)
+        verB B81    s=-0.065/cyc  R_OD≈0.285/h (corr 3.6% of bulk)
+        verB B59    s=-0.066/cyc  R_OD≈0.285/h (corr 3.6% of bulk)
+        verB B138   s=-0.071/cyc  R_OD≈0.284/h (corr 3.9% of bulk)
+        verB B104   s=-0.078/cyc  R_OD≈0.283/h (corr 4.2% of bulk)
+        verB B25    s=-0.083/cyc  R_OD≈0.282/h (corr 4.5% of bulk)
+        verB B126   s=-0.085/cyc  R_OD≈0.282/h (corr 4.6% of bulk)
+        verB B162   s=-0.090/cyc  R_OD≈0.281/h (corr 4.9% of bulk)
+        verB B137   s=-0.104/cyc  R_OD≈0.279/h (corr 5.6% of bulk)
+        verB B30    s=-0.107/cyc  R_OD≈0.278/h (corr 5.8% of bulk)
+        verB B16    s=-0.111/cyc  R_OD≈0.278/h (corr 6.0% of bulk)
+        verB B14    s=-0.127/cyc  R_OD≈0.275/h (corr 6.9% of bulk)
+        verB B158   s=-0.128/cyc  R_OD≈0.275/h (corr 7.0% of bulk)
+        verB B55    s=-0.174/cyc  R_OD≈0.267/h (corr 9.4% of bulk)
+[s10] wrote allele_growth_advantage.csv
+----------------------------------------------------------------------
+[s12] large problem: L-BFGS stopped at |grad|=5.21e+01; trust-krylov polish -> |grad|=4.90e-07; max|Δr|=0.0051/h
+[s12] blocked Laplace: 10 logA blocks; max |cross-sample HAA| = 0.00e+00
+[s12] optimize: success=True final_loss=620958.0 grad_norm=4.90e-07 (3100 global rates + 5134 intercepts)
+[s12] community mu_bar=0.295/h; fitted r range [-0.475,0.616]/h; median SE=0.0882
+[s12] FIT QUALITY: freq pseudo-R2=0.887; community-rate (rbar vs mu_bulk) RMSE=0.227/h on 38 cells
+[s12] fastest variants (with slope info):
+        A166-B145  r=0.616±0.003/h (rel +0.322)
+        A166-B113  r=0.600±0.007/h (rel +0.306)
+        A154-B145  r=0.595±0.009/h (rel +0.300)
+        A166-B174  r=0.592±0.003/h (rel +0.297)
+[s12] wrote global_variant_growth_rates.csv
+----------------------------------------------------------------------
+[s12b] bootstrap B=60; median boot SE=0.0110/h, median Laplace SE=0.0882/h
+[s12b] LOSO heterogeneity median=0.0052/h (max=0.085)
+[s12b] absolute-level shift when OD weight 0->20: -0.0688/h; identifiability: {'anchor/prior-driven': 1826, 'mixed': 1274}
+[s12b] wrote augmented global_variant_growth_rates.csv + figures/global_growth_fit.png
+----------------------------------------------------------------------
+[s14] 1013 estimable trajectories; 527 breakpoint-testable (>= 4 obs, >= 2/segment).
+[s14] INCREASING-only: two-phase (accelerating) selected for 2/527 testable (ΔBIC>6 strong evidence AND +Δrate>10%); 520 held constant because their best fit was a DECREASE (not permitted).
+[s14] selected breakpoints (transfer -> #variants): {2: 2}
+[s14] strongest rate switches (by ΔBIC):
+            verABLib_sub_1 A166-B2    r -0.745 -> -0.084/cyc @T2 (ΔBIC=10.1, Δ=89%)
+            verABLib_large A183-B103  r -1.007 -> +0.029/cyc @T2 (ΔBIC=6.7, Δ=103%)
+[s14] wrote segmented_growth_rates.csv
+----------------------------------------------------------------------
+[s14b] model-selection audit: 1013 estimable, 527 testable, 2 adopted increasing, 520 held (decrease), 5 weak-constant.
+[s14b] verA alleles with most adopted accelerations: A183(1), A166(1), A119(0)
+[s14b] cultures with most accelerations: verABLib_sub_1(1), verABLib_large(1)
+[s14b] wrote segmented_model_selection.csv, segmented_sample_summary.csv, segmented_allele_effects.csv
+----------------------------------------------------------------------
+[s14d] 527 testable compared; 1-var==4-var on 525/527 (+486 non-testable), 4-var refines 2.
+[s14d] in-sample (unfair): median wR² 1-var=0.0565 vs 4-var=0.905 (nested).
+[s14d] LOOCV adopted — elbow LEARNED (fair): 1-var=2.353 4-var=3.680 (1/2 better); elbow SUPPLIED: 1-var=2.595 4-var=0.889.
+[s14d] wrote model_comparison_summary.csv, model_comparison_by_trajectory.csv
+[s14d] wrote figures/model_comparison.png
+[s14d] wrote figures/model_comparison_blindspot.png
+----------------------------------------------------------------------
+[s14e] in-sample CLR RMSE (adopted): 1-var=0.648 -> 4-var=0.290 (0.45× ); R² 0.40->0.90.
+[s14e] out-of-sample LOOCV RMSE (adopted): 1-var=2.353 4-var=3.680  -> in-sample gain is largely optimism.
+[s14e] dof-adjusted residual SE (testable): 1-var=3.732 4-var=3.732.
+[s14e] wrote model_fit_error.csv, model_fit_error_by_trajectory.csv
+[s14e] wrote figures/model_fit_error.png
+----------------------------------------------------------------------
+[s06] wrote 3 figures to /home/freiburger/Documents/TFMN4/outputs_lims/barcode/TFMN7_guaiacol_ACN3788_amplicon/figures
+[s07] wrote /home/freiburger/Documents/TFMN4/outputs_lims/barcode/TFMN7_guaiacol_ACN3788_amplicon/figures/growth_matrix_overview.png  (294 variants x 10 samples, 1013 cells, 10 winners marked)
+[s11] wrote /home/freiburger/Documents/TFMN4/outputs_lims/barcode/TFMN7_guaiacol_ACN3788_amplicon/figures/od_anchor_falsification.png
+[s12c] wrote /home/freiburger/Documents/TFMN4/outputs_lims/barcode/TFMN7_guaiacol_ACN3788_amplicon/figures/global_growth_forest_all.png  (3100 variants as a ranked caterpillar; 294 with slope info)
+[s14] wrote figures/segmented_growth_examples.png (2 panels)
+[s14c] wrote figures/segmented_overview.png
+[s14c] wrote figures/segmented_parameters.png
+[s14c] wrote figures/segmented_gallery.png (2 panels)
+[s14c] wrote figures/segmented_allele.png
+[s14c] lims_TFMN7_guaiacol_ACN3788_amplicon: wrote 4 figures for 2 adopted switches.
+======================================================================
+DONE. Headlines (paths below are under outputs_lims/barcode/TFMN7_guaiacol_ACN3788_amplicon/):
+  outputs/growth_matrix_selection_per_cycle.csv  (per-sample, per-variant)
+  outputs/variant_bridged_relative.csv           (cross-sample variant effects)
+  outputs/allele_growth_advantage.csv            (graded allele table + OD-clock)
+  outputs/global_variant_growth_rates.csv        (global static per-variant rate + error)
+  outputs/segmented_growth_rates.csv             (complementary two-phase breakpoint fit)
+  outputs/segmented_{model_selection,sample_summary,allele_effects}.csv  (segmented rollups)
+  outputs/model_comparison_{summary,by_trajectory}.csv                   (1-var vs 4-var)
+  outputs/model_fit_error{,_by_trajectory}.csv                           (1-var vs 4-var fit error)
+  outputs/figures/segmented_{overview,parameters,gallery,allele}.png     (segmented figures)
+  outputs/figures/model_comparison{,_blindspot}.png                      (1-var vs 4-var figures)
+  outputs/figures/model_fit_error.png                                    (1-var vs 4-var fit error)
+  outputs/intermediate/od_bulk_condition_summary.csv  (the one absolute OD/h rate)

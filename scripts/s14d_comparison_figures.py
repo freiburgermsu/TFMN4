@@ -104,7 +104,12 @@ def _fig_headtohead(bt, seg):
                ha="center", va="bottom", fontsize=8.5, fontweight="bold", color=INK)
     a.set_ylabel("LOOCV RMSE ratio  (4-var / 1-var)")
     a.set_ylim(0, max(1.15, max(vals) * 1.25))
-    a.set_title("(d) Out-of-sample: the 4-var edge needs a known elbow")
+    if C.IS_LIMS:
+        from s14d_model_comparison import oos_verdict
+        a.set_title(f"(d) Out-of-sample (elbow learned): {oos_verdict(r_free, better_free, len(ad))}",
+                    fontsize=9.5)
+    else:
+        a.set_title("(d) Out-of-sample: the 4-var edge needs a known elbow")
     a.grid(axis="x", visible=False)
 
     fig.suptitle(f"1-variable vs 4-variable growth model — fair comparison  [{C.DATASET}]", fontsize=13)

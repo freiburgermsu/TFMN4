@@ -27,7 +27,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import config as C
 
-SHORT = lambda s: s.replace("TFMN4.exp2.ACN3788.", "")
+SHORT = lambda s: s.replace(C.SAMPLE_PREFIX, "")
+REL_LABEL = "/".join(f"T{t}" for t in C.RELIABLE_OD_TRANSFERS)   # e.g. "T6/T13"
 
 
 def main():
@@ -58,7 +59,7 @@ def main():
         ax.set_title(f"(a) GO/NO-GO test  —  FAILS\nPearson r = {r:+.2f} (p={p:.2f}); "
                      f"need strongly NEGATIVE to anchor per-variant rates", fontsize=10)
     ax.axhline(0, color="k", lw=0.6)
-    ax.set_xlabel("OD bulk rate  μ_bulk  (per h, T6/T13)")
+    ax.set_xlabel(f"OD bulk rate  μ_bulk  (per h, {REL_LABEL})")
     ax.set_ylabel("per-sample gauge  γ_c  (per cycle)")
 
     # ---- (b) mu_bulk vs transfer ------------------------------------------
@@ -69,10 +70,10 @@ def main():
     ax.axhspan(rel["mu_bulk_per_h"].mean() - rel["mu_bulk_per_h"].std(),
                rel["mu_bulk_per_h"].mean() + rel["mu_bulk_per_h"].std(),
                color="#cccccc", alpha=0.5, zorder=0,
-               label=f"T6/T13 mean±SD = {rel['mu_bulk_per_h'].mean():.2f}±{rel['mu_bulk_per_h'].std():.2f}")
+               label=f"{REL_LABEL} mean±SD = {rel['mu_bulk_per_h'].mean():.2f}±{rel['mu_bulk_per_h'].std():.2f}")
     ax.set_title("(b) μ_bulk vs transfer  —  one shared constant + noise", fontsize=10)
     ax.set_xlabel("transfer"); ax.set_ylabel("μ_bulk (per h)")
-    ax.set_xticks([3, 4, 6, 13]); ax.legend(fontsize=8)
+    ax.set_xticks(list(C.TRANSFERS)); ax.legend(fontsize=8)
 
     # ---- (c) bridge graph --------------------------------------------------
     ax = axes[1, 0]
@@ -82,21 +83,35 @@ def main():
     ang = {s: 2 * np.pi * k / len(samples) for k, s in enumerate(samples)}
     pos = {s: (np.cos(a), np.sin(a)) for s, a in ang.items()}
     deg = dict(zip(gauge["Sample"], gauge["bridge_degree"]))
+    nmax = max([len(vs[a] & vs[b]) for a, b in itertools.combinations(samples, 2)] + [1])
     for a, b in itertools.combinations(samples, 2):
         n = len(vs[a] & vs[b])
         if n:
             (x0, y0), (x1, y1) = pos[a], pos[b]
-            ax.plot([x0, x1], [y0, y1], color="#bbb", lw=0.4 + 0.35 * n, zorder=1)
+            # LIMS cultures share up to hundreds of variants: scale widths to the max instead
+            lw = (0.4 + 4.0 * n / nmax) if C.IS_LIMS else (0.4 + 0.35 * n)
+            ax.plot([x0, x1], [y0, y1], color="#bbb", lw=lw, zorder=1)
     for s in samples:
         weak = deg.get(s, 9) <= 1
         ax.scatter(*pos[s], s=260, color="#d62728" if weak else "#2ca02c", zorder=3)
-        ax.annotate(SHORT(s), pos[s], fontsize=6, ha="center", va="center", color="white")
-    ax.set_title("(c) Bridge graph: 1 connected component\n(red = weakly anchored, degree 1)", fontsize=10)
-    ax.set_xlim(-1.35, 1.35); ax.set_ylim(-1.35, 1.35); ax.axis("off")
+        if C.IS_LIMS:   # label outside the node (names are longer than the WGS ones)
+            x, y = pos[s]
+            ax.annotate(SHORT(s).replace("verABLib_", ""), (x * 1.16, y * 1.16), fontsize=6.5,
+                        ha="center", va="center", color="#333")
+        else:
+            ax.annotate(SHORT(s), pos[s], fontsize=6, ha="center", va="center", color="white")
+    n_comp = int(gauge["bridge_component"].nunique()) if "bridge_component" in gauge else 1
+    ax.set_title(f"(c) Bridge graph: {n_comp} connected component{'s' if n_comp > 1 else ''}\n"
+                 "(red = weakly anchored, degree 1)", fontsize=10)
+    lim = 1.45 if C.IS_LIMS else 1.35          # room for the outside labels of LIMS runs
+    ax.set_xlim(-lim, lim); ax.set_ylim(-lim, lim); ax.axis("off")
 
     # ---- (d) forest of robust allele effects + OD-clock twin axis ----------
     ax = axes[1, 1]
     rob = allele[allele.robust_selection].sort_values("marginal_s_per_cycle").reset_index(drop=True)
+    n_rob = len(rob)
+    if C.IS_LIMS and n_rob > 30:   # keep the forest legible: 15 most negative + 15 most positive
+        rob = pd.concat([rob.head(15), rob.tail(15)]).reset_index(drop=True)
     y = np.arange(len(rob))
     ax.errorbar(rob["marginal_s_per_cycle"], y, xerr=rob["se"], fmt="o",
                 color="#6a3d9a", capsize=2, zorder=3)
@@ -104,8 +119,9 @@ def main():
     ax.set_yticks(y)
     ax.set_yticklabels([f"{k} {a}" for k, a in zip(rob["allele_kind"], rob["allele"])], fontsize=7)
     ax.set_xlabel("relative selection coefficient  s  (per cycle)")
-    ax.set_title("(d) Drift-confirmed allele effects (relative)\n"
-                 "top axis: same effects on the OD clock → all near μ_bulk", fontsize=10)
+    ax.set_title(("(d) Drift-confirmed allele effects (relative)" if len(rob) == n_rob else
+                  f"(d) Drift-confirmed allele effects — 15 lowest + 15 highest of {n_rob}") +
+                 "\ntop axis: same effects on the OD clock → all near μ_bulk", fontsize=10)
     # twin top axis: OD/h = mu_mid + s/tau  (a linear remap of the bottom axis)
     def s2od(s): return mu_mid + s / tau
     def od2s(o): return (o - mu_mid) * tau

@@ -16,6 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import config as C
 import s01_prepare_data
 import s02_time_axis
 import s03_estimate_growth
@@ -75,7 +76,8 @@ def main():
     except Exception as e:
         print(f"[figures] skipped ({type(e).__name__}: {e})")
     print("=" * 70)
-    print("DONE. Headlines:")
+    o = str(C.OUT.relative_to(C.ROOT))
+    print("DONE. Headlines:" if o == "outputs" else f"DONE. Headlines (paths below are under {o}/):")
     print("  outputs/growth_matrix_selection_per_cycle.csv  (per-sample, per-variant)")
     print("  outputs/variant_bridged_relative.csv           (cross-sample variant effects)")
     print("  outputs/allele_growth_advantage.csv            (graded allele table + OD-clock)")

@@ -20,11 +20,16 @@ import numpy as np
 #   wgs               - SeqCenter WGS extracted barcodes, 11 samples, transfers {3,4,6,13}
 #   amplicon_4MXB     - Plasmidsaurus amplicon, well B4 on 4-methoxybenzoate, {3,4,13}
 #   amplicon_pyruvate - Plasmidsaurus amplicon, well B4 on pyruvate, {3,4,13}
+#   lims_<name>       - one environment extracted from the LIMS mirror DB by
+#                       scripts/lims01_extract.py (lims_data/manifest.json lists them;
+#                       e.g. lims_TFMN7_guaiacol_ACN3788_amplicon) -> outputs_lims/barcode/<name>/
 # ---------------------------------------------------------------------------
 ROOT = Path(__file__).resolve().parent.parent
 BARCODE_CSV = ROOT / "SeqCenter_2026-05-26_QUO1022807_exp2_extracted_barcodes.csv"
 OD_CSV = ROOT / "TFMN4_robotic_OD_processed_final.csv"
 AMPLICON_READS = ROOT / "amplicon_data/Plasmidsaurus_2026-06-10_X2VH94/amplicons_reads.csv"
+
+LIMS_MANIFEST = ROOT / "lims_data" / "manifest.json"
 
 DATASET = os.environ.get("TFMN4_DATASET", "wgs")
 _CFG = {
@@ -35,6 +40,22 @@ _CFG = {
     "amplicon_pyruvate": dict(out="outputs_amplicon_pyruvate", transfers=(3, 4, 13), reliable_od=(4, 13),
                               od_series="exp1", od_condition="Pyruvate 20 mM + Kan", amplicon_carbon="p"),
 }
+IS_LIMS = DATASET.startswith("lims_")
+LIMS = None                                 # the manifest entry of a lims_* dataset
+LIMS_BARCODES = None
+if IS_LIMS:
+    import json
+    if not LIMS_MANIFEST.exists():
+        raise SystemExit(f"{LIMS_MANIFEST} missing - run scripts/lims01_extract.py first")
+    _lims = {d["id"]: d for d in json.loads(LIMS_MANIFEST.read_text())["barcode_datasets"]}
+    if DATASET not in _lims:
+        raise SystemExit(f"Unknown TFMN4_DATASET={DATASET!r}; LIMS datasets: {sorted(_lims)}")
+    LIMS = _lims[DATASET]
+    _CFG[DATASET] = dict(out=LIMS["out"], transfers=tuple(LIMS["transfers"]),
+                         reliable_od=tuple(LIMS["reliable_od"]), od_series=None,
+                         od_condition=None, amplicon_carbon=None)
+    LIMS_BARCODES = ROOT / LIMS["barcodes_csv"]
+    OD_CSV = ROOT / LIMS["od_csv"]          # this dataset's wells only (pre-filtered)
 if DATASET not in _CFG:
     raise SystemExit(f"Unknown TFMN4_DATASET={DATASET!r}; choose from {list(_CFG)}")
 _c = _CFG[DATASET]
@@ -52,6 +73,11 @@ FIG = OUT / "figures"
 for _d in (OUT, INTER, FIG):
     _d.mkdir(parents=True, exist_ok=True)
 
+# Display prefix stripped from Sample names in tables/figures (culture-name stem).
+SAMPLE_PREFIX = LIMS["sample_prefix"] if IS_LIMS else "TFMN4.exp2.ACN3788."
+# First/last sampled transfers: the span used for generations-per-cycle (legacy: T3->T13).
+T_FIRST, T_LAST = TRANSFERS[0], TRANSFERS[-1]
+
 
 def read_focus_od(usecols, focus_wells):
     """Read the OD file filtered to this dataset's series/condition and the given
@@ -59,7 +85,8 @@ def read_focus_od(usecols, focus_wells):
     import pandas as pd
     need = sorted(set(list(usecols) + ["series", "Condition", "Microtiter_plate_well"]))
     od = pd.read_csv(OD_CSV, usecols=need)
-    od = od[od["series"].astype(str) == OD_SERIES]
+    if OD_SERIES is not None:              # LIMS OD exports are pre-filtered to the run/plate
+        od = od[od["series"].astype(str) == OD_SERIES]
     if OD_CONDITION is not None:
         od = od[od["Condition"].astype(str) == OD_CONDITION]
     od = od[od["Microtiter_plate_well"].astype(str).isin(set(map(str, focus_wells)))]
@@ -86,6 +113,8 @@ MIN_OBS_TIMEPOINTS = 2
 #   - NOMINAL : 10 h/transfer, as stated in the original task description.
 HOURS_PER_TRANSFER_MEASURED = 26.4
 HOURS_PER_TRANSFER_NOMINAL = 10.0
+if IS_LIMS:   # measured from this dataset's own OD instrument timestamps (lims01)
+    HOURS_PER_TRANSFER_MEASURED = float(LIMS["hours_per_transfer_measured"])
 
 # Robustness bounds for the OD-derived generations-per-cycle estimate (Delta g).
 OD_INOCULUM_FLOOR = 0.01      # net OD floor for the post-dilution inoculum

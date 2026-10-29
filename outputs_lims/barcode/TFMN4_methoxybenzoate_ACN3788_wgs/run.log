@@ -1,0 +1,126 @@
+======================================================================
+[s01:lims_TFMN4_methoxybenzoate_ACN3788_wgs] TFMN4 | Methoxybenzoate 4 mM + Kan | ACN3788 | wgs; transfers [3, 4, 6, 13]
+[s01:lims_TFMN4_methoxybenzoate_ACN3788_wgs] 11 samples, 908 rows, 314 distinct Candidates; depth/cell min=101 median=190 max=274
+----------------------------------------------------------------------
+[s02] measured cycle length = 26.38 h/transfer (task stated 10.0 h)
+[s02] sampled-transfer axis:
+        T3     53.0 h   cumgen=5.08
+        T4     79.7 h   cumgen=9.02
+        T6    132.8 h   cumgen=16.18
+        T13   317.6 h   cumgen=39.63
+[s02] median Delta g/cycle (focus wells) = 3.31 generations
+[s02] wrote od_time_axis.csv
+----------------------------------------------------------------------
+[s03] 460 (Sample,Candidate) pairs; 237 estimable (>=2 timepoints), 223 single-timepoint (non-estimable).
+[s03] s_per_cycle range (estimable): [-0.372, 0.668]
+[s03] wrote selection_coefficients_long.csv
+----------------------------------------------------------------------
+[s04] growth matrix: 168 variants x 11 samples (237 filled cells).
+[s04] verA winners across samples: {'A81': 6, 'A83': 2, 'A20': 1, 'A78': 1, 'A196': 1}
+[s04] wrote growth_matrix_selection_per_cycle.csv, growth_matrix_selection_per_generation.csv, sample_summary.csv
+----------------------------------------------------------------------
+[s05] verA: 16 alleles, 4 exceed the drift null (p<0.05).
+[s05] top verA by marginal selection (of 11 samples):
+        A185   s=+0.146/cycle  wins=0  drift_p=0.033
+        A90    s=+0.104/cycle  wins=0  drift_p=0.000
+        A78    s=+0.061/cycle  wins=1  drift_p=0.010
+[s05] wrote allele_effects_verA.csv, allele_effects_verB.csv
+----------------------------------------------------------------------
+[s08] mu_bulk per (Sample,transfer): 26/44 reliable (by transfer: T3 1/11, T4 4/11, T6 10/11, T13 11/11).
+[s08] reliable mu_bulk median=0.318/h (doubling 2.18 h); tau_exp median=7.2 h
+[s08] community mu_bulk by construct (the only honestly-absolute OD/h number):
+        concX: median 0.318/h (n=15)
+        concY: median 0.293/h (n=6)
+[s08] wrote od_bulk_rate.csv, od_bulk_condition_summary.csv
+----------------------------------------------------------------------
+[s09] bridge graph: 1 connected component(s), 38 edges, 51 bridge variants; gen/cycle=3.46
+[s09] overdispersion phi = 2.53  (SEs inflated by 1.59x); weakly-anchored: ['concX_largeLib_SpeI.3']
+[s09] beta_per_cycle range [-0.446,+0.693]; 51 bridged / 168 variants
+[s09] wrote variant_bridged_relative.csv, sample_gauge.csv
+----------------------------------------------------------------------
+[s09b] tau^2(between-variant)=0.0017; mean shrinkage lambda=0.28 (single-sample variants shrink hardest)
+[s09b] single-sample mean lambda=0.23  vs multi-sample mean lambda=0.38
+[s09b] wrote variant_pooled.csv
+----------------------------------------------------------------------
+[s10] community mu_bulk interval 0.293-0.318/h, tau_exp=7.2h, gen/cycle=3.46
+[s10] robust (drift-confirmed) alleles: 10; their OD-clock correction is 1.7%-12.2% of mu_bulk
+        verA A90    s=+0.104/cyc  R_OD≈0.320/h (corr 4.7% of bulk)
+        verA A78    s=+0.061/cyc  R_OD≈0.314/h (corr 2.7% of bulk)
+        verA A196   s=-0.038/cyc  R_OD≈0.300/h (corr 1.7% of bulk)
+        verB B3     s=+0.269/cyc  R_OD≈0.343/h (corr 12.2% of bulk)
+        verB B2     s=+0.139/cyc  R_OD≈0.325/h (corr 6.3% of bulk)
+        verB B79    s=+0.093/cyc  R_OD≈0.318/h (corr 4.2% of bulk)
+        verB B6     s=+0.058/cyc  R_OD≈0.314/h (corr 2.6% of bulk)
+        verB B27    s=-0.107/cyc  R_OD≈0.291/h (corr 4.8% of bulk)
+        verB B137   s=-0.117/cyc  R_OD≈0.289/h (corr 5.3% of bulk)
+        verB B75    s=-0.136/cyc  R_OD≈0.287/h (corr 6.2% of bulk)
+[s10] wrote allele_growth_advantage.csv
+----------------------------------------------------------------------
+[s12] optimize: success=True final_loss=16489.9 grad_norm=2.21e-02 (314 global rates + 460 intercepts)
+[s12] community mu_bar=0.318/h; fitted r range [0.154,0.461]/h; median SE=0.0389
+[s12] FIT QUALITY: freq pseudo-R2=0.946; community-rate (rbar vs mu_bulk) RMSE=0.147/h on 26 cells
+[s12] fastest variants (with slope info):
+        A83-B42    r=0.461±0.010/h (rel +0.143)
+        A78-B79    r=0.434±0.007/h (rel +0.117)
+        A78-B30    r=0.391±0.006/h (rel +0.073)
+        A81-B8     r=0.385±0.007/h (rel +0.067)
+[s12] wrote global_variant_growth_rates.csv
+----------------------------------------------------------------------
+[s12b] bootstrap B=60; median boot SE=0.0195/h, median Laplace SE=0.0388/h
+[s12b] LOSO heterogeneity median=0.0104/h (max=0.045)
+[s12b] absolute-level shift when OD weight 0->20: -0.0312/h; identifiability: {'mixed': 230, 'data-pinned': 44, 'anchor/prior-driven': 40}
+[s12b] wrote augmented global_variant_growth_rates.csv + figures/global_growth_fit.png
+----------------------------------------------------------------------
+[s14] 237 estimable trajectories; 66 breakpoint-testable (>= 4 obs, >= 2/segment).
+[s14] INCREASING-only: two-phase (accelerating) selected for 13/66 testable (ΔBIC>6 strong evidence AND +Δrate>10%); 47 held constant because their best fit was a DECREASE (not permitted).
+[s14] selected breakpoints (transfer -> #variants): {4: 4, 6: 9}
+[s14] strongest rate switches (by ΔBIC):
+        concY_largeLib_PCR_DpnI_cleanup A186-B26   r -0.159 -> -0.019/cyc @T4 (ΔBIC=33.7, Δ=88%)
+        concX_largeLib_SpeI A78-B26    r -0.299 -> +0.446/cyc @T6 (ΔBIC=18.2, Δ=249%)
+        concX_largeLib_SpeI A81-B30    r -0.176 -> +0.259/cyc @T6 (ΔBIC=16.7, Δ=247%)
+        concX_smallLib_PCR_DpnI_cleanup A78-B3     r -0.314 -> +0.151/cyc @T6 (ΔBIC=16.2, Δ=148%)
+[s14] wrote segmented_growth_rates.csv
+----------------------------------------------------------------------
+[s14b] model-selection audit: 237 estimable, 66 testable, 13 adopted increasing, 47 held (decrease), 6 weak-constant.
+[s14b] verA alleles with most adopted accelerations: A78(4), A81(4), A153(1)
+[s14b] cultures with most accelerations: concX_largeLib_SpeI(4), concX_smallLib_PCR_DpnI_cleanup(3), concY_largeLib_PCR_DpnI_cleanup(2)
+[s14b] wrote segmented_model_selection.csv, segmented_sample_summary.csv, segmented_allele_effects.csv
+----------------------------------------------------------------------
+[s14d] 66 testable compared; 1-var==4-var on 53/66 (+171 non-testable), 4-var refines 13.
+[s14d] in-sample (unfair): median wR² 1-var=0.3115 vs 4-var=0.961 (nested).
+[s14d] LOOCV adopted — elbow LEARNED (fair): 1-var=1.707 4-var=1.691 (7/13 better); elbow SUPPLIED: 1-var=0.760 4-var=0.282.
+[s14d] wrote model_comparison_summary.csv, model_comparison_by_trajectory.csv
+[s14d] wrote figures/model_comparison.png
+[s14d] wrote figures/model_comparison_blindspot.png
+----------------------------------------------------------------------
+[s14e] in-sample CLR RMSE (adopted): 1-var=0.397 -> 4-var=0.058 (0.15× ); R² 0.87->1.00.
+[s14e] out-of-sample LOOCV RMSE (adopted): 1-var=1.707 4-var=1.691  -> in-sample gain is largely optimism.
+[s14e] dof-adjusted residual SE (testable): 1-var=1.497 4-var=1.249.
+[s14e] wrote model_fit_error.csv, model_fit_error_by_trajectory.csv
+[s14e] wrote figures/model_fit_error.png
+----------------------------------------------------------------------
+[s06] wrote 3 figures to /home/freiburger/Documents/TFMN4/outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_wgs/figures
+[s07] wrote /home/freiburger/Documents/TFMN4/outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_wgs/figures/growth_matrix_overview.png  (168 variants x 11 samples, 237 cells, 11 winners marked)
+[s11] wrote /home/freiburger/Documents/TFMN4/outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_wgs/figures/od_anchor_falsification.png
+[s12c] wrote /home/freiburger/Documents/TFMN4/outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_wgs/figures/global_growth_forest_all.png  (314 variants; 168 with slope info, 146 prior-driven)
+[s12c] rate range [0.153, 0.461]/h; identifiability: {'mixed': 230, 'data-pinned': 44, 'anchor/prior-driven': 40}
+[s14] wrote figures/segmented_growth_examples.png (6 panels)
+[s14c] wrote figures/segmented_overview.png
+[s14c] wrote figures/segmented_parameters.png
+[s14c] wrote figures/segmented_gallery.png (13 panels)
+[s14c] wrote figures/segmented_allele.png
+[s14c] lims_TFMN4_methoxybenzoate_ACN3788_wgs: wrote 4 figures for 13 adopted switches.
+======================================================================
+DONE. Headlines (paths below are under outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_wgs/):
+  outputs/growth_matrix_selection_per_cycle.csv  (per-sample, per-variant)
+  outputs/variant_bridged_relative.csv           (cross-sample variant effects)
+  outputs/allele_growth_advantage.csv            (graded allele table + OD-clock)
+  outputs/global_variant_growth_rates.csv        (global static per-variant rate + error)
+  outputs/segmented_growth_rates.csv             (complementary two-phase breakpoint fit)
+  outputs/segmented_{model_selection,sample_summary,allele_effects}.csv  (segmented rollups)
+  outputs/model_comparison_{summary,by_trajectory}.csv                   (1-var vs 4-var)
+  outputs/model_fit_error{,_by_trajectory}.csv                           (1-var vs 4-var fit error)
+  outputs/figures/segmented_{overview,parameters,gallery,allele}.png     (segmented figures)
+  outputs/figures/model_comparison{,_blindspot}.png                      (1-var vs 4-var figures)
+  outputs/figures/model_fit_error.png                                    (1-var vs 4-var fit error)
+  outputs/intermediate/od_bulk_condition_summary.csv  (the one absolute OD/h rate)

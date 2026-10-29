@@ -16,3 +16,6 @@ __pycache__/
 
 # Large source zips (extracted copy is committed under amplicon_data/)
 *.zip
+
+# LIMS mirror database (445 MB, re-downloadable); lims_data/ holds the extracted inputs
+lims_mirror*.db

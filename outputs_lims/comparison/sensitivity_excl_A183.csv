@@ -1,0 +1,21 @@
+metric,value
+verA_marginal_spearman_main_vs_excl,0.9995
+verA_robust_main,23
+verA_robust_excl,22
+verA_robust_only_in_main,A183
+verA_robust_only_in_excl,
+verB_marginal_spearman_main_vs_excl,0.9993
+verB_robust_main,57
+verB_robust_excl,57
+verB_robust_only_in_main,B63
+verB_robust_only_in_excl,B79
+A183_marginal_s_per_cycle_main,+0.206 (robust True); excluded from the sensitivity run
+A81_marginal_s_per_cycle_main_vs_excl,+0.016 vs +0.021 (robust True vs True)
+A90_marginal_s_per_cycle_main_vs_excl,-0.116 vs -0.112 (robust True vs True)
+A78_marginal_s_per_cycle_main_vs_excl,-0.036 vs -0.032 (robust True vs True)
+global_rel_advantage_spearman_main_vs_excl,0.9969
+global_rel_advantage_max_abs_change_per_h,0.0414
+top12_fastest_overlap,11/12
+n_breakpoint_testable_main_vs_excl,702 vs 701
+n_two_phase_adopted_increasing_main_vs_excl,53 vs 53
+global_fit_freq_R2_main_vs_excl,0.948 vs 0.960

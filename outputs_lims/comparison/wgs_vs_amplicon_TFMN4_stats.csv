@@ -1,0 +1,17 @@
+,value
+n_cells,44.0
+n_rows,3622.0
+freq_pearson_log,0.7801758741859687
+freq_spearman,0.7641409126329687
+frac_wgs_variants_seen_in_amplicon,0.9504405286343612
+frac_amp_reads_in_wgs_variants,0.8724493668299461
+dominant_variant_agreement,0.8181818181818182
+n_cells_compared,44.0
+n_slope_pairs,236.0
+slope_pearson_same_4T,0.6300599882997773
+slope_spearman_same_4T,0.5965708082801977
+slope_median_diff_amp_minus_wgs,-0.01521580983535616
+n_slope_pairs_4T_vs_8T,893.0
+slope_spearman_amp4T_vs_amp8T,0.8744990192587264
+n_estimable_wgs,237.0
+n_estimable_amp8,1329.0

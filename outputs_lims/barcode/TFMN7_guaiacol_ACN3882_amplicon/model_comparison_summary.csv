@@ -1,0 +1,17 @@
+metric,one_variable,four_variable,interpretation
+free_parameters_per_trajectory,2 (log-abundance + growth rate),"4 (log-abundance, initial rate, final rate, breakpoint)",the models compared
+trajectories_fittable,343,13,1-var needs >=2 obs; 4-var needs >=4 (>=2/segment)
+trajectories_identical_output,343,343,4-var reduces to 1-var where not testable or gates do not fire
+trajectories_where_deployed_differs,0,0,the 4-var only refines these
+median_wR2_on_testable,0.1397,0.9379,"4-var favoured BY CONSTRUCTION (nested, +params) — not a fair basis alone"
+median_wRSS_on_testable,586.2775,16.5251,lower is better; same caveat
+BIC_prefers_4var_of_testable,-,13,unconstrained broken-stick; of 13 (n=5 transfers)
+BIC_prefers_increasing_4var_of_testable,-,0,of 13
+deployed_decision_of_testable,13 keep 1-var,0 upgrade to 4-var,increasing-only AND deltaBIC>6 AND +Δrate>10%
+median_LOOCV_RMSE_adopted_elbow_learned,,,FAIR out-of-sample test (elbow re-learned per fold)
+LOOCV_RMSE_ratio_adopted_elbow_learned,1.00 (parity),,median per-trajectory 4-var/1-var; <1 favours 4-var (not assessable)
+adopted_4var_predicts_better_elbow_learned,-,0/0,the honest predictive score
+median_LOOCV_RMSE_adopted_elbow_supplied,,,elbow FIXED -> isolates the two-phase shape
+LOOCV_RMSE_ratio_adopted_elbow_supplied,1.00 (parity),,elbow supplied: not assessable
+median_abs_single_slope_adopted,,-,what the 1-var reports for the adopted variants
+median_abs_phase_range_adopted,-,,the |r_final - r_init| swing the single slope averages away

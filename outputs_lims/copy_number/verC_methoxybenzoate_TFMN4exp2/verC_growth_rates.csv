@@ -1,0 +1,22 @@
+lineage,genotype,context,rate_per_transfer,se,ci95_lo,ci95_hi,p_value,fold_change_per_transfer,r2,n_points,n_transfers,dof,tier,raw_ci_excludes_0,q_value,call
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.2,ACN3788.concX_largeLib_SpeI_cleanup,TFMN4 concX,0.08557,,,,,1.0893,1.0,2,2,0,rate-only (2 transfers),False,,uncertain (low leverage)
+TFMN4.exp2.ACN3788.concX_smallLib_PCR_DpnI_cleanup.2,ACN3788.concX_smallLib_PCR_DpnI_cleanup,TFMN4 concX,0.02176,,,,,1.022,1.0,2,2,0,rate-only (2 transfers),False,,uncertain (low leverage)
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.5,ACN3788.concX_largeLib_SpeI,TFMN4 concX,0.00604,0.00598,-0.01969,0.03177,0.41871,1.0061,0.3379,4,4,2,reliable,False,0.9112,flat
+TFMN4.exp2.ACN3788.concX_pBAC2264_BglI.2,ACN3788.concX_pBAC2264_BglI,TFMN4 concX,0.00549,0.00274,-0.02935,0.04033,0.29478,1.0055,0.8005,3,3,1,low-leverage (3 transfers),False,,uncertain (low leverage)
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.1,ACN3788.concX_largeLib_SpeI,TFMN4 concX,0.0037,0.01554,-0.06317,0.07057,0.83402,1.0037,0.0275,4,4,2,reliable,False,0.9112,flat
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.3,ACN3788.concX_largeLib_SpeI_cleanup,TFMN4 concX,0.00166,0.00536,-0.02139,0.0247,0.78629,1.0017,0.0457,4,4,2,reliable,False,0.9112,flat
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.2,ACN3788.concX_largeLib_SpeI,TFMN4 concX,0.00076,0.00601,-0.0251,0.02661,0.91123,1.0008,0.0079,4,4,2,reliable,False,0.9112,flat
+TFMN4.exp2.ACN3788.concX_smallLib_PCR_DpnI_cleanup.3,ACN3788.concX_smallLib_PCR_DpnI_cleanup,TFMN4 concX,-0.00264,0.00528,-0.02536,0.02009,0.66729,0.9974,0.1107,4,4,2,reliable,False,0.9112,flat
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.3,ACN3788.concX_largeLib_SpeI,TFMN4 concX,-0.00514,0.00582,-0.03018,0.01991,0.47043,0.9949,0.2804,4,4,2,reliable,False,0.9112,flat
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.4,ACN3788.concX_largeLib_SpeI,TFMN4 concX,-0.00622,0.00168,-0.01343,0.00099,0.0656,0.9938,0.8731,4,4,2,reliable,False,0.7216,flat
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.1,ACN3788.concX_largeLib_SpeI_cleanup,TFMN4 concX,-0.00731,0.01352,-0.06549,0.05086,0.64274,0.9927,0.1276,4,4,2,reliable,False,0.9112,flat
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.5,ACN3788.concX_largeLib_SpeI_cleanup,TFMN4 concX,-0.01229,,,,,0.9878,1.0,2,2,0,rate-only (2 transfers),False,,uncertain (low leverage)
+TFMN4.exp2.ACN3788.concX_smallLib_PCR_DpnI_cleanup.1,ACN3788.concX_smallLib_PCR_DpnI_cleanup,TFMN4 concX,-0.04956,,,,,0.9516,1.0,2,2,0,rate-only (2 transfers),False,,uncertain (low leverage)
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.4,ACN3788.concX_largeLib_SpeI_cleanup,TFMN4 concX,-0.06987,,,,,0.9325,1.0,2,2,0,rate-only (2 transfers),False,,uncertain (low leverage)
+TFMN4.exp2.ACN3788.concX_largeLib_PCR_DpnI_cleanup.1,ACN3788.concX_largeLib_PCR_DpnI_cleanup,TFMN4 concX,-0.08282,,,,,0.9205,1.0,2,2,0,rate-only (2 transfers),False,,uncertain (low leverage)
+TFMN4.exp2.ACN3788.concX_largeLib_PCR_DpnI_cleanup.3,ACN3788.concX_largeLib_PCR_DpnI_cleanup,TFMN4 concX,-0.15217,,,,,0.8588,1.0,2,2,0,rate-only (2 transfers),False,,uncertain (low leverage)
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.3,ACN3788.concY_largeLib_PCR_DpnI_cleanup,TFMN4 concY,0.00743,0.00579,-0.0175,0.03236,0.32823,1.0075,0.4513,4,4,2,reliable,False,0.9112,flat
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.4,ACN3788.concY_largeLib_PCR_DpnI_cleanup,TFMN4 concY,0.00328,0.00474,-0.01712,0.02367,0.56094,1.0033,0.1928,4,4,2,reliable,False,0.9112,flat
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.2,ACN3788.concY_largeLib_PCR_DpnI_cleanup,TFMN4 concY,0.00147,0.00198,-0.00706,0.00999,0.53658,1.0015,0.2148,4,4,2,reliable,False,0.9112,flat
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.1,ACN3788.concY_largeLib_PCR_DpnI_cleanup,TFMN4 concY,-0.09145,,,,,0.9126,1.0,2,2,0,rate-only (2 transfers),False,,uncertain (low leverage)
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.5,ACN3788.concY_largeLib_PCR_DpnI_cleanup,TFMN4 concY,-0.09235,,,,,0.9118,1.0,2,2,0,rate-only (2 transfers),False,,uncertain (low leverage)

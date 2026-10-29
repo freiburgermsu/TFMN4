@@ -28,7 +28,7 @@ def _matrix(res, value_col, only_estimable=True):
         df.loc[~df["estimable"], value_col] = np.nan
     m = df.pivot_table(index="Candidate", columns="Sample", values=value_col, aggfunc="first")
     # Short, readable Sample column names (drop the common prefix).
-    m.columns = [c.replace("TFMN4.exp2.ACN3788.", "") for c in m.columns]
+    m.columns = [c.replace(C.SAMPLE_PREFIX, "") for c in m.columns]
     # Order variants by how broadly informative they are, then by mean growth.
     m = m.assign(_n=m.notna().sum(axis=1), _mean=m.mean(axis=1, numeric_only=True))
     m = m.sort_values(["_n", "_mean"], ascending=[False, False]).drop(columns=["_n", "_mean"])

@@ -34,12 +34,32 @@ from s14c_segmented_figures import (styled, SURFACE, INK, INK2, MUTED, BASELINE,
 CONTEXT_ORDER = ["TFMN1 single-KO", "TFMN1 double-KO", "TFMN4 exp1", "control (noDNA)"]
 CTX_COLOR = {"TFMN1 single-KO": BLUE, "TFMN1 double-KO": VIOLET,
              "TFMN4 exp1": AQUA, "control (noDNA)": MUTED}
+# categorical slots in the data-viz skill's fixed order, for contexts that only appear in
+# LIMS environments (assigned in sorted order, never cycled; >8 fold into one gray)
+_SLOTS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"]
+
+
+def _context_palette(contexts):
+    """Legacy contexts keep their colours; others take categorical slots in order."""
+    global CONTEXT_ORDER
+    new = sorted(c for c in set(contexts) if c not in CTX_COLOR)
+    controls = [c for c in new if "control" in c]
+    new = [c for c in new if c not in controls]
+    for i, c in enumerate(new):
+        CTX_COLOR[c] = _SLOTS[i] if i < len(_SLOTS) else MUTED
+    for c in controls:
+        CTX_COLOR[c] = MUTED
+    CONTEXT_ORDER = [c for c in CONTEXT_ORDER if c != "control (noDNA)"] + new + \
+        [c for c in controls if c != "control (noDNA)"] + ["control (noDNA)"]
 ONE = MUTED; FOUR = BLUE
 UNREL = "#b9b8b2"
 
 
 def _short(lineage):
-    return str(lineage).replace("TFMN4.exp1.", "").replace("TFMN1.", "")
+    s = str(lineage).replace("TFMN4.exp1.", "").replace("TFMN1.", "")
+    for pre in ("TFMN4.exp2.", "TFMN2.", "TFMN3."):
+        s = s.replace(pre, "")
+    return s
 
 
 @styled
@@ -74,21 +94,25 @@ def fig_forest(rates):
                         fontsize=8, color=col)
     ax.set_yticks(yticks); ax.set_yticklabels(ylabels, fontsize=5.5)
     ax.set_ylim(-1, y - 1)
-    ax.set_xlabel("dgoA copy-number amplification rate  r = d ln(copy_number)/d transfer  (± 95% CI)")
+    ax.set_xlabel(f"{CN.REGION_LABEL} copy-number amplification rate  r = d ln(copy_number)/d transfer  (± 95% CI)")
     ax.set_title(f"Per-variant amplification rate ± error  ·  {len(blocks)} lineages "
                  f"(★ = FDR-significant)", fontsize=12)
-    for c, s, e in ctx_spans:
-        ax.text(1.005, (s + e) / 2, c, transform=ax.get_yaxis_transform(), rotation=270,
-                va="center", ha="left", fontsize=7.5, color=CTX_COLOR.get(c, INK), fontweight="bold")
+    if not CN.IS_LIMS:   # LIMS contexts are small blocks: the legend carries their identity
+        for c, s, e in ctx_spans:
+            ax.text(1.005, (s + e) / 2, c, transform=ax.get_yaxis_transform(), rotation=270,
+                    va="center", ha="left", fontsize=7.5, color=CTX_COLOR.get(c, INK), fontweight="bold")
     handles = [Line2D([0], [0], marker="o", lw=0, color=CTX_COLOR[c], label=c) for c in ctxs]
     handles += [Line2D([0], [0], marker="*", lw=0, color=INK, label="FDR-significant (q<0.05)"),
                 Line2D([0], [0], marker="o", lw=0, markerfacecolor="white", markeredgecolor=UNREL,
                        label="low-leverage (3 transfers) — CI not calibrated")]
-    ax.legend(handles=handles, fontsize=7, loc="lower right", framealpha=0.95)
+    if CN.IS_LIMS:
+        ax.legend(handles=handles, fontsize=7, loc="upper left", bbox_to_anchor=(1.01, 1.0), framealpha=0.95)
+    else:
+        ax.legend(handles=handles, fontsize=7, loc="lower right", framealpha=0.95)
     fig.tight_layout()
-    fig.savefig(CN.FIG / "dgoA_growth_rates_forest.png", dpi=145, bbox_inches="tight")
+    fig.savefig(CN.FIG / f"{CN.TAG}_growth_rates_forest.png", dpi=145, bbox_inches="tight")
     plt.close(fig)
-    print(f"[cn05] wrote figures/dgoA_growth_rates_forest.png ({len(blocks)} variants)")
+    print(f"[cn05] wrote figures/{CN.TAG}_growth_rates_forest.png ({len(blocks)} variants)")
 
 
 @styled
@@ -127,11 +151,11 @@ def fig_examples(long, rates, seg, bt):
         a.set_title(f"{_short(lin)}  ({kind})", fontsize=8.5)
         a.set_xlabel("transfer"); a.set_ylabel("ln(copy number)")
         a.legend(fontsize=6, loc="best", framealpha=0.9)
-    fig.suptitle("dgoA copy-number trajectories — data behind the rates", fontsize=12)
+    fig.suptitle(f"{CN.REGION_LABEL} copy-number trajectories — data behind the rates", fontsize=12)
     fig.tight_layout(rect=[0, 0, 1, 0.96])
-    fig.savefig(CN.FIG / "dgoA_growth_examples.png", dpi=140, bbox_inches="tight")
+    fig.savefig(CN.FIG / f"{CN.TAG}_growth_examples.png", dpi=140, bbox_inches="tight")
     plt.close(fig)
-    print(f"[cn05] wrote figures/dgoA_growth_examples.png ({len(picks)} panels)")
+    print(f"[cn05] wrote figures/{CN.TAG}_growth_examples.png ({len(picks)} panels)")
 
 
 @styled
@@ -162,9 +186,14 @@ def fig_comparison(bt, idx):
     a.scatter(bt.r2_1var, bt.r2_4var_form, s=44, color=FOUR, zorder=3)
     a.set_xlim(-0.02, 1.03); a.set_ylim(-0.02, 1.03); a.set_aspect("equal")
     a.set_xlabel("1-var (straight line) R²"); a.set_ylabel("broken-stick FORM R²")
-    a.set_title("(b) The straight line misses the saturation")
-    a.text(0.03, 0.97, f"median R² {bt.r2_1var.median():.2f} → {bt.r2_4var_form.median():.2f}",
-           transform=a.transAxes, fontsize=8, va="top", color=INK2)
+    a.set_title("(b) In-sample fit: straight line vs broken-stick FORM" if CN.IS_LIMS
+                else "(b) The straight line misses the saturation")
+    if CN.IS_LIMS:   # nested models: the lower-right triangle is always empty
+        a.text(0.97, 0.05, f"median R² {bt.r2_1var.median():.2f} → {bt.r2_4var_form.median():.2f}",
+               transform=a.transAxes, fontsize=8, va="bottom", ha="right", color=INK2)
+    else:
+        a.text(0.03, 0.97, f"median R² {bt.r2_1var.median():.2f} → {bt.r2_4var_form.median():.2f}",
+               transform=a.transAxes, fontsize=8, va="top", color=INK2)
 
     a = ax[1, 0]; a.set_axisbelow(True)
     dc = bt.unconstrained_direction.value_counts()
@@ -175,7 +204,11 @@ def fig_comparison(bt, idx):
         a.text(b.get_x() + b.get_width() / 2, v + 0.2, str(v), ha="center", va="bottom",
                fontsize=11, fontweight="bold", color=INK)
     a.set_ylabel("# testable lineages"); a.set_ylim(0, max(vals) * 1.25)
-    a.set_title("(c) Copy number mostly saturates")
+    if CN.IS_LIMS:
+        top = ["decelerating (saturation)", "accelerating", "flat"][int(np.argmax(vals))]
+        a.set_title(f"(c) Best broken-stick direction: mostly {top} ({max(vals)}/{sum(vals)})")
+    else:
+        a.set_title("(c) Copy number mostly saturates")
     a.grid(axis="x", visible=False)
 
     a = ax[1, 1]
@@ -186,12 +219,23 @@ def fig_comparison(bt, idx):
     nb = int((g.loto_rmse_form < g.loto_rmse_1var).sum())
     a.set_xlim(0, lim); a.set_ylim(0, lim); a.set_aspect("equal")
     a.set_xlabel("1-var LOTO RMSE"); a.set_ylabel("broken-stick FORM LOTO RMSE")
-    a.set_title("(d) Out-of-sample: a modest broken-stick edge")
-    a.text(0.96, 0.06, f"FORM better on {nb}/{len(g)}\nmedian {g.loto_rmse_1var.median():.2f} → "
-           f"{g.loto_rmse_form.median():.2f} (not significant)", transform=a.transAxes,
-           ha="right", va="bottom", fontsize=7.5, color=INK2)
+    if CN.IS_LIMS:
+        from scipy import stats as _st
+        dd = (g.loto_rmse_1var - g.loto_rmse_form); dd = dd[dd != 0]
+        pw = float(_st.wilcoxon(dd)[1]) if len(dd) >= 1 else np.nan
+        verdict = ((f"FORM significantly {'better' if np.median(dd) > 0 else 'worse'}")
+                   if np.isfinite(pw) and pw < 0.05 else "not significant")
+        a.set_title("(d) Out-of-sample (leave-one-transfer-out) error")
+        a.text(0.96, 0.06, f"FORM better on {nb}/{len(g)}\nmedian {g.loto_rmse_1var.median():.2f} → "
+               f"{g.loto_rmse_form.median():.2f} (Wilcoxon p={pw:.2f}, {verdict})", transform=a.transAxes,
+               ha="right", va="bottom", fontsize=7.5, color=INK2)
+    else:
+        a.set_title("(d) Out-of-sample: a modest broken-stick edge")
+        a.text(0.96, 0.06, f"FORM better on {nb}/{len(g)}\nmedian {g.loto_rmse_1var.median():.2f} → "
+               f"{g.loto_rmse_form.median():.2f} (not significant)", transform=a.transAxes,
+               ha="right", va="bottom", fontsize=7.5, color=INK2)
 
-    fig.suptitle("1-variable vs 4-variable growth model — dgoA copy number", fontsize=13)
+    fig.suptitle(f"1-variable vs 4-variable growth model — {CN.REGION_LABEL} copy number", fontsize=13)
     fig.tight_layout(rect=[0, 0, 1, 0.97])
     fig.savefig(CN.FIG / "model_comparison.png", dpi=140, bbox_inches="tight")
     plt.close(fig)
@@ -219,7 +263,8 @@ def fig_fit_error(bt):
     nb = int((g.loto_rmse_form < g.loto_rmse_1var).sum())
     a.set_xlim(0, lim); a.set_ylim(0, lim); a.set_aspect("equal")
     a.set_xlabel("1-var LOTO RMSE"); a.set_ylabel("broken-stick LOTO RMSE")
-    a.set_title(f"(b) Out-of-sample ({nb}/{len(g)} below line, modest)")
+    a.set_title(f"(b) Out-of-sample ({nb}/{len(g)} below line)" if CN.IS_LIMS
+                else f"(b) Out-of-sample ({nb}/{len(g)} below line, modest)")
     a.text(0.96, 0.06, f"median {g.loto_rmse_1var.median():.2f} → {g.loto_rmse_form.median():.2f}",
            transform=a.transAxes, ha="right", va="bottom", fontsize=8, color=INK2)
     a = ax[2]
@@ -234,9 +279,10 @@ def fig_fit_error(bt):
         a.text(xi + wd / 2, b4 + 0.004, f"{b4:.2f}", ha="center", va="bottom", fontsize=8.5, fontweight="bold")
     a.set_xticks(xt); a.set_xticklabels(["in-sample", "out-of-sample\n(LOTO)"])
     a.set_ylabel("median ln(CN) RMSE"); a.set_ylim(0, max(v1 + v4) * 1.25)
-    a.set_title("(c) In-sample gain is large; out-of-sample modest")
+    a.set_title("(c) In-sample vs out-of-sample error" if CN.IS_LIMS
+                else "(c) In-sample gain is large; out-of-sample modest")
     a.legend(fontsize=8, loc="upper left", framealpha=0.9); a.grid(axis="x", visible=False)
-    fig.suptitle("Fit error: 1-variable line vs 4-variable broken-stick — dgoA copy number", fontsize=12)
+    fig.suptitle(f"Fit error: 1-variable line vs 4-variable broken-stick — {CN.REGION_LABEL} copy number", fontsize=12)
     fig.tight_layout(rect=[0, 0, 1, 0.94])
     fig.savefig(CN.FIG / "model_fit_error.png", dpi=140, bbox_inches="tight")
     plt.close(fig)
@@ -244,12 +290,13 @@ def fig_fit_error(bt):
 
 
 def main():
-    long = pd.read_csv(CN.INTER / "dgoA_copynumber_long.csv")
-    bt_means = pd.read_csv(CN.INTER / "dgoA_bytransfer.csv")
-    idx = pd.read_csv(CN.INTER / "dgoA_lineage_index.csv")
-    rates = pd.read_csv(CN.OUT / "dgoA_growth_rates.csv")
-    seg = pd.read_csv(CN.OUT / "dgoA_segmented.csv")
+    long = pd.read_csv(CN.INTER / f"{CN.TAG}_copynumber_long.csv")
+    bt_means = pd.read_csv(CN.INTER / f"{CN.TAG}_bytransfer.csv")
+    idx = pd.read_csv(CN.INTER / f"{CN.TAG}_lineage_index.csv")
+    rates = pd.read_csv(CN.OUT / f"{CN.TAG}_growth_rates.csv")
+    seg = pd.read_csv(CN.OUT / f"{CN.TAG}_segmented.csv")
     bt = pd.read_csv(CN.OUT / "model_comparison_by_lineage.csv")
+    _context_palette(rates["context"].dropna())
     fig_forest(rates)
     fig_examples(long, rates, seg, bt_means)
     fig_comparison(bt, idx)

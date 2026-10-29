@@ -78,8 +78,12 @@ def main():
         return res.x
 
     ones_row = np.ones_like(cnt0); ones_cell = np.ones(nc)
-    p_map = solve(cnt0, ones_row, ones_cell, W_OD, W_R,
-                  np.concatenate([np.full(n_var, mu_bar), np.asarray(logA0)]), maxiter=3000)
+    sol = C.INTER / "s12_solution.npy"      # written by s12 for large (LIMS) problems only
+    if sol.exists() and np.load(sol).shape == (n_par,):
+        p_map = np.load(sol)                 # the converged s12 optimum of the same loss
+    else:
+        p_map = solve(cnt0, ones_row, ones_cell, W_OD, W_R,
+                      np.concatenate([np.full(n_var, mu_bar), np.asarray(logA0)]), maxiter=3000)
     r_map = p_map[:n_var]
 
     # ---- (2) bootstrap: resample counts per cell + jitter mu_bulk ----

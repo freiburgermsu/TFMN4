@@ -44,6 +44,27 @@ BLUE = "#2a78d6"; BLUE_LIGHT = "#9ec5f4"; BLUE_DARK = "#256abf"
 ORANGE = "#eb6834"; AQUA = "#1baf7a"; VIOLET = "#4a3aa7"; GOOD = "#0ca30c"
 ADOPTED = BLUE; HELD = ORANGE; WEAK = MUTED
 BP_COLOR = {4: AQUA, 6: VIOLET}
+# Ordinal one-hue ramps for the breakpoint transfer of LIMS datasets (knots are ordered
+# in time). Documented blue steps, validated with the data-viz validator (--ordinal);
+# at most five steps pass, so >5 distinct knots are grouped into five consecutive bins.
+_KNOT_RAMPS = {1: [BLUE], 2: ["#86b6ef", "#0d366b"], 3: ["#86b6ef", "#256abf", "#0d366b"],
+               4: ["#86b6ef", "#3987e5", "#1c5cab", "#0d366b"],
+               5: ["#86b6ef", "#3987e5", "#256abf", "#184f95", "#0d366b"]}
+MAX_DUMBBELL_ROWS = 40     # per-variant rows in a dumbbell before it stops being legible
+MAX_GALLERY_PANELS = 48    # small multiples shown (top by ΔBIC); the CSV lists every fit
+MAX_ALLELE_ROWS = 25       # alleles per tally panel
+
+
+def bp_color_map(knots):
+    """Breakpoint transfer -> colour (legacy datasets: their original aqua/violet)."""
+    if not C.IS_LIMS:
+        return BP_COLOR
+    ks = sorted({int(k) for k in pd.Series(knots).dropna()})
+    if not ks:
+        return {}
+    if len(ks) <= 5:
+        return dict(zip(ks, _KNOT_RAMPS[len(ks)]))
+    return {int(k): _KNOT_RAMPS[5][i] for i, g in enumerate(np.array_split(np.array(ks), 5)) for k in g}
 
 
 import functools
@@ -77,9 +98,9 @@ def _set_style():   # retained as a no-op for import compatibility; styling is n
 
 
 def _short_sample(s):
-    s = s.replace("TFMN4.exp2.ACN3788.", "")
+    s = s.replace(C.SAMPLE_PREFIX, "")
     reps = [("concX", "cX"), ("concY", "cY"), ("largeLib", "lg"), ("smallLib", "sm"),
-            ("PCR_DpnI", "PD"), ("_cleanup", "·cl"), ("SpeI", "Sp")]
+            ("PCR_DpnI", "PD"), ("_cleanup", "·cl"), ("SpeI", "Sp"), ("verABLib_", "")]
     for a, b in reps:
         s = s.replace(a, b)
     return s
@@ -232,23 +253,28 @@ def fig_parameters(r, cls):
         return
     adopted = adopted.sort_values("r_final_per_cycle")
     transfers = list(C.FOUR_TRANSFER_SET); t0 = transfers[0]
+    BPC = bp_color_map(adopted.breakpoint_transfer)
     fig, ax = plt.subplots(2, 2, figsize=(13, 10))
 
     # (a) dumbbell r_init -> r_final ---------------------------------------
     a = ax[0, 0]
-    y = np.arange(len(adopted))
-    a.hlines(y, adopted.r_init_per_cycle, adopted.r_final_per_cycle,
+    dumb = adopted
+    if len(adopted) > MAX_DUMBBELL_ROWS:
+        dumb = adopted.nlargest(MAX_DUMBBELL_ROWS, "abs_rate_change").sort_values("r_final_per_cycle")
+    y = np.arange(len(dumb))
+    a.hlines(y, dumb.r_init_per_cycle, dumb.r_final_per_cycle,
              color=BASELINE, lw=2.2, zorder=1)
-    a.scatter(adopted.r_init_per_cycle, y, s=55, color=BLUE_LIGHT, edgecolors=BLUE_DARK,
+    a.scatter(dumb.r_init_per_cycle, y, s=55, color=BLUE_LIGHT, edgecolors=BLUE_DARK,
               linewidths=1, zorder=3, label="r_init (initial rate)")
-    a.scatter(adopted.r_final_per_cycle, y, s=55, color=BLUE_DARK, zorder=3,
+    a.scatter(dumb.r_final_per_cycle, y, s=55, color=BLUE_DARK, zorder=3,
               label="r_final (final rate)")
     a.axvline(0, color=BASELINE, lw=1, ls="--")
     a.set_yticks(y)
     a.set_yticklabels([f"{c}  ({_short_sample(s)})" for c, s in
-                       zip(adopted.Candidate, adopted.Sample)], fontsize=7)
+                       zip(dumb.Candidate, dumb.Sample)], fontsize=7 if len(dumb) <= 25 else 5.5)
     a.set_xlabel("growth rate (per cycle)")
-    a.set_title("(a) Initial → final rate per adopted variant")
+    a.set_title("(a) Initial → final rate per adopted variant" if len(dumb) == len(adopted) else
+                f"(a) Initial → final rate — {len(dumb)} largest accelerations of {len(adopted)}")
     a.legend(fontsize=7.5, loc="lower right", framealpha=0.9)
     a.grid(axis="y", visible=False)
 
@@ -257,7 +283,7 @@ def fig_parameters(r, cls):
     bpc = adopted.breakpoint_transfer.value_counts().sort_index()
     xs = list(bpc.index)
     bars = a.bar([f"T{int(t)}" for t in xs], bpc.values,
-                 color=[BP_COLOR.get(int(t), BLUE) for t in xs], edgecolor=SURFACE, linewidth=2, width=0.6)
+                 color=[BPC.get(int(t), BLUE) for t in xs], edgecolor=SURFACE, linewidth=2, width=0.6)
     for b, v in zip(bars, bpc.values):
         a.text(b.get_x() + b.get_width() / 2, v, f"{int(v)}", ha="center", va="bottom",
                fontsize=11, fontweight="bold", color=INK)
@@ -270,7 +296,7 @@ def fig_parameters(r, cls):
     a = ax[1, 0]
     for t in sorted(adopted.breakpoint_transfer.unique()):
         s = adopted[adopted.breakpoint_transfer == t]
-        a.scatter(s.logA_init, s.abs_rate_change, s=55, color=BP_COLOR.get(int(t), BLUE),
+        a.scatter(s.logA_init, s.abs_rate_change, s=55, color=BPC.get(int(t), BLUE),
                   edgecolors="white", linewidths=0.6, label=f"τ = T{int(t)}", zorder=3)
     a.set_xlabel("initial abundance  logA_init  (CLR at first transfer)")
     a.set_ylabel("acceleration  r_final − r_init  (per cycle)")
@@ -284,13 +310,13 @@ def fig_parameters(r, cls):
         kt = float(row.breakpoint_transfer)
         yy = row.r_init_per_cycle * (xx - t0) + \
             (row.r_final_per_cycle - row.r_init_per_cycle) * np.maximum(0.0, xx - kt)
-        a.plot(xx, yy, color=BP_COLOR.get(int(kt), BLUE), lw=1.3, alpha=0.7)
+        a.plot(xx, yy, color=BPC.get(int(kt), BLUE), lw=1.3, alpha=0.7)
     a.axhline(0, color=BASELINE, lw=0.8)
     for t in sorted(adopted.breakpoint_transfer.unique()):
-        a.axvline(t, color=BP_COLOR.get(int(t), BLUE), lw=1, ls=":")
+        a.axvline(t, color=BPC.get(int(t), BLUE), lw=1, ls=":")
     a.set_xlabel("Transfer"); a.set_ylabel("fitted CLR change from t₀")
     a.set_title("(d) Acceleration shapes (normalized to 0 at t₀)")
-    handles = [Line2D([0], [0], color=BP_COLOR.get(int(t), BLUE), lw=2, label=f"τ = T{int(t)}")
+    handles = [Line2D([0], [0], color=BPC.get(int(t), BLUE), lw=2, label=f"τ = T{int(t)}")
                for t in sorted(adopted.breakpoint_transfer.unique())]
     a.legend(handles=handles, fontsize=7.5, loc="upper left", framealpha=0.9)
 
@@ -307,6 +333,8 @@ def fig_gallery(r, cls, d4):
     adopted = cls["adopted"].sort_values("delta_bic", ascending=False)
     if adopted.empty:
         return
+    n_all = len(adopted)
+    adopted = adopted.head(MAX_GALLERY_PANELS)
     transfers = list(C.FOUR_TRANSFER_SET); x0, xN = transfers[0], transfers[-1]
     xx = np.linspace(x0, xN, 200)
     n = len(adopted); ncol = 4; nrow = int(np.ceil(n / ncol))
@@ -350,7 +378,9 @@ def fig_gallery(r, cls, d4):
                Line2D([0], [0], color=ADOPTED, lw=2.2, label="two-phase fit")]
     fig.legend(handles=handles, fontsize=8.5, loc="lower center", ncol=3, framealpha=0.9,
                bbox_to_anchor=(0.5, -0.01))
-    fig.suptitle(f"Every adopted increasing two-phase fit  ({n})  [{C.DATASET}]", fontsize=13)
+    fig.suptitle(f"Every adopted increasing two-phase fit  ({n})  [{C.DATASET}]" if n == n_all else
+                 f"Strongest {n} of {n_all} adopted increasing two-phase fits (by ΔBIC; all in "
+                 f"segmented_growth_rates.csv)  [{C.DATASET}]", fontsize=13)
     fig.tight_layout(rect=[0.01, 0.03, 1, 0.96])
     fig.savefig(C.FIG / "segmented_gallery.png", dpi=140, bbox_inches="tight")
     plt.close(fig)
@@ -367,6 +397,9 @@ def fig_allele(alle, cls):
         a = ax[j]
         sub = alle[(alle.level == level) & (alle.n_accelerating > 0)].sort_values(
             "n_accelerating", ascending=True)
+        n_al = len(sub)
+        if n_al > MAX_ALLELE_ROWS:
+            sub = sub.tail(MAX_ALLELE_ROWS)
         if sub.empty:
             a.set_title(f"({'ab'[j]}) {level}: no adopted accelerations"); a.axis("off"); continue
         y = np.arange(len(sub))
@@ -380,7 +413,8 @@ def fig_allele(alle, cls):
                    va="center", fontsize=7.5, color=INK2)
         a.set_yticks(y); a.set_yticklabels(sub.allele, fontsize=8)
         a.set_xlabel("# adopted accelerating variants")
-        a.set_title(f"({'ab'[j]}) {level} allele — acceleration tally")
+        a.set_title(f"({'ab'[j]}) {level} allele — acceleration tally" if len(sub) == n_al else
+                    f"({'ab'[j]}) {level} — top {len(sub)} of {n_al} accelerating alleles")
         a.grid(axis="y", visible=False)
         a.set_xlim(0, mx * 1.35)
     fig.suptitle(f"Segmented growth model — acceleration by enzyme allele  [{C.DATASET}]", fontsize=13)
