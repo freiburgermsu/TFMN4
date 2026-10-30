@@ -9,7 +9,9 @@ relative-fitness model.
 
 > The full model derivation, identifiability analysis, and caveats are in
 > [`docs/METHODS.md`](docs/METHODS.md). Output column definitions are in
-> [`docs/DATA_DICTIONARY.md`](docs/DATA_DICTIONARY.md).
+> [`docs/DATA_DICTIONARY.md`](docs/DATA_DICTIONARY.md). To browse every figure, open
+> [`figure_atlas.html`](figure_atlas.html) in a browser from a checkout (rebuild it with
+> `scripts/build_figure_atlas.py` after re-running the pipelines).
 
 ---
 
@@ -170,6 +172,7 @@ scripts/
   lims01_extract.py        evaluate the LIMS DB; per-environment inputs -> lims_data/
   lims_run_all.py          run every LIMS environment (barcode + copy number) in parallel
   lims_compare.py          cross-environment comparison + outputs_lims/REPORT.md
+  build_figure_atlas.py    figure_atlas.html: every figure, by dataset and environment, with captions
 docs/
   METHODS.md                model derivation, identifiability, cross-sample integration
   DATA_DICTIONARY.md        every output file + column
