@@ -1,0 +1,6 @@
+fit_error_metric,one_variable,four_variable,interpretation
+in_sample_lnCN_RMSE_FORM,0.032,0.0091,broken-stick FORM vs line (captures saturation)
+in_sample_R2_FORM,0.1928,0.9428,0.1928 -> 0.9428
+out_of_sample_LOTO_RMSE_FORM,0.1281,0.1477,FORM better on 4/11 lineages; Wilcoxon p=0.21 (not significant)
+in_sample_RMSE_DEPLOYED,0.032,0.032,the DEPLOYED increasing-only 4-var differs on only a few lineages
+lineages_identical_error_deployed,11.0,11.0,of 12 estimable

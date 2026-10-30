@@ -35,7 +35,7 @@ def main():
     tau = float(bulk.loc[bulk.reliable & bulk.transfer.isin(list(C.RELIABLE_OD_TRANSFERS)), "tau_exp_h"].median())
 
     ax = pd.read_csv(C.INTER / "od_time_axis.csv").set_index("transfer")["cumgen"]
-    gpc = (ax[13] - ax[3]) / (13 - 3)             # generations per cycle
+    gpc = (ax[C.T_LAST] - ax[C.T_FIRST]) / (C.T_LAST - C.T_FIRST)   # generations per cycle
 
     frames = []
     for part in ("verA", "verB"):

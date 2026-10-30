@@ -115,8 +115,13 @@ def main():
     summ = summ.round(4)
     summ.to_csv(C.INTER / "od_bulk_condition_summary.csv", index=False)
 
+    if C.IS_LIMS:   # report reliability per transfer instead of the WGS-specific expectation
+        byt = bulk.groupby("transfer")["reliable"].agg(["sum", "size"])
+        note = "by transfer: " + ", ".join(f"T{int(t)} {int(r['sum'])}/{int(r['size'])}" for t, r in byt.iterrows())
+    else:
+        note = "T3/T4 mostly unreliable as expected"
     print(f"[s08] mu_bulk per (Sample,transfer): {bulk.reliable.sum()}/{len(bulk)} reliable "
-          f"(T3/T4 mostly unreliable as expected).")
+          f"({note}).")
     print(f"[s08] reliable mu_bulk median={rel['mu_bulk_per_h'].median():.3f}/h "
           f"(doubling {np.log(2)/rel['mu_bulk_per_h'].median():.2f} h); "
           f"tau_exp median={rel['tau_exp_h'].median():.1f} h")

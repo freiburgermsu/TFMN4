@@ -1,0 +1,38 @@
+======================================================================
+[cn01] 78 rows -> 78 measurements (78 per-transfer means) across 34 lineages (ancestral stock verC copy_number=nan).
+[cn01] contexts: TFMN4 concX=22, TFMN4 concY=9, control (noDNA)=3
+[cn01] estimable (>=3 transfers): 12; CI-reliable (>=4 transfers): 11; lineages with technical replicates: 0.
+[cn01] wrote verC_copynumber_long.csv, verC_bytransfer.csv, verC_lineage_index.csv
+----------------------------------------------------------------------
+[cn02] fitted 1-var amplification rate ± SE for 21 lineages (OLS of ln(copy_number) on transfer, per-transfer means).
+[cn02] rate range [-0.152, +0.086]/transfer; median SE=0.006.
+[cn02] tiers: 11 CI-reliable (>=4 transfers), 1 low-leverage (3 transfers), 9 rate-only (2 transfers).
+[cn02] significance among reliable (BH-FDR q<0.05): 0 amplifying, 0 losing (vs 0 lineages whose RAW CI excludes 0 — most are multiplicity/low-leverage artifacts).
+[cn02] per-context median rate:
+        TFMN4 concX        n=16  median r=-0.004/transfer  (0 FDR-amplifying)
+        TFMN4 concY        n= 5  median r=+0.001/transfer  (0 FDR-amplifying)
+[cn02] wrote verC_growth_rates.csv
+----------------------------------------------------------------------
+[cn03] segmented model fit for 12 lineages; 11 breakpoint-testable (>=4 transfers).
+[cn03] increasing two-phase adopted for 1/11 testable (strong-evidence BIC AND +Δrate>10%); 4 held constant because their best fit was a DECREASE (plateau/saturation).
+        TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.2 r -0.026->+0.003/transfer @T4 (ΔBIC=14.8)
+[cn03] wrote verC_segmented.csv
+----------------------------------------------------------------------
+[cn04] 11 testable lineages; deployed 4-var == 1-var on 11/12, differs on 1.
+[cn04] SATURATION: 4/11 testable DECELERATE (amplify then plateau).
+[cn04] in-sample median R² 1-var=0.1928 vs broken-stick FORM=0.9428.
+[cn04] out-of-sample LOTO median RMSE 1-var=0.1281 FORM=0.1477; FORM better on 4/11, Wilcoxon p=0.21 (not significant).
+[cn04] wrote model_comparison_summary.csv, model_comparison_by_lineage.csv, model_fit_error.csv
+----------------------------------------------------------------------
+[cn05] wrote figures/verC_growth_rates_forest.png (21 variants)
+[cn05] wrote figures/verC_growth_examples.png (5 panels)
+[cn05] wrote figures/model_comparison.png
+[cn05] wrote figures/model_fit_error.png
+[cn05] done.
+======================================================================
+DONE. Headlines (outputs_copynumber/):
+  dgoA_growth_rates.csv                     per-variant amplification rate ± error
+  figures/dgoA_growth_rates_forest.png      forest of every variant's rate ± 95% CI
+  dgoA_segmented.csv                        4-variable breakpoint model
+  model_comparison_summary.csv + .png       1-var vs 4-var head-to-head
+  model_fit_error.csv + figures/model_fit_error.png

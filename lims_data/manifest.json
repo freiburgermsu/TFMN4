@@ -1,0 +1,855 @@
+{
+  "source_db": "lims_mirror.backup.db",
+  "source_db_bytes": 444956672,
+  "qc": {
+    "min_depth_amplicon": 500,
+    "min_depth_wgs": 0,
+    "transfer_majority": 0.5,
+    "wgs_transfers": [
+      3,
+      4,
+      6,
+      13
+    ],
+    "unk_alleles": "dropped",
+    "resequenced_cells": "deepest run kept",
+    "controls": "noDNA excluded"
+  },
+  "barcode_datasets": [
+    {
+      "id": "lims_TFMN4_methoxybenzoate_ACN3788_amplicon",
+      "name": "TFMN4_methoxybenzoate_ACN3788_amplicon",
+      "kind": "barcode",
+      "experiment": "TFMN4",
+      "condition": "Methoxybenzoate 4 mM + Kan",
+      "carbon": "methoxybenzoate",
+      "carbon_mM": 4.0,
+      "strain": "ACN3788",
+      "assay": "amplicon",
+      "role": "new analysis",
+      "transfers": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        13
+      ],
+      "cultures": [
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.1",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.2",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.3",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.4",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.5",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.1",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.3",
+        "TFMN4.exp2.ACN3788.concX_smallLib_PCR_DpnI_cleanup.3",
+        "TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.2",
+        "TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.3",
+        "TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.4"
+      ],
+      "robotic_run": "TFMN4",
+      "plate": "exp2",
+      "min_depth": 500,
+      "barcodes_csv": "lims_data/barcodes/TFMN4_methoxybenzoate_ACN3788_amplicon.csv",
+      "sample_prefix": "TFMN4.exp2.ACN3788.",
+      "n_cultures": 11,
+      "n_rows": 7452,
+      "n_variants": 1909,
+      "median_depth": 3926,
+      "min_depth_observed": 2510,
+      "wells": [
+        "B4",
+        "B5",
+        "C4",
+        "C9",
+        "D10",
+        "D4",
+        "D5",
+        "D9",
+        "E4",
+        "E9",
+        "F4"
+      ],
+      "seqorders": [
+        "Plasmidsaurus_2026-06-25_ZQT7PJ",
+        "Plasmidsaurus_2026-06-26_KZGC3B",
+        "Plasmidsaurus_2026-07-09_JF7C2X",
+        "Plasmidsaurus_2026-07-14_PLYG3T"
+      ],
+      "od_csv": "lims_data/od/TFMN4_methoxybenzoate_ACN3788_amplicon.csv",
+      "od_rows": 2167,
+      "od_transfers": 15,
+      "hours_per_transfer_measured": 26.4,
+      "od_well_name_mismatches": 0,
+      "reliable_od": [
+        10,
+        13
+      ],
+      "out": "outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_amplicon"
+    },
+    {
+      "id": "lims_TFMN4_methoxybenzoate_ACN3788_wgs",
+      "name": "TFMN4_methoxybenzoate_ACN3788_wgs",
+      "kind": "barcode",
+      "experiment": "TFMN4",
+      "condition": "Methoxybenzoate 4 mM + Kan",
+      "carbon": "methoxybenzoate",
+      "carbon_mM": 4.0,
+      "strain": "ACN3788",
+      "assay": "wgs",
+      "role": "validation (same data as the repo's WGS CSV)",
+      "transfers": [
+        3,
+        4,
+        6,
+        13
+      ],
+      "cultures": [
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.1",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.2",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.3",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.4",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.5",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.1",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.3",
+        "TFMN4.exp2.ACN3788.concX_smallLib_PCR_DpnI_cleanup.3",
+        "TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.2",
+        "TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.3",
+        "TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.4"
+      ],
+      "robotic_run": "TFMN4",
+      "plate": "exp2",
+      "min_depth": 0,
+      "barcodes_csv": "lims_data/barcodes/TFMN4_methoxybenzoate_ACN3788_wgs.csv",
+      "sample_prefix": "TFMN4.exp2.ACN3788.",
+      "n_cultures": 11,
+      "n_rows": 908,
+      "n_variants": 314,
+      "median_depth": 190,
+      "min_depth_observed": 101,
+      "wells": [
+        "B4",
+        "B5",
+        "C4",
+        "C9",
+        "D10",
+        "D4",
+        "D5",
+        "D9",
+        "E4",
+        "E9",
+        "F4"
+      ],
+      "seqorders": [
+        "SeqCenter_2026-05-26_QUO1022807"
+      ],
+      "od_csv": "lims_data/od/TFMN4_methoxybenzoate_ACN3788_wgs.csv",
+      "od_rows": 2167,
+      "od_transfers": 15,
+      "hours_per_transfer_measured": 26.4,
+      "od_well_name_mismatches": 0,
+      "reliable_od": [
+        6,
+        13
+      ],
+      "out": "outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_wgs"
+    },
+    {
+      "id": "lims_TFMN7_guaiacol_ACN3788_amplicon",
+      "name": "TFMN7_guaiacol_ACN3788_amplicon",
+      "kind": "barcode",
+      "experiment": "TFMN7verAB",
+      "condition": "Guaiacol 4 mM + Kan",
+      "carbon": "guaiacol",
+      "carbon_mM": 4.0,
+      "strain": "ACN3788",
+      "assay": "amplicon",
+      "role": "new analysis",
+      "transfers": [
+        1,
+        2,
+        3,
+        4,
+        17
+      ],
+      "cultures": [
+        "TFMN7verAB.ACN3788.Gua.verABLib_large.1",
+        "TFMN7verAB.ACN3788.Gua.verABLib_large.2",
+        "TFMN7verAB.ACN3788.Gua.verABLib_large.3",
+        "TFMN7verAB.ACN3788.Gua.verABLib_large.4",
+        "TFMN7verAB.ACN3788.Gua.verABLib_large.5",
+        "TFMN7verAB.ACN3788.Gua.verABLib_sub_1.1",
+        "TFMN7verAB.ACN3788.Gua.verABLib_sub_1.2",
+        "TFMN7verAB.ACN3788.Gua.verABLib_sub_1.3",
+        "TFMN7verAB.ACN3788.Gua.verABLib_sub_1.4",
+        "TFMN7verAB.ACN3788.Gua.verABLib_sub_1.5"
+      ],
+      "robotic_run": "TFMN6",
+      "plate": "exp2",
+      "min_depth": 500,
+      "barcodes_csv": "lims_data/barcodes/TFMN7_guaiacol_ACN3788_amplicon.csv",
+      "sample_prefix": "TFMN7verAB.ACN3788.Gua.",
+      "n_cultures": 10,
+      "n_rows": 7585,
+      "n_variants": 3100,
+      "median_depth": 4182,
+      "min_depth_observed": 2506,
+      "wells": [
+        "F10",
+        "F11",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "seqorders": [
+        "Plasmidsaurus_2026-10-09_37MMWP",
+        "Plasmidsaurus_2026-10-14_4W8GBN",
+        "Plasmidsaurus_2026-10-15_8WZ9ZS",
+        "Plasmidsaurus_2026-10-15_XT4RRR",
+        "Plasmidsaurus_2026-10-23_74TJ9W"
+      ],
+      "od_csv": "lims_data/od/TFMN7_guaiacol_ACN3788_amplicon.csv",
+      "od_rows": 2960,
+      "od_transfers": 21,
+      "hours_per_transfer_measured": 26.7,
+      "od_well_name_mismatches": 0,
+      "reliable_od": [
+        4,
+        17
+      ],
+      "out": "outputs_lims/barcode/TFMN7_guaiacol_ACN3788_amplicon"
+    },
+    {
+      "id": "lims_TFMN7_guaiacol_ACN3882_amplicon",
+      "name": "TFMN7_guaiacol_ACN3882_amplicon",
+      "kind": "barcode",
+      "experiment": "TFMN7verAB",
+      "condition": "Guaiacol 4 mM + Kan",
+      "carbon": "guaiacol",
+      "carbon_mM": 4.0,
+      "strain": "ACN3882",
+      "assay": "amplicon",
+      "role": "new analysis",
+      "transfers": [
+        1,
+        2,
+        3,
+        4,
+        17
+      ],
+      "cultures": [
+        "TFMN7verAB.ACN3882.Gua.verABLib_large.2",
+        "TFMN7verAB.ACN3882.Gua.verABLib_large.3",
+        "TFMN7verAB.ACN3882.Gua.verABLib_large.4",
+        "TFMN7verAB.ACN3882.Gua.verABLib_large.5",
+        "TFMN7verAB.ACN3882.Gua.verABLib_sub_1.1",
+        "TFMN7verAB.ACN3882.Gua.verABLib_sub_1.2",
+        "TFMN7verAB.ACN3882.Gua.verABLib_sub_1.3",
+        "TFMN7verAB.ACN3882.Gua.verABLib_sub_1.4",
+        "TFMN7verAB.ACN3882.Gua.verABLib_sub_1.5"
+      ],
+      "robotic_run": "TFMN6",
+      "plate": "exp2",
+      "min_depth": 500,
+      "barcodes_csv": "lims_data/barcodes/TFMN7_guaiacol_ACN3882_amplicon.csv",
+      "sample_prefix": "TFMN7verAB.ACN3882.Gua.",
+      "n_cultures": 9,
+      "n_rows": 7476,
+      "n_variants": 4865,
+      "median_depth": 3766,
+      "min_depth_observed": 640,
+      "wells": [
+        "G10",
+        "G11",
+        "G3",
+        "G4",
+        "G5",
+        "G6",
+        "G7",
+        "G8",
+        "G9"
+      ],
+      "seqorders": [
+        "Plasmidsaurus_2026-10-09_37MMWP",
+        "Plasmidsaurus_2026-10-14_4W8GBN",
+        "Plasmidsaurus_2026-10-15_8WZ9ZS",
+        "Plasmidsaurus_2026-10-15_XT4RRR",
+        "Plasmidsaurus_2026-10-23_74TJ9W"
+      ],
+      "od_csv": "lims_data/od/TFMN7_guaiacol_ACN3882_amplicon.csv",
+      "od_rows": 2664,
+      "od_transfers": 21,
+      "hours_per_transfer_measured": 26.7,
+      "od_well_name_mismatches": 0,
+      "reliable_od": [
+        4,
+        17
+      ],
+      "out": "outputs_lims/barcode/TFMN7_guaiacol_ACN3882_amplicon"
+    },
+    {
+      "id": "lims_TFMN7_isovanillate_ACN3788_amplicon",
+      "name": "TFMN7_isovanillate_ACN3788_amplicon",
+      "kind": "barcode",
+      "experiment": "TFMN7verAB",
+      "condition": "Isovanillate 4 mM + Kan",
+      "carbon": "isovanillate",
+      "carbon_mM": 4.0,
+      "strain": "ACN3788",
+      "assay": "amplicon",
+      "role": "new analysis",
+      "transfers": [
+        1,
+        2,
+        3,
+        4,
+        17
+      ],
+      "cultures": [
+        "TFMN7verAB.ACN3788.Iva.verABLib_large.1",
+        "TFMN7verAB.ACN3788.Iva.verABLib_large.2",
+        "TFMN7verAB.ACN3788.Iva.verABLib_large.3",
+        "TFMN7verAB.ACN3788.Iva.verABLib_large.4"
+      ],
+      "robotic_run": "TFMN6",
+      "plate": "exp2",
+      "min_depth": 500,
+      "barcodes_csv": "lims_data/barcodes/TFMN7_isovanillate_ACN3788_amplicon.csv",
+      "sample_prefix": "TFMN7verAB.ACN3788.Iva.",
+      "n_cultures": 4,
+      "n_rows": 5348,
+      "n_variants": 1272,
+      "median_depth": 4321,
+      "min_depth_observed": 2623,
+      "wells": [
+        "B11",
+        "C11",
+        "D11",
+        "E11"
+      ],
+      "seqorders": [
+        "Plasmidsaurus_2026-10-09_37MMWP",
+        "Plasmidsaurus_2026-10-14_4W8GBN",
+        "Plasmidsaurus_2026-10-15_8WZ9ZS",
+        "Plasmidsaurus_2026-10-15_XT4RRR",
+        "Plasmidsaurus_2026-10-23_74TJ9W"
+      ],
+      "od_csv": "lims_data/od/TFMN7_isovanillate_ACN3788_amplicon.csv",
+      "od_rows": 1184,
+      "od_transfers": 21,
+      "hours_per_transfer_measured": 26.7,
+      "od_well_name_mismatches": 0,
+      "reliable_od": [
+        4,
+        17
+      ],
+      "out": "outputs_lims/barcode/TFMN7_isovanillate_ACN3788_amplicon"
+    },
+    {
+      "id": "lims_TFMN7_methoxybenzoate_ACN3788_amplicon",
+      "name": "TFMN7_methoxybenzoate_ACN3788_amplicon",
+      "kind": "barcode",
+      "experiment": "TFMN7verAB",
+      "condition": "Methoxybenzoate 4 mM + Kan",
+      "carbon": "methoxybenzoate",
+      "carbon_mM": 4.0,
+      "strain": "ACN3788",
+      "assay": "amplicon",
+      "role": "new analysis",
+      "transfers": [
+        1,
+        2,
+        3,
+        4,
+        17
+      ],
+      "cultures": [
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_1.1",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_1.2",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_1.3",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_1.4",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_2.1",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_2.2",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_2.3",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_2.4",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_4.1",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_4.3",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_4.4",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_5.1",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_5.2",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_5.3",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_6.1",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_6.2",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_6.3",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_6.4",
+        "TFMN7verAB.ACN3788.Mxb.verABLib_sub_9.4"
+      ],
+      "robotic_run": "TFMN6",
+      "plate": "exp2",
+      "min_depth": 500,
+      "barcodes_csv": "lims_data/barcodes/TFMN7_methoxybenzoate_ACN3788_amplicon.csv",
+      "sample_prefix": "TFMN7verAB.ACN3788.Mxb.",
+      "n_cultures": 19,
+      "n_rows": 8932,
+      "n_variants": 3178,
+      "median_depth": 4010,
+      "min_depth_observed": 1765,
+      "wells": [
+        "B2",
+        "B3",
+        "B4",
+        "B5",
+        "B6",
+        "C2",
+        "C3",
+        "C5",
+        "C6",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "E2",
+        "E3",
+        "E4",
+        "E6",
+        "E8"
+      ],
+      "seqorders": [
+        "Plasmidsaurus_2026-10-09_37MMWP",
+        "Plasmidsaurus_2026-10-14_4W8GBN",
+        "Plasmidsaurus_2026-10-15_8WZ9ZS",
+        "Plasmidsaurus_2026-10-15_XT4RRR",
+        "Plasmidsaurus_2026-10-23_74TJ9W",
+        "Plasmidsaurus_2026-10-27_YTZT9N"
+      ],
+      "od_csv": "lims_data/od/TFMN7_methoxybenzoate_ACN3788_amplicon.csv",
+      "od_rows": 5624,
+      "od_transfers": 21,
+      "hours_per_transfer_measured": 26.7,
+      "od_well_name_mismatches": 0,
+      "reliable_od": [
+        4,
+        17
+      ],
+      "out": "outputs_lims/barcode/TFMN7_methoxybenzoate_ACN3788_amplicon"
+    },
+    {
+      "id": "lims_TFMN7_veratrate_ACN3788_amplicon",
+      "name": "TFMN7_veratrate_ACN3788_amplicon",
+      "kind": "barcode",
+      "experiment": "TFMN7verAB",
+      "condition": "Veratrate 4 mM + Kan",
+      "carbon": "veratrate",
+      "carbon_mM": 4.0,
+      "strain": "ACN3788",
+      "assay": "amplicon",
+      "role": "new analysis",
+      "transfers": [
+        1,
+        2,
+        3,
+        4,
+        17
+      ],
+      "cultures": [
+        "TFMN7verAB.ACN3788.Ver.verABLib_large.1",
+        "TFMN7verAB.ACN3788.Ver.verABLib_large.2",
+        "TFMN7verAB.ACN3788.Ver.verABLib_large.3",
+        "TFMN7verAB.ACN3788.Ver.verABLib_large.4"
+      ],
+      "robotic_run": "TFMN6",
+      "plate": "exp2",
+      "min_depth": 500,
+      "barcodes_csv": "lims_data/barcodes/TFMN7_veratrate_ACN3788_amplicon.csv",
+      "sample_prefix": "TFMN7verAB.ACN3788.Ver.",
+      "n_cultures": 4,
+      "n_rows": 6732,
+      "n_variants": 1565,
+      "median_depth": 4253,
+      "min_depth_observed": 2747,
+      "wells": [
+        "B10",
+        "C10",
+        "D10",
+        "E10"
+      ],
+      "seqorders": [
+        "Plasmidsaurus_2026-10-09_37MMWP",
+        "Plasmidsaurus_2026-10-14_4W8GBN",
+        "Plasmidsaurus_2026-10-15_8WZ9ZS",
+        "Plasmidsaurus_2026-10-15_XT4RRR",
+        "Plasmidsaurus_2026-10-23_74TJ9W"
+      ],
+      "od_csv": "lims_data/od/TFMN7_veratrate_ACN3788_amplicon.csv",
+      "od_rows": 1184,
+      "od_transfers": 21,
+      "hours_per_transfer_measured": 26.7,
+      "od_well_name_mismatches": 0,
+      "reliable_od": [
+        4,
+        17
+      ],
+      "out": "outputs_lims/barcode/TFMN7_veratrate_ACN3788_amplicon"
+    },
+    {
+      "id": "lims_TFMN4_methoxybenzoate_ACN3788_amplicon_excl_A183",
+      "name": "TFMN4_methoxybenzoate_ACN3788_amplicon_excl_A183",
+      "kind": "barcode",
+      "experiment": "TFMN4",
+      "condition": "Methoxybenzoate 4 mM + Kan",
+      "carbon": "methoxybenzoate",
+      "carbon_mM": 4.0,
+      "strain": "ACN3788",
+      "assay": "amplicon",
+      "role": "sensitivity: TFMN4_methoxybenzoate_ACN3788_amplicon without A183 (all partners)",
+      "transfers": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        10,
+        13
+      ],
+      "cultures": [
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.1",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.2",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.3",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.4",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI.5",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.1",
+        "TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.3",
+        "TFMN4.exp2.ACN3788.concX_smallLib_PCR_DpnI_cleanup.3",
+        "TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.2",
+        "TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.3",
+        "TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.4"
+      ],
+      "robotic_run": "TFMN4",
+      "plate": "exp2",
+      "min_depth": 500,
+      "barcodes_csv": "lims_data/barcodes/TFMN4_methoxybenzoate_ACN3788_amplicon_excl_A183.csv",
+      "sample_prefix": "TFMN4.exp2.ACN3788.",
+      "n_cultures": 11,
+      "n_rows": 7387,
+      "n_variants": 1889,
+      "median_depth": 3830,
+      "min_depth_observed": 2176,
+      "wells": [
+        "B4",
+        "B5",
+        "C4",
+        "C9",
+        "D10",
+        "D4",
+        "D5",
+        "D9",
+        "E4",
+        "E9",
+        "F4"
+      ],
+      "seqorders": [
+        "Plasmidsaurus_2026-06-25_ZQT7PJ",
+        "Plasmidsaurus_2026-06-26_KZGC3B",
+        "Plasmidsaurus_2026-07-09_JF7C2X",
+        "Plasmidsaurus_2026-07-14_PLYG3T"
+      ],
+      "od_csv": "lims_data/od/TFMN4_methoxybenzoate_ACN3788_amplicon.csv",
+      "od_rows": 2167,
+      "od_transfers": 15,
+      "hours_per_transfer_measured": 26.4,
+      "od_well_name_mismatches": 0,
+      "reliable_od": [
+        10,
+        13
+      ],
+      "out": "outputs_lims/barcode/TFMN4_methoxybenzoate_ACN3788_amplicon_excl_A183",
+      "excluded": [
+        "A183 (all partners)"
+      ],
+      "excluded_verA": [
+        "A183"
+      ],
+      "exclusion_reason": "verA A183 is essentially absent from all 11 TFMN4 cultures through T8 (10 reads in 66 culture-transfers, ~260k reads) and from every WGS sample (0 reads, incl. T13), then appears at T10/T13 in all 11 cultures at once - dominated by A183-B63 (6-30% at T10, 11-25% at T13; ~30 WGS reads per culture expected at T13, 0 seen) plus a dozen other A183 pairings at 1-6 reads - and only in the two June 2026 amplicon orders (ZQT7PJ, KZGC3B) -> suspected contamination of the T10/T13 amplicon material by an A183-carrying population"
+    }
+  ],
+  "copy_number_datasets": [
+    {
+      "id": "lims_cn_dgoA_pyruvate_EASy",
+      "name": "dgoA_pyruvate_EASy",
+      "kind": "copy_number",
+      "region": "dgoA-Star",
+      "tag": "dgoA",
+      "carbon": "pyruvate",
+      "conditions": [
+        "Pyruvate 20 mM + Kan"
+      ],
+      "platform": "EASy",
+      "experiments": [
+        "EASyTwist25",
+        "EASyUnchar22"
+      ],
+      "cn_csv": "lims_data/copy_number/dgoA_pyruvate_EASy.csv",
+      "out": "outputs_lims/copy_number/dgoA_pyruvate_EASy",
+      "n_lineages": 22,
+      "n_rows": 90,
+      "n_lineages_ge3_transfers": 22,
+      "n_lineages_ge4_transfers": 22,
+      "transfers": [
+        203,
+        207,
+        214,
+        218,
+        239,
+        267,
+        286,
+        358,
+        474,
+        488,
+        504,
+        537,
+        593,
+        642
+      ],
+      "seqorders": [
+        "SeqCenter_2026-06-23_QUO1023432"
+      ]
+    },
+    {
+      "id": "lims_cn_dgoA_pyruvate_TFMN1-TFMN4exp1",
+      "name": "dgoA_pyruvate_TFMN1-TFMN4exp1",
+      "kind": "copy_number",
+      "region": "dgoA-star",
+      "tag": "dgoA",
+      "carbon": "pyruvate",
+      "conditions": [
+        "Pyruvate 20 mM + Kan"
+      ],
+      "platform": "TFMN",
+      "experiments": [
+        "TFMN1",
+        "TFMN4"
+      ],
+      "cn_csv": "lims_data/copy_number/dgoA_pyruvate_TFMN1-TFMN4exp1.csv",
+      "out": "outputs_lims/copy_number/dgoA_pyruvate_TFMN1-TFMN4exp1",
+      "n_lineages": 105,
+      "n_rows": 392,
+      "n_lineages_ge3_transfers": 73,
+      "n_lineages_ge4_transfers": 24,
+      "transfers": [
+        1,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        18,
+        20,
+        25,
+        30,
+        32
+      ],
+      "seqorders": [
+        "Plasmidsaurus_2025-12-22_MQRBN8",
+        "Plasmidsaurus_2026-05-09_KPF9J2",
+        "SeqCenter_2026-05-26_QUO1022807"
+      ]
+    },
+    {
+      "id": "lims_cn_KanR_pyruvate_EASy",
+      "name": "KanR_pyruvate_EASy",
+      "kind": "copy_number",
+      "region": "Kanamycin",
+      "tag": "KanR",
+      "carbon": "pyruvate",
+      "conditions": [
+        "Pyruvate 20 mM + Kan"
+      ],
+      "platform": "EASy",
+      "experiments": [
+        "EASyTwist25",
+        "EASyUnchar22"
+      ],
+      "cn_csv": "lims_data/copy_number/KanR_pyruvate_EASy.csv",
+      "out": "outputs_lims/copy_number/KanR_pyruvate_EASy",
+      "n_lineages": 22,
+      "n_rows": 90,
+      "n_lineages_ge3_transfers": 22,
+      "n_lineages_ge4_transfers": 22,
+      "transfers": [
+        203,
+        207,
+        214,
+        218,
+        239,
+        267,
+        286,
+        358,
+        474,
+        488,
+        504,
+        537,
+        593,
+        642
+      ],
+      "seqorders": [
+        "SeqCenter_2026-06-23_QUO1023432"
+      ]
+    },
+    {
+      "id": "lims_cn_verAB_isovanillate_TFMN2",
+      "name": "verAB_isovanillate_TFMN2",
+      "kind": "copy_number",
+      "region": "verAB",
+      "tag": "verAB",
+      "carbon": "isovanillate",
+      "conditions": [
+        "Isovanillate 3 mM + Kan"
+      ],
+      "platform": "TFMN",
+      "experiments": [
+        "TFMN2"
+      ],
+      "cn_csv": "lims_data/copy_number/verAB_isovanillate_TFMN2.csv",
+      "out": "outputs_lims/copy_number/verAB_isovanillate_TFMN2",
+      "n_lineages": 21,
+      "n_rows": 165,
+      "n_lineages_ge3_transfers": 21,
+      "n_lineages_ge4_transfers": 21,
+      "transfers": [
+        1,
+        2,
+        3,
+        7,
+        13,
+        20
+      ],
+      "seqorders": [
+        "Plasmidsaurus_2026-03-04_GFHFWC",
+        "Plasmidsaurus_2026-03-24_YWLYRK",
+        "Plasmidsaurus_2026-04-13_WTN32D"
+      ]
+    },
+    {
+      "id": "lims_cn_verAB_methoxybenzoate_TFMN2-TFMN3",
+      "name": "verAB_methoxybenzoate_TFMN2-TFMN3",
+      "kind": "copy_number",
+      "region": "verAB",
+      "tag": "verAB",
+      "carbon": "methoxybenzoate",
+      "conditions": [
+        "Methoxybenzoate 3 mM + Kan"
+      ],
+      "platform": "TFMN",
+      "experiments": [
+        "TFMN2",
+        "TFMN3"
+      ],
+      "cn_csv": "lims_data/copy_number/verAB_methoxybenzoate_TFMN2-TFMN3.csv",
+      "out": "outputs_lims/copy_number/verAB_methoxybenzoate_TFMN2-TFMN3",
+      "n_lineages": 26,
+      "n_rows": 80,
+      "n_lineages_ge3_transfers": 4,
+      "n_lineages_ge4_transfers": 4,
+      "transfers": [
+        1,
+        2,
+        5,
+        8,
+        12
+      ],
+      "seqorders": [
+        "Plasmidsaurus_2026-03-04_GFHFWC",
+        "Plasmidsaurus_2026-03-24_YWLYRK",
+        "Plasmidsaurus_2026-04-13_WTN32D",
+        "SeqCenter_2026-09-01_QUO1024636"
+      ]
+    },
+    {
+      "id": "lims_cn_verAB_vanillate_TFMN2",
+      "name": "verAB_vanillate_TFMN2",
+      "kind": "copy_number",
+      "region": "verAB",
+      "tag": "verAB",
+      "carbon": "vanillate",
+      "conditions": [
+        "Vanillate 3 mM + Kan"
+      ],
+      "platform": "TFMN",
+      "experiments": [
+        "TFMN2"
+      ],
+      "cn_csv": "lims_data/copy_number/verAB_vanillate_TFMN2.csv",
+      "out": "outputs_lims/copy_number/verAB_vanillate_TFMN2",
+      "n_lineages": 15,
+      "n_rows": 112,
+      "n_lineages_ge3_transfers": 15,
+      "n_lineages_ge4_transfers": 15,
+      "transfers": [
+        1,
+        2,
+        3,
+        7,
+        13,
+        20
+      ],
+      "seqorders": [
+        "Plasmidsaurus_2026-03-04_GFHFWC",
+        "Plasmidsaurus_2026-03-24_YWLYRK",
+        "Plasmidsaurus_2026-04-13_WTN32D"
+      ]
+    },
+    {
+      "id": "lims_cn_verC_methoxybenzoate_TFMN4exp2",
+      "name": "verC_methoxybenzoate_TFMN4exp2",
+      "kind": "copy_number",
+      "region": "verC",
+      "tag": "verC",
+      "carbon": "methoxybenzoate",
+      "conditions": [
+        "Methoxybenzoate 4 mM + Kan"
+      ],
+      "platform": "TFMN",
+      "experiments": [
+        "TFMN4"
+      ],
+      "cn_csv": "lims_data/copy_number/verC_methoxybenzoate_TFMN4exp2.csv",
+      "out": "outputs_lims/copy_number/verC_methoxybenzoate_TFMN4exp2",
+      "n_lineages": 34,
+      "n_rows": 78,
+      "n_lineages_ge3_transfers": 12,
+      "n_lineages_ge4_transfers": 11,
+      "transfers": [
+        3,
+        4,
+        6,
+        13
+      ],
+      "seqorders": [
+        "SeqCenter_2026-05-26_QUO1022807"
+      ]
+    }
+  ],
+  "cn_region_redundancy": {
+    "verAB_vs_ver_cassette_pearson": 0.9793,
+    "n_shared_samples": 281
+  },
+  "n_reads_unk_dropped": 47814,
+  "n_cells_failed_depth": 8,
+  "n_cells_superseded": 3
+}

@@ -20,7 +20,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import numpy as np
 import pandas as pd
 import config as C
-from s13_joint_4MXB import load_combined, build, fit_point, OUT, W_B
+from s13_joint_4MXB import load_combined, build, fit_point, OUT, W_B, REFIT_GNORM
+from newton_solver import GRAD_TOL
 
 
 def main():
@@ -52,6 +53,8 @@ def main():
                                  + res["se_heterogeneity_loso"].fillna(0) ** 2).round(4)
     res.to_csv(OUT / "joint_variant_growth_rates_4MXB.csv", index=False)
 
+    print(f"[s13b] {len(REFIT_GNORM)} refits: max final |grad| = {max(REFIT_GNORM):.1e} "
+          f"(converged: {max(REFIT_GNORM) < GRAD_TOL})")
     print(f"[s13b] b_amp under weak ridge = {b_w:+.4f} (strong={b_s:+.4f}); "
           f"median r sensitivity to assay-drift = {np.nanmedian(list(sens.values())):.4f}/h")
     print(f"[s13b] LOSO-by-well heterogeneity: median={np.nanmedian(list(het.values())):.4f}/h, "
@@ -59,7 +62,7 @@ def main():
     both = res[res.evidence_tier == "both-deep"]
     print(f"[s13b] both-deep: median se_joint={both.se_joint.median():.4f} vs "
           f"median se_heterogeneity={both.se_heterogeneity_loso.median():.4f} "
-          f"(heterogeneity often >= sampling -> cross-culture variation dominates)")
+          f"(heterogeneity >= sampling in {np.mean(both.se_heterogeneity_loso >= both.se_joint):.0%} of them)")
     print("[s13b] augmented joint_variant_growth_rates_4MXB.csv")
 
 

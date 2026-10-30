@@ -1,0 +1,23 @@
+lineage,genotype,context,rate_per_transfer,se,ci95_lo,ci95_hi,p_value,fold_change_per_transfer,r2,n_points,n_transfers,dof,tier,raw_ci_excludes_0,q_value,call
+EASyTwist25.LdgoATlarge.D,EASyTwist25.LdgoATlarge,EASyTwist25 LdgoATlarge,-0.00585,0.00643,-0.03353,0.02184,0.45936,0.9942,0.2923,4,4,2,reliable,False,0.5053,flat
+EASyTwist25.LdgoATlarge.C,EASyTwist25.LdgoATlarge,EASyTwist25 LdgoATlarge,-0.00642,0.00661,-0.03487,0.02203,0.43391,0.9936,0.3205,4,4,2,reliable,False,0.5024,flat
+EASyTwist25.LdgoATlarge.B,EASyTwist25.LdgoATlarge,EASyTwist25 LdgoATlarge,-0.00764,0.00399,-0.02482,0.00954,0.19595,0.9924,0.6465,4,4,2,reliable,False,0.4734,flat
+EASyTwist25.LdgoATlarge.A,EASyTwist25.LdgoATlarge,EASyTwist25 LdgoATlarge,-0.00837,0.0052,-0.03073,0.01398,0.24838,0.9917,0.5649,4,4,2,reliable,False,0.4734,flat
+EASyTwist25.LdgoATlarge.E,EASyTwist25.LdgoATlarge,EASyTwist25 LdgoATlarge,-0.01002,0.00164,-0.01707,-0.00298,0.02566,0.99,0.9493,4,4,2,reliable,True,0.2823,flat
+EASyTwist25.LdgoATsmall.E,EASyTwist25.LdgoATsmall,EASyTwist25 LdgoATsmall,-0.00627,0.00454,-0.02582,0.01327,0.30134,0.9937,0.4881,4,4,2,reliable,False,0.4734,flat
+EASyTwist25.LdgoATsmall.C,EASyTwist25.LdgoATsmall,EASyTwist25 LdgoATsmall,-0.00704,0.00582,-0.0321,0.01802,0.35034,0.993,0.4221,4,4,2,reliable,False,0.4734,flat
+EASyTwist25.LdgoATsmall.B,EASyTwist25.LdgoATsmall,EASyTwist25 LdgoATsmall,-0.00839,0.00765,-0.04132,0.02454,0.38734,0.9916,0.3753,4,4,2,reliable,False,0.4734,flat
+EASyTwist25.LdgoATsmall.D,EASyTwist25.LdgoATsmall,EASyTwist25 LdgoATsmall,-0.01132,0.01029,-0.05561,0.03298,0.38632,0.9887,0.3766,4,4,2,reliable,False,0.4734,flat
+EASyTwist25.LdgoATsmall.A,EASyTwist25.LdgoATsmall,EASyTwist25 LdgoATsmall,-0.01192,0.00936,-0.05219,0.02834,0.33063,0.9881,0.4481,4,4,2,reliable,False,0.4734,flat
+EASyUnchar22.LdgoA3.E,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,0.00579,0.0019,-0.00241,0.01398,0.0934,1.0058,0.8219,4,4,2,reliable,False,0.2935,flat
+EASyUnchar22.LdgoA3.I,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,0.00262,0.00033,0.00118,0.00405,0.0159,1.0026,0.9685,4,4,2,reliable,True,0.2823,flat
+EASyUnchar22.LdgoA3.C,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,0.00181,0.00145,-0.00444,0.00807,0.33844,1.0018,0.4377,4,4,2,reliable,False,0.4734,flat
+EASyUnchar22.LdgoA3.B,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,-0.00066,0.00151,-0.00717,0.00585,0.707,0.9993,0.0858,4,4,2,reliable,False,0.707,flat
+EASyUnchar22.LdgoA3.J,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,-0.01036,0.00646,-0.03816,0.01743,0.24986,0.9897,0.5627,4,4,2,reliable,False,0.4734,flat
+EASyUnchar22.LdgoA3.H,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,-0.01108,0.00263,-0.0224,0.00023,0.05197,0.989,0.8988,4,4,2,reliable,False,0.2935,flat
+EASyUnchar22.LdgoA3.D,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,-0.01185,0.00306,-0.02499,0.0013,0.06054,0.9882,0.8826,4,4,2,reliable,False,0.2935,flat
+EASyUnchar22.LdgoA3.G,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,-0.01205,0.0035,-0.0271,0.00301,0.07497,0.988,0.8557,4,4,2,reliable,False,0.2935,flat
+EASyUnchar22.LdgoA3.F,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,-0.01324,0.00499,-0.03471,0.00824,0.11764,0.9869,0.7786,4,4,2,reliable,False,0.3235,flat
+EASyUnchar22.LdgoA3.A,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,-0.01884,0.00579,-0.04373,0.00605,0.08276,0.9813,0.8413,4,4,2,reliable,False,0.2935,flat
+EASyUnchar22.noDNA,EASyUnchar22.noDNA,control (noDNA),0.00365,0.00303,-0.00476,0.01206,0.29424,1.0037,0.2667,6,6,4,reliable,False,0.4734,flat
+EASyTwist25.noDNA,EASyTwist25.noDNA,control (noDNA),-0.00077,0.00115,-0.00572,0.00418,0.57203,0.9992,0.1832,4,4,2,reliable,False,0.5993,flat

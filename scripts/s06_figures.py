@@ -18,7 +18,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import config as C
 
-SHORT = lambda s: s.replace("TFMN4.exp2.ACN3788.", "")
+SHORT = lambda s: s.replace(C.SAMPLE_PREFIX, "")
 
 
 def main():

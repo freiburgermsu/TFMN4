@@ -1,0 +1,46 @@
+[lims01] lims_mirror.backup.db: 31 tables; verAB_barcodes 75624 live rows in 15 orders (1501404 reads; 47814 UNK-allele reads dropped).
+[lims01] barcode cells: 436 (culture x transfer x order); 3 superseded by deeper re-sequencing, 8 failed depth QC (<500 amplicon reads).
+[lims01] noDNA control cells with barcode reads: 1; single-timepoint (not modelable) seqsamples: 105.
+[lims01] 8 barcode datasets (one per experiment x environment x strain x assay):
+        TFMN4_methoxybenzoate_ACN3788_amplicon     11 cultures  T[2, 3, 4, 5, 6, 8, 10, 13]  1909 variants  median depth 3926  26.4 h/transfer
+        TFMN4_methoxybenzoate_ACN3788_wgs          11 cultures  T[3, 4, 6, 13]   314 variants  median depth 190  26.4 h/transfer
+        TFMN7_guaiacol_ACN3788_amplicon            10 cultures  T[1, 2, 3, 4, 17]  3100 variants  median depth 4182  26.7 h/transfer
+        TFMN7_guaiacol_ACN3882_amplicon             9 cultures  T[1, 2, 3, 4, 17]  4865 variants  median depth 3766  26.7 h/transfer
+        TFMN7_isovanillate_ACN3788_amplicon         4 cultures  T[1, 2, 3, 4, 17]  1272 variants  median depth 4321  26.7 h/transfer
+        TFMN7_methoxybenzoate_ACN3788_amplicon     19 cultures  T[1, 2, 3, 4, 17]  3178 variants  median depth 4010  26.7 h/transfer
+        TFMN7_veratrate_ACN3788_amplicon            4 cultures  T[1, 2, 3, 4, 17]  1565 variants  median depth 4253  26.7 h/transfer
+        TFMN4_methoxybenzoate_ACN3788_amplicon_excl_A183 11 cultures  T[2, 3, 4, 5, 6, 8, 10, 13]  1889 variants  median depth 3830  26.4 h/transfer
+[lims01] 7 copy-number datasets (region x carbon source x platform):
+        dgoA_pyruvate_EASy                          22 lineages (22 with >=4 transfers)
+        dgoA_pyruvate_TFMN1-TFMN4exp1              105 lineages (24 with >=4 transfers)
+        KanR_pyruvate_EASy                          22 lineages (22 with >=4 transfers)
+        verAB_isovanillate_TFMN2                    21 lineages (21 with >=4 transfers)
+        verAB_methoxybenzoate_TFMN2-TFMN3           26 lineages (4 with >=4 transfers)
+        verAB_vanillate_TFMN2                       15 lineages (15 with >=4 transfers)
+        verC_methoxybenzoate_TFMN4exp2              34 lineages (11 with >=4 transfers)
+[lims01] wrote lims_data/manifest.json + barcodes/ od/ copy_number/ inventory/
+[lims] JAX backend: gpu; running 15 environment pipelines (8 in parallel, at most 2 barcode) ...
+[lims] cn      verAB_methoxybenzoate_TFMN2-TFMN3            ok               0.0 min
+[lims] cn      verAB_vanillate_TFMN2                        ok               0.0 min
+[lims] cn      dgoA_pyruvate_EASy                           ok               0.0 min
+[lims] cn      KanR_pyruvate_EASy                           ok               0.0 min
+[lims] cn      verAB_isovanillate_TFMN2                     ok               0.1 min
+[lims] cn      dgoA_pyruvate_TFMN1-TFMN4exp1                ok               0.1 min
+[lims] cn      verC_methoxybenzoate_TFMN4exp2               ok               0.0 min
+[lims] barcode TFMN4_methoxybenzoate_ACN3788_wgs            ok               0.6 min
+[lims] barcode TFMN4_methoxybenzoate_ACN3788_amplicon       ok               3.2 min
+[lims] barcode TFMN7_guaiacol_ACN3788_amplicon              ok               9.6 min
+[lims] barcode TFMN7_isovanillate_ACN3788_amplicon          ok               3.9 min
+[lims] barcode TFMN7_methoxybenzoate_ACN3788_amplicon       ok              14.9 min
+[lims] barcode TFMN7_guaiacol_ACN3882_amplicon              ok              27.6 min
+[lims] barcode TFMN7_veratrate_ACN3788_amplicon             ok               3.4 min
+[lims] barcode TFMN4_methoxybenzoate_ACN3788_amplicon_excl_A183 ok               3.7 min
+[lims_compare] wrote figures/environment_overview.png
+[lims_compare] wrote figures/allele_effects_heatmap.png
+[lims_compare] wrote figures/allele_concordance.png
+[lims_compare] wrote figures/top_variants_by_environment.png
+[lims_compare] wrote figures/wgs_vs_amplicon_TFMN4.png
+[lims_compare] wrote figures/copy_number_by_environment.png
+[lims_compare] wrote figures/sensitivity.png
+[lims_compare] 8 barcode + 7 copy-number environments summarised; wrote outputs_lims/comparison/ and outputs_lims/REPORT.md
+[lims] DONE -> outputs_lims/ (REPORT.md, comparison/, barcode/<env>/, copy_number/<env>/)

@@ -31,8 +31,8 @@ FDR_Q = 0.05
 
 
 def main():
-    bt = pd.read_csv(CN.INTER / "dgoA_bytransfer.csv")
-    idx = pd.read_csv(CN.INTER / "dgoA_lineage_index.csv").set_index("lineage")
+    bt = pd.read_csv(CN.INTER / f"{CN.TAG}_bytransfer.csv")
+    idx = pd.read_csv(CN.INTER / f"{CN.TAG}_lineage_index.csv").set_index("lineage")
     rows = []
     for lin, g in bt.groupby("lineage"):
         g = g.sort_values("transfer")
@@ -71,7 +71,7 @@ def main():
     res["p_value"] = res["p_value"].round(5)
     res["q_value"] = res["q_value"].round(4)
     res = res.sort_values(["context", "rate_per_transfer"], ascending=[True, False])
-    res.to_csv(CN.OUT / "dgoA_growth_rates.csv", index=False)
+    res.to_csv(CN.OUT / f"{CN.TAG}_growth_rates.csv", index=False)
 
     n = len(res); nrel = int(rel.sum())
     amp = res[res.call == "amplifying"]; los = res[res.call == "losing"]
@@ -94,7 +94,7 @@ def main():
     for c, g in res.groupby("context"):
         print(f"        {c:18s} n={len(g):2d}  median r={g.rate_per_transfer.median():+.3f}/transfer  "
               f"({int((g.call=='amplifying').sum())} FDR-amplifying)")
-    print("[cn02] wrote dgoA_growth_rates.csv")
+    print(f"[cn02] wrote {CN.TAG}_growth_rates.csv")
     return res
 
 

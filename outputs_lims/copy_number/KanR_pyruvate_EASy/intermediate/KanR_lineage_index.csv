@@ -1,0 +1,23 @@
+lineage,genotype,context,n_points,n_transfers,transfers,has_replicates,estimable,ci_reliable,breakpoint_testable
+EASyTwist25.LdgoATlarge.A,EASyTwist25.LdgoATlarge,EASyTwist25 LdgoATlarge,4,4,"207,214,218,286",False,True,True,True
+EASyTwist25.LdgoATlarge.B,EASyTwist25.LdgoATlarge,EASyTwist25 LdgoATlarge,4,4,"207,214,218,286",False,True,True,True
+EASyTwist25.LdgoATlarge.C,EASyTwist25.LdgoATlarge,EASyTwist25 LdgoATlarge,4,4,"207,214,218,286",False,True,True,True
+EASyTwist25.LdgoATlarge.D,EASyTwist25.LdgoATlarge,EASyTwist25 LdgoATlarge,4,4,"207,214,218,286",False,True,True,True
+EASyTwist25.LdgoATlarge.E,EASyTwist25.LdgoATlarge,EASyTwist25 LdgoATlarge,4,4,"207,214,218,286",False,True,True,True
+EASyTwist25.LdgoATsmall.A,EASyTwist25.LdgoATsmall,EASyTwist25 LdgoATsmall,4,4,"207,239,267,358",False,True,True,True
+EASyTwist25.LdgoATsmall.B,EASyTwist25.LdgoATsmall,EASyTwist25 LdgoATsmall,4,4,"207,239,267,358",False,True,True,True
+EASyTwist25.LdgoATsmall.C,EASyTwist25.LdgoATsmall,EASyTwist25 LdgoATsmall,4,4,"207,239,267,358",False,True,True,True
+EASyTwist25.LdgoATsmall.D,EASyTwist25.LdgoATsmall,EASyTwist25 LdgoATsmall,4,4,"207,239,267,358",False,True,True,True
+EASyTwist25.LdgoATsmall.E,EASyTwist25.LdgoATsmall,EASyTwist25 LdgoATsmall,4,4,"207,239,267,358",False,True,True,True
+EASyUnchar22.LdgoA3.A,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,4,4,"504,537,593,642",False,True,True,True
+EASyUnchar22.LdgoA3.B,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,4,4,"504,537,593,642",False,True,True,True
+EASyUnchar22.LdgoA3.C,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,4,4,"504,537,593,642",False,True,True,True
+EASyUnchar22.LdgoA3.D,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,4,4,"504,537,593,642",False,True,True,True
+EASyUnchar22.LdgoA3.E,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,4,4,"504,537,593,642",False,True,True,True
+EASyUnchar22.LdgoA3.F,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,4,4,"504,537,593,642",False,True,True,True
+EASyUnchar22.LdgoA3.G,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,4,4,"504,537,593,642",False,True,True,True
+EASyUnchar22.LdgoA3.H,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,4,4,"504,537,593,642",False,True,True,True
+EASyUnchar22.LdgoA3.I,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,4,4,"504,537,593,642",False,True,True,True
+EASyUnchar22.LdgoA3.J,EASyUnchar22.LdgoA3,EASyUnchar22 LdgoA3,4,4,"504,537,593,642",False,True,True,True
+EASyTwist25.noDNA,EASyTwist25.noDNA,control (noDNA),4,4,"203,207,214,358",False,True,True,True
+EASyUnchar22.noDNA,EASyUnchar22.noDNA,control (noDNA),6,6,"474,488,504,537,593,642",False,True,True,True

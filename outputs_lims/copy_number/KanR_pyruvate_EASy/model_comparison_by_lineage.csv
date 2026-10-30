@@ -1,0 +1,23 @@
+lineage,context,deployed_model,unconstrained_direction,r2_1var,r2_4var_deployed,r2_4var_form,rmse_1var,rmse_4var_deployed,rmse_form_insample,rse_dofadj_1var,rse_dofadj_4var_deployed,bic_prefers_form,bic_prefers_increasing,loto_rmse_1var,loto_rmse_form,loto_folds,n_transfers
+EASyTwist25.LdgoATlarge.A,EASyTwist25 LdgoATlarge,constant,accelerating,0.8636,0.8636,0.9769,0.4548,0.4548,0.187,0.6432,0.6432,True,True,3.9315,8.2063,4,4
+EASyTwist25.LdgoATlarge.B,EASyTwist25 LdgoATlarge,constant,accelerating,0.9939,0.9939,0.9951,0.1015,0.1015,0.0914,0.1436,0.1436,False,False,0.4391,2.5364,4,4
+EASyTwist25.LdgoATlarge.C,EASyTwist25 LdgoATlarge,two_phase,accelerating,0.8573,0.9986,0.9986,0.421,0.0423,0.0423,0.5954,0.0846,True,True,3.9659,4.8938,4,4
+EASyTwist25.LdgoATlarge.D,EASyTwist25 LdgoATlarge,two_phase,accelerating,0.8311,0.9909,0.9909,0.4246,0.0986,0.0986,0.6005,0.1973,True,True,3.9114,6.142,4,4
+EASyTwist25.LdgoATlarge.E,EASyTwist25 LdgoATlarge,constant,decelerating,0.9795,0.9795,0.9975,0.2197,0.2197,0.0761,0.3107,0.3107,True,False,1.9533,3.6873,4,4
+EASyTwist25.LdgoATsmall.A,EASyTwist25 LdgoATsmall,constant,accelerating,0.9283,0.9283,0.9407,0.3353,0.3353,0.3049,0.4742,0.4742,False,False,0.6335,2.0488,4,4
+EASyTwist25.LdgoATsmall.B,EASyTwist25 LdgoATsmall,two_phase,accelerating,0.9617,0.9956,0.9956,0.2309,0.078,0.078,0.3266,0.1559,True,True,0.7443,1.0681,4,4
+EASyTwist25.LdgoATsmall.C,EASyTwist25 LdgoATsmall,constant,accelerating,0.9608,0.9608,0.9872,0.2336,0.2336,0.1334,0.3304,0.3304,True,True,0.6684,1.2795,4,4
+EASyTwist25.LdgoATsmall.D,EASyTwist25 LdgoATsmall,two_phase,accelerating,0.9811,0.9996,0.9996,0.1614,0.0245,0.0245,0.2283,0.0491,True,True,0.5273,0.2435,4,4
+EASyTwist25.LdgoATsmall.E,EASyTwist25 LdgoATsmall,two_phase,accelerating,0.962,0.9993,0.9993,0.2333,0.0318,0.0318,0.33,0.0636,True,True,0.8049,0.587,4,4
+EASyTwist25.noDNA,control (noDNA),constant,decelerating,0.0664,0.0664,0.9709,0.1133,0.1133,0.02,0.1603,0.1603,True,False,2.1357,1.6728,4,4
+EASyUnchar22.LdgoA3.A,EASyUnchar22 LdgoA3,constant,decelerating,0.8725,0.8725,0.924,0.3895,0.3895,0.3008,0.5508,0.5508,True,False,0.7015,1.1676,4,4
+EASyUnchar22.LdgoA3.B,EASyUnchar22 LdgoA3,constant,decelerating,0.0128,0.0128,0.8132,0.1132,0.1132,0.0492,0.1601,0.1601,True,False,0.2219,0.2907,4,4
+EASyUnchar22.LdgoA3.C,EASyUnchar22 LdgoA3,constant,decelerating,0.4519,0.4519,0.992,0.0897,0.0897,0.0108,0.1268,0.1268,True,False,0.2104,0.2104,4,4
+EASyUnchar22.LdgoA3.D,EASyUnchar22 LdgoA3,constant,decelerating,0.8581,0.8581,0.9252,0.2373,0.2373,0.1724,0.3356,0.3356,True,False,0.4295,0.7003,4,4
+EASyUnchar22.LdgoA3.E,EASyUnchar22 LdgoA3,constant,decelerating,0.84,0.84,0.9608,0.1363,0.1363,0.0674,0.1927,0.1927,True,False,0.2872,0.3873,4,4
+EASyUnchar22.LdgoA3.F,EASyUnchar22 LdgoA3,constant,accelerating,0.8043,0.8043,0.858,0.3233,0.3233,0.2754,0.4572,0.4572,False,False,0.5923,0.9966,4,4
+EASyUnchar22.LdgoA3.G,EASyUnchar22 LdgoA3,constant,decelerating,0.9041,0.9041,0.9462,0.2074,0.2074,0.1554,0.2933,0.2933,True,False,0.3742,0.617,4,4
+EASyUnchar22.LdgoA3.H,EASyUnchar22 LdgoA3,constant,decelerating,0.9524,0.9524,0.9998,0.1319,0.1319,0.0087,0.1866,0.1866,True,False,0.3129,0.2991,4,4
+EASyUnchar22.LdgoA3.I,EASyUnchar22 LdgoA3,constant,accelerating,0.8468,0.8468,0.9219,0.0511,0.0511,0.0365,0.0723,0.0723,True,True,0.0928,0.1502,4,4
+EASyUnchar22.LdgoA3.J,EASyUnchar22 LdgoA3,constant,decelerating,0.5708,0.5708,0.9991,0.4779,0.4779,0.0221,0.6758,0.6758,True,False,1.1377,1.0699,4,4
+EASyUnchar22.noDNA,control (noDNA),constant,accelerating,0.2172,0.2172,0.3361,0.3501,0.3501,0.3224,0.4288,0.4288,False,False,0.4671,0.6377,6,6

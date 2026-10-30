@@ -1,0 +1,6 @@
+lineage,genotype,context,rate_per_transfer,se,ci95_lo,ci95_hi,p_value,fold_change_per_transfer,r2,n_points,n_transfers,dof,tier,raw_ci_excludes_0,q_value,call
+TFMN3.ACN3749.Mxb.noDNA.5,ACN3749.Mxb.noDNA,control (noDNA),0.04243,0.02329,-0.05778,0.14264,0.21008,1.0433,0.624,12,4,2,reliable,False,0.3792,flat
+TFMN3.ACN3749.Mxb.noDNA.4,ACN3749.Mxb.noDNA,control (noDNA),0.01327,0.00534,-0.00969,0.03623,0.13077,1.0134,0.7556,12,4,2,reliable,False,0.3792,flat
+TFMN3.ACN3749.Mxb.noDNA.3,ACN3749.Mxb.noDNA,control (noDNA),0.01017,0.01057,-0.03531,0.05564,0.43763,1.0102,0.3163,12,4,2,reliable,False,0.4376,flat
+TFMN3.ACN3749.Mxb.noDNA.2,ACN3749.Mxb.noDNA,control (noDNA),0.00762,0.00526,-0.01501,0.03026,0.28439,1.0077,0.5121,12,4,2,reliable,False,0.3792,flat
+TFMN3.ACN3575.Mxb.noDNA.2,ACN3575.Mxb.noDNA,control (noDNA),-0.01778,,,,,0.9824,1.0,2,2,0,rate-only (2 transfers),False,,uncertain (low leverage)

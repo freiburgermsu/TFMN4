@@ -1,0 +1,12 @@
+Sample,DNA_construct,n_estimable,n_testable,n_accelerating,n_held_decrease,frac_accelerating,bp_T4,bp_T6,median_r_init_adopted,median_r_final_adopted,median_acceleration_adopted,median_logA_init
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.4,concX_largeLib_SpeI,23,9,4,5,0.4444,0,4,-0.196,0.4543,0.5805,0.8941
+TFMN4.exp2.ACN3788.concX_smallLib_PCR_DpnI_cleanup.3,concX_smallLib_PCR_DpnI_cleanup,14,8,3,5,0.375,1,2,-0.3137,0.2112,0.5923,1.0667
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.2,concY_largeLib_PCR_DpnI_cleanup,28,6,2,3,0.3333,1,1,-0.3784,0.3566,0.735,1.0356
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.3,concY_largeLib_PCR_DpnI_cleanup,40,15,2,11,0.1333,1,1,-0.3157,0.2122,0.528,0.9932
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.1,concX_largeLib_SpeI_cleanup,25,9,1,7,0.1111,1,0,-0.3167,0.0112,0.3279,0.716
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.2,concX_largeLib_SpeI,22,5,1,2,0.2,0,1,-0.0112,0.3412,0.3524,1.0978
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.1,concX_largeLib_SpeI,24,6,0,6,0.0,0,0,,,,0.7994
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.3,concX_largeLib_SpeI,2,2,0,2,0.0,0,0,,,,3.3586
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.5,concX_largeLib_SpeI,12,1,0,1,0.0,0,0,,,,1.1097
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.3,concX_largeLib_SpeI_cleanup,13,4,0,4,0.0,0,0,,,,0.0914
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.4,concY_largeLib_PCR_DpnI_cleanup,34,1,0,1,0.0,0,0,,,,0.8034

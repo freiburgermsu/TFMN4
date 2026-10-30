@@ -1,0 +1,47 @@
+======================================================================
+[cn01] 165 rows -> 161 measurements (126 per-transfer means) across 21 lineages (ancestral stock verAB copy_number=nan).
+[cn01] contexts: TFMN2 DEL6kb=3, TFMN2 DEL6kb-DELvanK=3, TFMN2 DEL6kb-DELvanK-DELadeK=3, TFMN2 gDNA3560=3, TFMN2 gDNA3575=3, TFMN2 gDNA3575-gDNA3749=3, TFMN2 gDNA3749=3
+[cn01] estimable (>=3 transfers): 21; CI-reliable (>=4 transfers): 21; lineages with technical replicates: 17.
+[cn01] wrote verAB_copynumber_long.csv, verAB_bytransfer.csv, verAB_lineage_index.csv
+----------------------------------------------------------------------
+[cn02] fitted 1-var amplification rate ± SE for 21 lineages (OLS of ln(copy_number) on transfer, per-transfer means).
+[cn02] rate range [-0.001, +0.034]/transfer; median SE=0.003.
+[cn02] tiers: 21 CI-reliable (>=4 transfers), 0 low-leverage (3 transfers), 0 rate-only (2 transfers).
+[cn02] significance among reliable (BH-FDR q<0.05): 1 amplifying, 0 losing (vs 4 lineages whose RAW CI excludes 0 — most are multiplicity/low-leverage artifacts).
+[cn02] robust amplifiers (FDR-significant):
+        TFMN2.ACN3500.Iva.DEL6kb-DELvanK-DELadeK.4 r=+0.013±0.001/transfer (×1.01, q=0.010, R²=0.96, 6 transfers)
+[cn02] per-context median rate:
+        TFMN2 DEL6kb       n= 3  median r=+0.026/transfer  (0 FDR-amplifying)
+        TFMN2 DEL6kb-DELvanK n= 3  median r=+0.031/transfer  (0 FDR-amplifying)
+        TFMN2 DEL6kb-DELvanK-DELadeK n= 3  median r=+0.013/transfer  (1 FDR-amplifying)
+        TFMN2 gDNA3560     n= 3  median r=+0.001/transfer  (0 FDR-amplifying)
+        TFMN2 gDNA3575     n= 3  median r=+0.004/transfer  (0 FDR-amplifying)
+        TFMN2 gDNA3575-gDNA3749 n= 3  median r=+0.002/transfer  (0 FDR-amplifying)
+        TFMN2 gDNA3749     n= 3  median r=+0.004/transfer  (0 FDR-amplifying)
+[cn02] wrote verAB_growth_rates.csv
+----------------------------------------------------------------------
+[cn03] segmented model fit for 21 lineages; 21 breakpoint-testable (>=4 transfers).
+[cn03] increasing two-phase adopted for 3/21 testable (strong-evidence BIC AND +Δrate>10%); 8 held constant because their best fit was a DECREASE (plateau/saturation).
+        TFMN2.ACN3500.Iva.gDNA3749.2 r -0.011->+0.020/transfer @T13 (ΔBIC=9.8)
+        TFMN2.ACN3500.Iva.gDNA3560.2 r -0.007->+0.005/transfer @T7 (ΔBIC=8.4)
+        TFMN2.ACN3500.Iva.gDNA3575-gDNA3749.3 r -0.043->+0.002/transfer @T2 (ΔBIC=7.0)
+[cn03] wrote verAB_segmented.csv
+----------------------------------------------------------------------
+[cn04] 21 testable lineages; deployed 4-var == 1-var on 18/21, differs on 3.
+[cn04] SATURATION: 8/21 testable DECELERATE (amplify then plateau).
+[cn04] in-sample median R² 1-var=0.422 vs broken-stick FORM=0.8174.
+[cn04] out-of-sample LOTO median RMSE 1-var=0.0657 FORM=0.0933; FORM better on 10/21, Wilcoxon p=0.82 (not significant).
+[cn04] wrote model_comparison_summary.csv, model_comparison_by_lineage.csv, model_fit_error.csv
+----------------------------------------------------------------------
+[cn05] wrote figures/verAB_growth_rates_forest.png (21 variants)
+[cn05] wrote figures/verAB_growth_examples.png (6 panels)
+[cn05] wrote figures/model_comparison.png
+[cn05] wrote figures/model_fit_error.png
+[cn05] done.
+======================================================================
+DONE. Headlines (outputs_copynumber/):
+  dgoA_growth_rates.csv                     per-variant amplification rate ± error
+  figures/dgoA_growth_rates_forest.png      forest of every variant's rate ± 95% CI
+  dgoA_segmented.csv                        4-variable breakpoint model
+  model_comparison_summary.csv + .png       1-var vs 4-var head-to-head
+  model_fit_error.csv + figures/model_fit_error.png

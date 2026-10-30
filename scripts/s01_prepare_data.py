@@ -7,6 +7,8 @@ the pipeline consumes. Branches by dataset (config.DATASET):
   amplicon* - Plasmidsaurus amplicons_reads.csv (per-read verA/verB); restrict to
               one carbon source (config.AMPLICON_CARBON); the three primer-set
               technical replicates become the cross-sample units; transfers {3,4,13}.
+  lims_*    - one environment of the LIMS mirror DB, already QC'd and restricted to
+              complete trajectories by scripts/lims01_extract.py (lims_data/barcodes/).
 
 Outputs (into config.INTER, which is dataset-specific so nothing is overwritten):
   barcode_4transfer_long.csv   - (Sample, Transfer, Candidate) + verA/verB/Count/depth/freq
@@ -85,7 +87,20 @@ def main_amplicon():
     return _finalize(d, C.DATASET)
 
 
+def main_lims():
+    d = pd.read_csv(C.LIMS_BARCODES)
+    d = d[d["Transfer"].isin(C.TRANSFERS)].copy()
+    bad = {s for s, g in d.groupby("Sample") if set(g["Transfer"]) != set(C.TRANSFERS)}
+    if bad:
+        raise SystemExit(f"[s01:{C.DATASET}] incomplete trajectories (lims01 should have dropped): {bad}")
+    print(f"[s01:{C.DATASET}] {C.LIMS['experiment']} | {C.LIMS['condition']} | {C.LIMS['strain']} | "
+          f"{C.LIMS['assay']}; transfers {list(C.TRANSFERS)}")
+    return _finalize(d, C.DATASET)
+
+
 def main():
+    if C.IS_LIMS:
+        return main_lims()
     return main_wgs() if C.DATASET == "wgs" else main_amplicon()
 
 

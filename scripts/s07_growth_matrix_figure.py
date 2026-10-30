@@ -21,7 +21,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import config as C
 
-PREFIX = "TFMN4.exp2.ACN3788."
+PREFIX = C.SAMPLE_PREFIX
 
 
 def short_label(c):

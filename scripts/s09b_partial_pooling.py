@@ -36,7 +36,9 @@ def main():
 
     # additive allele design (one-hot verA + verB), ridge-regularized weighted fit
     enc = OneHotEncoder(sparse_output=False, handle_unknown="ignore")
-    X = enc.fit_transform(v[["verA", "verB"]])
+    # a split bridge graph leaves each component on its own gauge -> absorb it
+    cols = ["verA", "verB"] + (["bridge_component"] if "bridge_component" in v.columns else [])
+    X = enc.fit_transform(v[cols].astype(str) if len(cols) > 2 else v[cols])
     ridge = Ridge(alpha=1.0, fit_intercept=True)
     ridge.fit(X, v["beta_per_cycle"].values, sample_weight=w)
     allele_pred = ridge.predict(X)

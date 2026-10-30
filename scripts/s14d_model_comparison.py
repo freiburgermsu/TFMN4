@@ -46,6 +46,18 @@ N = len(TRANSFERS)
 INTERIOR = TRANSFERS[1:-1]
 
 
+def oos_verdict(ratio, n_better, n):
+    """Plain-language reading of a median LOOCV RMSE ratio (4-var / 1-var), used for the
+    LIMS environments' interpretation text (the legacy datasets keep their reviewed wording)."""
+    if not np.isfinite(ratio) or n == 0:
+        return "not assessable"
+    if ratio < 0.9 and n_better > n / 2:
+        return "the 4-var predicts held-out timepoints better"
+    if ratio > 1.1 and n_better < n / 2:
+        return "the 4-var predicts held-out timepoints worse"
+    return "parity"
+
+
 # --------------------------------------------------------------------------- fits
 def _traj(d4, sample, cand):
     sub = d4[d4.Sample == sample]
@@ -88,7 +100,7 @@ def _loocv(cvec, yvec, knot=None):
         knots = [knot] if knot is not None else INTERIOR
         best = None
         for kt in knots:
-            h = np.maximum(0.0, xt - kt); XB = np.column_stack([np.ones(3), xt, h])
+            h = np.maximum(0.0, xt - kt); XB = np.column_stack([np.ones(len(xt)), xt, h])
             if np.linalg.matrix_rank(XB) < 3:
                 continue
             cB, wrss, _ = wls(XB, yt, wt)
@@ -97,7 +109,7 @@ def _loocv(cvec, yvec, knot=None):
         if best is None:
             continue
         cB, _, kt = best
-        XA = np.column_stack([np.ones(3), xt]); cA, _, _ = wls(XA, yt, wt)
+        XA = np.column_stack([np.ones(len(xt)), xt]); cA, _, _ = wls(XA, yt, wt)
         predA = np.array([1, XT[i]]) @ cA
         predB = np.array([1, XT[i], max(0.0, XT[i] - kt)]) @ cB
         seA.append((yvec[i] - predA) ** 2); seB.append((yvec[i] - predB) ** 2)
@@ -180,6 +192,7 @@ def summary_table(seg, bt):
         yield ("median_wRSS_on_testable", med(bt.wrss_1var), med(bt.wrss_4var_capability),
                "lower is better; same caveat")
         yield ("BIC_prefers_4var_of_testable", "-", int(bt.bic_prefers_4var_capability.sum()),
+               f"unconstrained broken-stick; of {n_test} (n={N} transfers)" if C.IS_LIMS else
                f"unconstrained broken-stick; of {n_test} (n=4 flexibility)")
         yield ("BIC_prefers_increasing_4var_of_testable", "-", int(bt.bic_prefers_4var_increasing.sum()),
                f"of {n_test}")
@@ -191,15 +204,19 @@ def summary_table(seg, bt):
             return round(float((num[m] / den[m]).median()), 3) if m.any() else np.nan
         yield ("median_LOOCV_RMSE_adopted_elbow_learned", med(ad.loocv_rmse_1var_free),
                med(ad.loocv_rmse_4var_free), "FAIR out-of-sample test (elbow re-learned per fold)")
-        yield ("LOOCV_RMSE_ratio_adopted_elbow_learned", "1.00 (parity)",
-               ratio(ad.loocv_rmse_4var_free, ad.loocv_rmse_1var_free),
+        r_free = ratio(ad.loocv_rmse_4var_free, ad.loocv_rmse_1var_free)
+        yield ("LOOCV_RMSE_ratio_adopted_elbow_learned", "1.00 (parity)", r_free,
+               (f"median per-trajectory 4-var/1-var; <1 favours 4-var ("
+                f"{oos_verdict(r_free, int(ad.oos_4var_better_free.sum()), len(ad))})") if C.IS_LIMS else
                "median per-trajectory 4-var/1-var; <1 favours 4-var (the fair test ≈ parity)")
         yield ("adopted_4var_predicts_better_elbow_learned", "-",
                f"{int(ad.oos_4var_better_free.sum())}/{len(ad)}", "the honest predictive score")
         yield ("median_LOOCV_RMSE_adopted_elbow_supplied", med(ad.loocv_rmse_1var_fixedelbow),
                med(ad.loocv_rmse_4var_fixedelbow), "elbow FIXED -> isolates the two-phase shape")
-        yield ("LOOCV_RMSE_ratio_adopted_elbow_supplied", "1.00 (parity)",
-               ratio(ad.loocv_rmse_4var_fixedelbow, ad.loocv_rmse_1var_fixedelbow),
+        r_fix = ratio(ad.loocv_rmse_4var_fixedelbow, ad.loocv_rmse_1var_fixedelbow)
+        n_fix = int((pd.to_numeric(ad.loocv_rmse_4var_fixedelbow) < pd.to_numeric(ad.loocv_rmse_1var_fixedelbow)).sum())
+        yield ("LOOCV_RMSE_ratio_adopted_elbow_supplied", "1.00 (parity)", r_fix,
+               f"elbow supplied: {oos_verdict(r_fix, n_fix, len(ad))}" if C.IS_LIMS else
                "with the elbow supplied the 4-var shape predicts markedly better")
         yield ("median_abs_single_slope_adopted", med(ad.s_constant_per_cycle.abs()), "-",
                "what the 1-var reports for the adopted variants")

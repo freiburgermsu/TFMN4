@@ -25,7 +25,7 @@ import cn_common as CN
 
 
 def main():
-    bt = pd.read_csv(CN.INTER / "dgoA_bytransfer.csv")
+    bt = pd.read_csv(CN.INTER / f"{CN.TAG}_bytransfer.csv")
     rows = []
     for lin, g in bt.groupby("lineage"):
         g = g.sort_values("transfer")
@@ -49,7 +49,7 @@ def main():
             n_transfers=s["n_transfers"],
         ))
     res = pd.DataFrame(rows).sort_values(["model_selected", "delta_bic"], ascending=[True, False])
-    res.to_csv(CN.OUT / "dgoA_segmented.csv", index=False)
+    res.to_csv(CN.OUT / f"{CN.TAG}_segmented.csv", index=False)
 
     test = res[res.breakpoint_testable]
     two = res[res.model_selected == "two_phase"]
@@ -63,7 +63,7 @@ def main():
         for _, x in two.sort_values("delta_bic", ascending=False).head(4).iterrows():
             print(f"        {x.lineage:20s} r {x.r_init_per_transfer:+.3f}->{x.r_final_per_transfer:+.3f}/transfer "
                   f"@T{x.breakpoint_transfer:g} (ΔBIC={x.delta_bic:.1f})")
-    print("[cn03] wrote dgoA_segmented.csv")
+    print(f"[cn03] wrote {CN.TAG}_segmented.csv")
     return res
 
 

@@ -1,0 +1,12 @@
+Sample,DNA_construct,n_estimable,n_testable,n_accelerating,n_held_decrease,frac_accelerating,bp_T3,bp_T4,bp_T5,bp_T6,bp_T8,bp_T10,median_r_init_adopted,median_r_final_adopted,median_acceleration_adopted,median_logA_init
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.4,concY_largeLib_PCR_DpnI_cleanup,162,106,12,74,0.1132,7,4,0,0,1,0,-0.9731,-0.0749,0.8154,1.3202
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.3,concY_largeLib_PCR_DpnI_cleanup,167,107,11,74,0.1028,3,3,1,1,3,0,-0.8474,0.166,0.6996,1.1291
+TFMN4.exp2.ACN3788.concX_smallLib_PCR_DpnI_cleanup.3,concX_smallLib_PCR_DpnI_cleanup,72,39,5,29,0.1282,1,0,1,1,2,0,-0.2965,0.1447,0.4272,0.3815
+TFMN4.exp2.ACN3788.concY_largeLib_PCR_DpnI_cleanup.2,concY_largeLib_PCR_DpnI_cleanup,119,73,4,55,0.0548,1,0,1,1,1,0,-0.538,0.0363,0.6612,1.1693
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.2,concX_largeLib_SpeI,148,85,4,71,0.0471,2,1,0,0,1,0,-0.8555,-0.135,0.6872,1.387
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.1,concX_largeLib_SpeI,138,68,4,51,0.0588,0,1,1,1,1,0,-0.6344,0.0534,0.6096,1.5099
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.1,concX_largeLib_SpeI_cleanup,103,54,4,40,0.0741,2,1,0,0,0,1,-0.9653,-0.1733,0.732,1.2681
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.3,concX_largeLib_SpeI,105,29,3,25,0.1034,0,3,0,0,0,0,-0.9654,-0.3143,0.6372,1.0719
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.5,concX_largeLib_SpeI,100,37,3,32,0.0811,2,1,0,0,0,0,-1.0532,-0.0855,1.1045,1.1485
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI.4,concX_largeLib_SpeI,145,70,2,55,0.0286,0,1,1,0,0,0,-0.6654,-0.1476,0.5179,0.9202
+TFMN4.exp2.ACN3788.concX_largeLib_SpeI_cleanup.3,concX_largeLib_SpeI_cleanup,53,33,1,31,0.0303,1,0,0,0,0,0,-1.4814,-0.4017,1.0797,0.6264

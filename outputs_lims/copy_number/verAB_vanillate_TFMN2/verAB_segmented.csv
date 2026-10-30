@@ -1,0 +1,16 @@
+lineage,genotype,context,model_selected,direction,unconstrained_direction,breakpoint_testable,logA_init,r_init_per_transfer,r_final_per_transfer,breakpoint_transfer,rel_rate_change,delta_bic,r2_constant,r2_two_phase,s_constant_per_transfer,n_transfers
+TFMN2.ACN3500.Van.DEL6kb.1,ACN3500.Van.DEL6kb,TFMN2 DEL6kb,constant,constant,accelerating,True,-0.1377,0.00304,0.00304,,0.6418,5.226,0.1223,0.7275,0.00304,6
+TFMN2.ACN3500.Van.DEL6kb.2,ACN3500.Van.DEL6kb,TFMN2 DEL6kb,constant,constant,accelerating,True,-0.1144,0.00341,0.00341,,0.2602,5.13,0.4808,0.8362,0.00341,6
+TFMN2.ACN3500.Van.gDNA3575-gDNA3749.1,ACN3500.Van.gDNA3575-gDNA3749,TFMN2 gDNA3575-gDNA3749,constant,constant,accelerating,True,-0.122,0.00264,0.00264,,1.0536,3.166,0.1454,0.626,0.00264,6
+TFMN2.ACN3500.Van.gDNA3575-gDNA3749.3,ACN3500.Van.gDNA3575-gDNA3749,TFMN2 gDNA3575-gDNA3749,constant,constant,accelerating,True,-0.1574,0.00595,0.00595,,0.4456,0.183,0.717,0.7964,0.00595,6
+TFMN2.ACN3500.Van.DEL6kb-DELvanK.2,ACN3500.Van.DEL6kb-DELvanK,TFMN2 DEL6kb-DELvanK,constant,constant,accelerating,True,-0.171,0.00752,0.00752,,0.1428,-0.53,0.8256,0.8587,0.00752,6
+TFMN2.ACN3500.Van.gDNA3749.2,ACN3500.Van.gDNA3749,TFMN2 gDNA3749,constant,constant,accelerating,True,-0.1123,0.00406,0.00406,,0.114,-0.779,0.9089,0.923,0.00406,6
+TFMN2.ACN3500.Van.gDNA3575.2,ACN3500.Van.gDNA3575,TFMN2 gDNA3575,constant,constant,accelerating,True,-0.1149,0.00108,0.00108,,0.0976,-1.239,0.0884,0.1687,0.00108,6
+TFMN2.ACN3500.Van.gDNA3560.2,ACN3500.Van.gDNA3560,TFMN2 gDNA3560,constant,constant,decelerating,True,-0.1223,0.00469,0.00469,,0.0885,-1.494,0.5506,0.5724,0.00469,6
+TFMN2.ACN3500.Van.gDNA3575.1,ACN3500.Van.gDNA3575,TFMN2 gDNA3575,constant,constant,decelerating,True,-0.1113,0.00346,0.00346,,0.2519,-1.527,0.2919,0.3225,0.00346,6
+TFMN2.ACN3500.Van.DEL6kb-DELvanK.1,ACN3500.Van.DEL6kb-DELvanK,TFMN2 DEL6kb-DELvanK,constant,constant,decelerating,True,-0.0955,0.00215,0.00215,,0.07,-1.752,0.0538,0.0602,0.00215,6
+TFMN2.ACN3500.Van.DEL6kb-DELvanK-DELadeK.1,ACN3500.Van.DEL6kb-DELvanK-DELadeK,TFMN2 DEL6kb-DELvanK-DELadeK,constant,constant,decelerating,True,-0.1706,0.00956,0.00956,,,,0.9148,,0.00956,6
+TFMN2.ACN3500.Van.DEL6kb-DELvanK-DELadeK.2,ACN3500.Van.DEL6kb-DELvanK-DELadeK,TFMN2 DEL6kb-DELvanK-DELadeK,constant,constant,decelerating,True,-0.1374,0.00494,0.00494,,,,0.3689,,0.00494,6
+TFMN2.ACN3500.Van.gDNA3560.1,ACN3500.Van.gDNA3560,TFMN2 gDNA3560,constant,constant,decelerating,True,-0.1735,0.00727,0.00727,,,,0.8754,,0.00727,6
+TFMN2.ACN3500.Van.gDNA3749.1,ACN3500.Van.gDNA3749,TFMN2 gDNA3749,constant,constant,decelerating,True,-0.0943,0.00173,0.00173,,,,0.1806,,0.00173,6
+TFMN2.ACN3500.Van.gDNA3575-gDNA3749.2,ACN3500.Van.gDNA3575-gDNA3749,TFMN2 gDNA3575-gDNA3749,two_phase,accelerating,accelerating,True,-0.1433,-0.00274,0.00752,3.0,0.2051,7.568,0.9779,0.9953,0.00682,6

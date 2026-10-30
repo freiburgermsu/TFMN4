@@ -1,0 +1,38 @@
+======================================================================
+[cn01] 80 rows -> 78 measurements (39 per-transfer means) across 26 lineages (ancestral stock verAB copy_number=nan).
+[cn01] contexts: TFMN2 DEL6kb=3, TFMN2 DEL6kb-DELvanK=3, TFMN2 DEL6kb-DELvanK-DELadeK=3, TFMN2 gDNA3560=3, TFMN2 gDNA3575=3, TFMN2 gDNA3575-gDNA3749=2, TFMN2 gDNA3575-gDNA3749-gDNA3560=1, TFMN2 gDNA3749=3, control (noDNA)=5
+[cn01] estimable (>=3 transfers): 4; CI-reliable (>=4 transfers): 4; lineages with technical replicates: 10.
+[cn01] wrote verAB_copynumber_long.csv, verAB_bytransfer.csv, verAB_lineage_index.csv
+----------------------------------------------------------------------
+[cn02] fitted 1-var amplification rate ± SE for 5 lineages (OLS of ln(copy_number) on transfer, per-transfer means).
+[cn02] rate range [-0.018, +0.042]/transfer; median SE=0.008.
+[cn02] tiers: 4 CI-reliable (>=4 transfers), 0 low-leverage (3 transfers), 1 rate-only (2 transfers).
+[cn02] significance among reliable (BH-FDR q<0.05): 0 amplifying, 0 losing (vs 0 lineages whose RAW CI excludes 0 — most are multiplicity/low-leverage artifacts).
+[cn02] per-context median rate:
+        control (noDNA)    n= 5  median r=+0.010/transfer  (0 FDR-amplifying)
+[cn02] wrote verAB_growth_rates.csv
+----------------------------------------------------------------------
+[cn03] segmented model fit for 4 lineages; 4 breakpoint-testable (>=4 transfers).
+[cn03] increasing two-phase adopted for 2/4 testable (strong-evidence BIC AND +Δrate>10%); 0 held constant because their best fit was a DECREASE (plateau/saturation).
+        TFMN3.ACN3749.Mxb.noDNA.5 r +0.000->+0.124/transfer @T8 (ΔBIC=17.7)
+        TFMN3.ACN3749.Mxb.noDNA.2 r -0.002->+0.026/transfer @T8 (ΔBIC=12.9)
+[cn03] wrote verAB_segmented.csv
+----------------------------------------------------------------------
+[cn04] 4 testable lineages; deployed 4-var == 1-var on 2/4, differs on 2.
+[cn04] SATURATION: 0/4 testable DECELERATE (amplify then plateau).
+[cn04] in-sample median R² 1-var=0.568 vs broken-stick FORM=0.9286.
+[cn04] out-of-sample LOTO median RMSE 1-var=0.1022 FORM=0.1555; FORM better on 1/4, Wilcoxon p=0.38 (not significant).
+[cn04] wrote model_comparison_summary.csv, model_comparison_by_lineage.csv, model_fit_error.csv
+----------------------------------------------------------------------
+[cn05] wrote figures/verAB_growth_rates_forest.png (5 variants)
+[cn05] wrote figures/verAB_growth_examples.png (4 panels)
+[cn05] wrote figures/model_comparison.png
+[cn05] wrote figures/model_fit_error.png
+[cn05] done.
+======================================================================
+DONE. Headlines (outputs_copynumber/):
+  dgoA_growth_rates.csv                     per-variant amplification rate ± error
+  figures/dgoA_growth_rates_forest.png      forest of every variant's rate ± 95% CI
+  dgoA_segmented.csv                        4-variable breakpoint model
+  model_comparison_summary.csv + .png       1-var vs 4-var head-to-head
+  model_fit_error.csv + figures/model_fit_error.png

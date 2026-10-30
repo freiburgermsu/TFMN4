@@ -1,0 +1,22 @@
+lineage,genotype,context,model_selected,direction,unconstrained_direction,breakpoint_testable,logA_init,r_init_per_transfer,r_final_per_transfer,breakpoint_transfer,rel_rate_change,delta_bic,r2_constant,r2_two_phase,s_constant_per_transfer,n_transfers
+TFMN2.ACN3500.Iva.gDNA3575.2,ACN3500.Iva.gDNA3575,TFMN2 gDNA3575,constant,constant,accelerating,True,-0.1596,0.00414,0.00414,,0.3861,4.756,0.4077,0.8011,0.00414,6
+TFMN2.ACN3500.Iva.gDNA3749.4,ACN3500.Iva.gDNA3749,TFMN2 gDNA3749,constant,constant,accelerating,True,-0.1603,0.0045,0.0045,,1.092,4.647,0.4983,0.8284,0.0045,6
+TFMN2.ACN3500.Iva.DEL6kb-DELvanK-DELadeK.3,ACN3500.Iva.DEL6kb-DELvanK-DELadeK,TFMN2 DEL6kb-DELvanK-DELadeK,constant,constant,accelerating,True,-0.1284,0.0067,0.0067,,1.0946,4.183,0.5058,0.8174,0.0067,6
+TFMN2.ACN3500.Iva.DEL6kb.2,ACN3500.Iva.DEL6kb,TFMN2 DEL6kb,constant,constant,accelerating,True,-0.3846,0.01669,0.01669,,1.1396,2.079,0.1516,0.5549,0.01669,6
+TFMN2.ACN3500.Iva.gDNA3575-gDNA3749.2,ACN3500.Iva.gDNA3575-gDNA3749,TFMN2 gDNA3575-gDNA3749,constant,constant,accelerating,True,-0.1556,0.00321,0.00321,,0.8341,2.061,0.5381,0.757,0.00321,6
+TFMN2.ACN3500.Iva.gDNA3749.3,ACN3500.Iva.gDNA3749,TFMN2 gDNA3749,constant,constant,accelerating,True,-0.4597,0.02037,0.02037,,1.1309,1.843,0.1159,0.5176,0.02037,6
+TFMN2.ACN3500.Iva.gDNA3575.3,ACN3500.Iva.gDNA3575,TFMN2 gDNA3575,constant,constant,accelerating,True,-0.1906,0.00551,0.00551,,0.7035,1.671,0.5762,0.7621,0.00551,6
+TFMN2.ACN3500.Iva.gDNA3575-gDNA3749.4,ACN3500.Iva.gDNA3575-gDNA3749,TFMN2 gDNA3575-gDNA3749,constant,constant,accelerating,True,-0.1477,0.00193,0.00193,,0.1164,0.668,0.422,0.6164,0.00193,6
+TFMN2.ACN3500.Iva.DEL6kb-DELvanK-DELadeK.4,ACN3500.Iva.DEL6kb-DELvanK-DELadeK,TFMN2 DEL6kb-DELvanK-DELadeK,constant,constant,accelerating,True,-0.1524,0.01304,0.01304,,0.1322,0.395,0.964,0.975,0.01304,6
+TFMN2.ACN3500.Iva.DEL6kb-DELvanK.4,ACN3500.Iva.DEL6kb-DELvanK,TFMN2 DEL6kb-DELvanK,constant,constant,accelerating,True,-0.2422,0.00885,0.00885,,1.2589,-0.044,0.3871,0.542,0.00885,6
+TFMN2.ACN3500.Iva.gDNA3560.3,ACN3500.Iva.gDNA3560,TFMN2 gDNA3560,constant,constant,decelerating,True,-0.1408,-0.00139,-0.00139,,0.3816,-1.677,0.0403,0.0585,-0.00139,6
+TFMN2.ACN3500.Iva.DEL6kb-DELvanK-DELadeK.2,ACN3500.Iva.DEL6kb-DELvanK-DELadeK,TFMN2 DEL6kb-DELvanK-DELadeK,constant,constant,decelerating,True,0.0598,0.02837,0.02837,,,,0.507,,0.02837,6
+TFMN2.ACN3500.Iva.DEL6kb-DELvanK.2,ACN3500.Iva.DEL6kb-DELvanK,TFMN2 DEL6kb-DELvanK,constant,constant,decelerating,True,-0.1253,0.03064,0.03064,,,,0.8261,,0.03064,6
+TFMN2.ACN3500.Iva.DEL6kb-DELvanK.3,ACN3500.Iva.DEL6kb-DELvanK,TFMN2 DEL6kb-DELvanK,constant,constant,decelerating,True,-0.0643,0.03371,0.03371,,,,0.7712,,0.03371,6
+TFMN2.ACN3500.Iva.DEL6kb.3,ACN3500.Iva.DEL6kb,TFMN2 DEL6kb,constant,constant,decelerating,True,-0.1394,0.02592,0.02592,,,,0.8567,,0.02592,6
+TFMN2.ACN3500.Iva.DEL6kb.4,ACN3500.Iva.DEL6kb,TFMN2 DEL6kb,constant,constant,decelerating,True,-0.2106,0.02738,0.02738,,,,0.6475,,0.02738,6
+TFMN2.ACN3500.Iva.gDNA3560.4,ACN3500.Iva.gDNA3560,TFMN2 gDNA3560,constant,constant,decelerating,True,-0.4011,0.01526,0.01526,,,,0.1612,,0.01526,6
+TFMN2.ACN3500.Iva.gDNA3575.4,ACN3500.Iva.gDNA3575,TFMN2 gDNA3575,constant,constant,decelerating,True,-0.1347,0.0019,0.0019,,,,0.1463,,0.0019,6
+TFMN2.ACN3500.Iva.gDNA3749.2,ACN3500.Iva.gDNA3749,TFMN2 gDNA3749,two_phase,accelerating,accelerating,True,-0.1267,-0.0106,0.02038,13.0,0.6197,9.775,0.0181,0.8572,-0.00102,6
+TFMN2.ACN3500.Iva.gDNA3560.2,ACN3500.Iva.gDNA3560,TFMN2 gDNA3560,two_phase,accelerating,accelerating,True,-0.1683,-0.00687,0.00508,7.0,0.2389,8.433,0.1928,0.8531,0.00136,6
+TFMN2.ACN3500.Iva.gDNA3575-gDNA3749.3,ACN3500.Iva.gDNA3575-gDNA3749,TFMN2 gDNA3575-gDNA3749,two_phase,accelerating,accelerating,True,-0.1038,-0.04324,0.00187,2.0,0.9023,7.015,0.0904,0.7904,0.0008,6

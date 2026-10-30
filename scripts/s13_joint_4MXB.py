@@ -36,6 +36,7 @@ import jax.numpy as jnp
 from jax.ops import segment_sum, segment_max
 from scipy.optimize import minimize
 import config as C
+from newton_solver import NewtonSolver, GRAD_TOL
 
 LN2 = float(np.log(2.0))
 ROOT = C.ROOT
@@ -43,6 +44,7 @@ OUT = ROOT / "outputs_joint_4MXB"
 (OUT / "intermediate").mkdir(parents=True, exist_ok=True)
 (OUT / "figures").mkdir(parents=True, exist_ok=True)
 W_OD, W_R, W_A, SIG_OD, W_B = 5.0, 50.0, 0.05, 0.08, 200.0   # W_B: strong ridge on assay drift
+REFIT_GNORM = []    # final |grad| of every fit_point refit (s13b reports them)
 
 
 def load_combined():
@@ -158,6 +160,8 @@ def fit(D):
         res = minimize(fn, p, jac=True, method="L-BFGS-B",
                        options=dict(maxiter=8000, maxfun=80000, ftol=1e-13, gtol=1e-7, maxls=60))
         p = res.x
+    # L-BFGS stops at its iteration cap; converge with damped Newton (same loss; newton_solver.py)
+    p, gn = NewtonSolver(loss, npar, rows=len(D["cnt"])).solve(p)
     # Laplace cov(r): Schur complement marginalizing logA (+ b if used)
     H = np.asarray(jax.hessian(loss)(jnp.asarray(p)), float)
     nu = slice(n_var, npar if use_b else npar - 1)
@@ -168,8 +172,8 @@ def fit(D):
     r = p[:n_var]
     # fit quality
     fr2, od_rmse = fit_quality(D, p)
-    return dict(r=r, se=se, b_amp=float(p[-1]) if use_b else 0.0, success=res.success,
-                gnorm=float(np.linalg.norm(fn(p)[1])), freq_r2=fr2, od_rmse=od_rmse)
+    return dict(r=r, se=se, b_amp=float(p[-1]) if use_b else 0.0, success=gn < GRAD_TOL,
+                gnorm=gn, freq_r2=fr2, od_rmse=od_rmse)
 
 
 def fit_point(D, w_b=W_B):
@@ -198,6 +202,8 @@ def fit_point(D, w_b=W_B):
     for _ in range(3):
         p = minimize(fn, p, jac=True, method="L-BFGS-B",
                      options=dict(maxiter=6000, ftol=1e-12, gtol=1e-7, maxls=60)).x
+    p, gn = NewtonSolver(loss, len(p), rows=len(D["cnt"])).solve(p)   # converge (as in fit)
+    REFIT_GNORM.append(gn)
     return dict(zip(D["variants"], p[:n_var])), float(p[-1])
 
 

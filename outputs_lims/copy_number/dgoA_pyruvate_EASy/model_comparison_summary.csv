@@ -1,0 +1,10 @@
+metric,one_variable,four_variable,interpretation
+free_parameters,2 (logA + rate),"4 (logA, r_init, r_final, breakpoint)",the models
+lineages_fittable,22,22,1-var >=3 transfers; 4-var >=4
+lineages_identical_output_deployed,12,12,deployed 4-var == 1-var except where it fires
+deployed_4var_differs_on,0,10,the increasing-only 4-var fires on only these
+testable_that_DECELERATE,-,10,of 22: amplify-then-plateau (saturation); increasing-only cannot fit these
+median_R2_testable_DEPLOYED,0.5254,0.9337,the deployed 4-var barely moves R² (fires on few)
+median_R2_testable_FORM,0.5254,0.9846,the bidirectional broken-stick FORM (0.5254 -> 0.9846)
+BIC_prefers_broken_stick_FORM,-,20,of 22
+median_LOTO_RMSE_FORM_vs_line,0.9671,0.7719,"out-of-sample; FORM better on 11/22, Wilcoxon p=0.11 (not significant)"

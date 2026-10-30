@@ -1,0 +1,11 @@
+[lims] running 1 environment pipelines (8 in parallel) ...
+[lims] barcode TFMN4_methoxybenzoate_ACN3788_amplicon_excl_A183 ok               5.6 min
+[lims_compare] wrote figures/environment_overview.png
+[lims_compare] wrote figures/allele_effects_heatmap.png
+[lims_compare] wrote figures/allele_concordance.png
+[lims_compare] wrote figures/top_variants_by_environment.png
+[lims_compare] wrote figures/wgs_vs_amplicon_TFMN4.png
+[lims_compare] wrote figures/copy_number_by_environment.png
+[lims_compare] wrote figures/sensitivity.png
+[lims_compare] 8 barcode + 7 copy-number environments summarised; wrote outputs_lims/comparison/ and outputs_lims/REPORT.md
+[lims] DONE -> outputs_lims/ (REPORT.md, comparison/, barcode/<env>/, copy_number/<env>/)

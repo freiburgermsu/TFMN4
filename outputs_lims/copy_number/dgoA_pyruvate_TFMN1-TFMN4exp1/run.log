@@ -1,0 +1,43 @@
+======================================================================
+[cn01] 393 rows -> 392 measurements (330 per-transfer means) across 105 lineages (ancestral stock dgoA copy_number=0.53).
+[cn01] contexts: TFMN1 double-KO=27, TFMN1 single-KO=16, TFMN4 exp1=55, control (noDNA)=7
+[cn01] estimable (>=3 transfers): 73; CI-reliable (>=4 transfers): 24; lineages with technical replicates: 13.
+[cn01] wrote dgoA_copynumber_long.csv, dgoA_bytransfer.csv, dgoA_lineage_index.csv
+----------------------------------------------------------------------
+[cn02] fitted 1-var amplification rate ± SE for 90 lineages (OLS of ln(copy_number) on transfer, per-transfer means).
+[cn02] rate range [-0.083, +0.141]/transfer; median SE=0.007.
+[cn02] tiers: 24 CI-reliable (>=4 transfers), 49 low-leverage (3 transfers), 17 rate-only (2 transfers).
+[cn02] significance among reliable (BH-FDR q<0.05): 1 amplifying, 0 losing (vs 11 lineages whose RAW CI excludes 0 — most are multiplicity/low-leverage artifacts).
+[cn02] robust amplifiers (FDR-significant):
+        TFMN1.pgi.1            r=+0.071±0.011/transfer (×1.07, q=0.019, R²=0.87, 8 transfers)
+[cn02] per-context median rate:
+        TFMN1 double-KO    n=16  median r=+0.003/transfer  (0 FDR-amplifying)
+        TFMN1 single-KO    n=12  median r=+0.031/transfer  (1 FDR-amplifying)
+        TFMN4 exp1         n=55  median r=+0.019/transfer  (0 FDR-amplifying)
+        control (noDNA)    n= 7  median r=+0.035/transfer  (0 FDR-amplifying)
+[cn02] wrote dgoA_growth_rates.csv
+----------------------------------------------------------------------
+[cn03] segmented model fit for 73 lineages; 24 breakpoint-testable (>=4 transfers).
+[cn03] increasing two-phase adopted for 2/24 testable (strong-evidence BIC AND +Δrate>10%); 20 held constant because their best fit was a DECREASE (plateau/saturation).
+        TFMN1.sohB.tpiA.2    r -0.009->+0.010/transfer @T11 (ΔBIC=7.8)
+        TFMN1.pgi.tpiA.3     r -0.025->+0.001/transfer @T5 (ΔBIC=6.1)
+[cn03] wrote dgoA_segmented.csv
+----------------------------------------------------------------------
+[cn04] 24 testable lineages; deployed 4-var == 1-var on 71/73, differs on 2.
+[cn04] SATURATION: 20/24 testable DECELERATE (amplify then plateau).
+[cn04] in-sample median R² 1-var=0.3954 vs broken-stick FORM=0.9249.
+[cn04] out-of-sample LOTO median RMSE 1-var=0.213 FORM=0.1622; FORM better on 15/24, Wilcoxon p=0.08 (not significant).
+[cn04] wrote model_comparison_summary.csv, model_comparison_by_lineage.csv, model_fit_error.csv
+----------------------------------------------------------------------
+[cn05] wrote figures/dgoA_growth_rates_forest.png (90 variants)
+[cn05] wrote figures/dgoA_growth_examples.png (6 panels)
+[cn05] wrote figures/model_comparison.png
+[cn05] wrote figures/model_fit_error.png
+[cn05] done.
+======================================================================
+DONE. Headlines (outputs_copynumber/):
+  dgoA_growth_rates.csv                     per-variant amplification rate ± error
+  figures/dgoA_growth_rates_forest.png      forest of every variant's rate ± 95% CI
+  dgoA_segmented.csv                        4-variable breakpoint model
+  model_comparison_summary.csv + .png       1-var vs 4-var head-to-head
+  model_fit_error.csv + figures/model_fit_error.png

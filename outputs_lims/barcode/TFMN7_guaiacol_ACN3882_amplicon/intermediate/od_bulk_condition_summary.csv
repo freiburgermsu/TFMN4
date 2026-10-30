@@ -1,0 +1,3 @@
+construct_family,n,median,mean,sd,min,max,doubling_h_at_median
+verABLib_large,3,0.2713,0.2678,0.024,0.2422,0.2899,2.55
+verABLib_sub_1,5,0.3044,0.3112,0.0142,0.3001,0.3339,2.28
